@@ -1,4 +1,7 @@
-import { pipeline } from '@huggingface/transformers';
+import { pipeline, env } from '@huggingface/transformers';
+
+// Limit ONNX to 1 thread to avoid OOM on low-RAM machines
+env.backends.onnx.wasm.numThreads = 1;
 
 let _embedder = null;
 
@@ -7,8 +10,9 @@ let _embedder = null;
  */
 async function getEmbedder() {
   if (!_embedder) {
+    // dtype: 'q8' downloads model_quantized.onnx (~23 MB vs 86 MB for fp32)
     _embedder = await pipeline('feature-extraction', 'Xenova/all-MiniLM-L6-v2', {
-      quantized: true,
+      dtype: 'q8',
     });
   }
   return _embedder;
