@@ -75,6 +75,7 @@ export default function HomeScreen() {
   );
 
   return (
+    <SafeAreaView style={styles.safeArea}>
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.headerLeft}>
