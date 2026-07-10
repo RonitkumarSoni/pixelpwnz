@@ -7,6 +7,7 @@ interface SessionState {
   isUploading: boolean;
   uploadProgress: number; // 0 to 1
   hasAgreedToPrivacy: boolean;
+  isLoggedIn: boolean;
 }
 
 const initialState: SessionState = {
@@ -16,6 +17,7 @@ const initialState: SessionState = {
   isUploading: false,
   uploadProgress: 0,
   hasAgreedToPrivacy: false,
+  isLoggedIn: false,
 };
 
 const sessionSlice = createSlice({
@@ -36,6 +38,9 @@ const sessionSlice = createSlice({
     agreeToPrivacy(state) {
       state.hasAgreedToPrivacy = true;
     },
+    setIsLoggedIn(state, action: PayloadAction<boolean>) {
+      state.isLoggedIn = action.payload;
+    },
     clearSession(state) {
       state.sessionId = null;
       state.userName = null;
@@ -43,9 +48,10 @@ const sessionSlice = createSlice({
       state.isUploading = false;
       state.uploadProgress = 0;
       // Note: privacy agreement persists
+      state.isLoggedIn = false;
     },
   },
 });
 
-export const { setSession, setUploading, setUploadProgress, agreeToPrivacy, clearSession } = sessionSlice.actions;
+export const { setSession, setUploading, setUploadProgress, agreeToPrivacy, setIsLoggedIn, clearSession } = sessionSlice.actions;
 export default sessionSlice.reducer;
