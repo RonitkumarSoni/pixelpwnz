@@ -59,6 +59,9 @@ describe('buildSystemPrompt', () => {
     formalityLevel: 'Low',
     usesCapitalization: false,
     exampleEmojis: ['😂'],
+    punctuation: { usesEllipsis: true, usesExclamation: false, usesQuestion: false, usesAllCaps: false },
+    avgSentences: 1.1,
+    commonFillers: ['lol', 'nah'],
   };
 
   it('includes the user name', () => {
@@ -84,6 +87,71 @@ describe('buildSystemPrompt', () => {
   it('includes AI rule about not revealing bot identity', () => {
     const prompt = buildSystemPrompt('Rishab', toneProfile);
     expect(prompt.toLowerCase()).toContain('never reveal');
+  });
+
+  it('includes punctuation habits in prompt', () => {
+    const prompt = buildSystemPrompt('Rishab', toneProfile);
+    expect(prompt).toContain('...');
+  });
+
+  it('includes common fillers in prompt', () => {
+    const prompt = buildSystemPrompt('Rishab', toneProfile);
+    expect(prompt).toContain('lol');
+    expect(prompt).toContain('nah');
+  });
+
+  it('includes sentence density note', () => {
+    const prompt = buildSystemPrompt('Rishab', toneProfile);
+    expect(prompt).toContain('single short sentence');
+  });
+
+  it('includes hard word limit based on avg length', () => {
+    const prompt = buildSystemPrompt('Rishab', toneProfile);
+    // ceil(5 * 1.5) = 8
+    expect(prompt).toContain('8 words');
+  });
+});
+
+describe('buildToneProfile — new fields', () => {
+  const PUNCT_PAIRS = [
+    { user_reply: 'yeah... I guess so', word_count_out: 5, emoji_count: 0 },
+    { user_reply: 'wait... really?', word_count_out: 3, emoji_count: 0 },
+    { user_reply: 'hmm...', word_count_out: 1, emoji_count: 0 },
+    { user_reply: 'ok fine', word_count_out: 2, emoji_count: 0 },
+    { user_reply: 'lol yeah', word_count_out: 2, emoji_count: 0 },
+    { user_reply: 'haha yeah lol', word_count_out: 3, emoji_count: 0 },
+    { user_reply: 'lol ok', word_count_out: 2, emoji_count: 0 },
+  ];
+
+  it('detects ellipsis usage', () => {
+    const profile = buildToneProfile(PUNCT_PAIRS);
+    expect(profile.punctuation.usesEllipsis).toBe(true);
+  });
+
+  it('detects avg sentence count', () => {
+    const profile = buildToneProfile(PUNCT_PAIRS);
+    expect(profile.avgSentences).toBeGreaterThanOrEqual(1);
+  });
+
+  it('detects common fillers', () => {
+    const profile = buildToneProfile(PUNCT_PAIRS);
+    expect(profile.commonFillers).toContain('lol');
+  });
+
+  it('returns punctuation object in default profile', () => {
+    const profile = buildToneProfile([]);
+    expect(profile.punctuation).toHaveProperty('usesEllipsis');
+    expect(profile.punctuation).toHaveProperty('usesExclamation');
+  });
+
+  it('returns avgSentences in default profile', () => {
+    const profile = buildToneProfile([]);
+    expect(profile.avgSentences).toBe(1);
+  });
+
+  it('returns commonFillers as empty array by default', () => {
+    const profile = buildToneProfile([]);
+    expect(profile.commonFillers).toEqual([]);
   });
 });
 
