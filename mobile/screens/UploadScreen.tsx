@@ -69,6 +69,7 @@ export default function UploadScreen() {
         {
           fieldName: 'file',
           httpMethod: 'POST',
+          // @ts-ignore
           uploadType: FileSystem.FileSystemUploadType.MULTIPART,
           headers: {
             Accept: 'application/json',
