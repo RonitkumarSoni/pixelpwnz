@@ -498,116 +498,235 @@ p {
 }
 
 /* ═══════════════════════════════════════════
-   3D ORB
+   SIGNET BOT
    ═══════════════════════════════════════════ */
 
-.orb {
-  width: 240px;
-  height: 240px;
-  border-radius: 50%;
-  background: radial-gradient(circle at 35% 30%,
-      #C5B8FF 0%,
-      #9B86FF 25%,
-      #7560F0 50%,
-      #5039D1 75%,
-      #2E1A9E 100%);
-  box-shadow:
-    0 40px 80px rgba(108, 92, 231, 0.45),
-    0 12px 32px rgba(108, 92, 231, 0.3),
-    inset 0 -28px 50px rgba(0, 0, 0, 0.22);
+.signet-bot {
   position: relative;
   z-index: 10;
-  animation: orbFloat 6s ease-in-out infinite;
-}
-
-/* Specular glass highlight */
-.orb::after {
-  content: '';
-  position: absolute;
-  top: 8%;
-  left: 14%;
-  width: 50%;
-  height: 38%;
-  border-radius: 50%;
-  background: radial-gradient(ellipse at center,
-      rgba(255, 255, 255, 0.75) 0%,
-      rgba(255, 255, 255, 0) 65%);
-  transform: rotate(-25deg);
-}
-
-@keyframes orbFloat {
-
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-
-  50% {
-    transform: translateY(-14px);
-  }
-}
-
-/* Eyes */
-.orb-eyes {
-  position: absolute;
-  top: 44%;
-  left: 50%;
-  transform: translateX(-50%);
   display: flex;
-  gap: 26px;
-  z-index: 20;
+  flex-direction: column;
+  align-items: center;
+  animation: botFloat 6s ease-in-out infinite;
+  cursor: pointer;
+  transition: transform 0.2s ease;
 }
 
-.orb-eye {
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.92);
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.18);
+.signet-bot:hover {
+  transform: scale(1.05);
 }
 
-/* 3 Concentric Glass Platform Rings */
-.orb-platform-1 {
+.signet-bot:active {
+  transform: scale(0.95);
+}
+
+@keyframes botFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-14px); }
+}
+
+/* --- Head --- */
+.signet-bot-head {
+  width: 180px;
+  height: 150px;
+  background: linear-gradient(145deg, #f1f5f9, #e2e8f0);
+  border-radius: 60px;
+  border: 3px solid rgba(255, 255, 255, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 2;
+  box-shadow:
+    0 20px 60px rgba(108, 92, 231, 0.18),
+    0 8px 20px rgba(0, 0, 0, 0.06);
+}
+
+/* --- Antenna --- */
+.signet-bot-antenna {
   position: absolute;
-  bottom: 10px;
+  top: -20px;
   left: 50%;
   transform: translateX(-50%);
-  width: 320px;
+  width: 4px;
+  height: 24px;
+  background: #94a3b8;
+  border-radius: 2px;
+}
+
+.signet-bot-antenna-ball {
+  position: absolute;
+  top: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 40% 35%, #a78bfa, #6c5ce7);
+  box-shadow: 0 0 12px rgba(108, 92, 231, 0.6);
+  animation: antennaPulse 2s ease-in-out infinite;
+}
+
+@keyframes antennaPulse {
+  0%, 100% { box-shadow: 0 0 12px rgba(108, 92, 231, 0.6); }
+  50% { box-shadow: 0 0 24px rgba(108, 92, 231, 1), 0 0 48px rgba(108, 92, 231, 0.3); }
+}
+
+/* --- Ears --- */
+.signet-bot-ear {
+  position: absolute;
+  top: 45px;
+  width: 20px;
+  height: 55px;
+  background: linear-gradient(180deg, #cbd5e1, #94a3b8);
+  z-index: 0;
+}
+
+.signet-bot-ear-left {
+  left: -16px;
+  border-radius: 14px 0 0 14px;
+}
+
+.signet-bot-ear-right {
+  right: -16px;
+  border-radius: 0 14px 14px 0;
+}
+
+/* --- Face (Dark Screen) --- */
+.signet-bot-face {
+  width: 130px;
+  height: 90px;
+  background: linear-gradient(145deg, #1e1b4b, #0f172a);
+  border-radius: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+/* --- Eyes --- */
+.signet-bot-eyes {
+  display: flex;
+  gap: 30px;
+}
+
+.signet-bot-eye {
+  width: 18px;
+  height: 36px;
+  border-radius: 9px;
+  background: #38bdf8;
+  box-shadow: 0 0 16px rgba(56, 189, 248, 0.8), 0 0 32px rgba(56, 189, 248, 0.3);
+  animation: eyeBlink 5s ease-in-out infinite;
+}
+
+@keyframes eyeBlink {
+  0%, 42%, 48%, 100% { transform: scaleY(1); }
+  45% { transform: scaleY(0.1); }
+}
+
+/* --- Cheeks --- */
+.signet-bot-cheek {
+  position: absolute;
+  bottom: 18px;
+  width: 18px;
+  height: 8px;
+  background: #f472b6;
+  border-radius: 4px;
+  opacity: 0.5;
+}
+
+.signet-bot-cheek-left { left: 14px; }
+.signet-bot-cheek-right { right: 14px; }
+
+/* --- Body Wrapper --- */
+.signet-bot-body-wrapper {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  margin-top: -20px;
+  z-index: 1;
+}
+
+/* --- Torso --- */
+.signet-bot-torso {
+  width: 100px;
+  height: 85px;
+  background: linear-gradient(145deg, #f1f5f9, #e2e8f0);
+  border-radius: 22px 22px 36px 36px;
+  border: 3px solid rgba(255, 255, 255, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-top: 30px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.06);
+}
+
+/* --- Chest Light --- */
+.signet-bot-chest-light {
+  width: 36px;
+  height: 8px;
+  border-radius: 4px;
+  background: #38bdf8;
+  opacity: 0.8;
+  box-shadow: 0 0 12px rgba(56, 189, 248, 0.7);
+  animation: chestPulse 3s ease-in-out infinite;
+}
+
+@keyframes chestPulse {
+  0%, 100% { opacity: 0.5; box-shadow: 0 0 8px rgba(56, 189, 248, 0.5); }
+  50% { opacity: 1; box-shadow: 0 0 20px rgba(56, 189, 248, 0.9); }
+}
+
+/* --- Arms --- */
+.signet-bot-arm {
+  position: absolute;
+  top: 20px;
+  width: 26px;
   height: 65px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.6);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.85);
-  box-shadow: 0 12px 40px rgba(108, 92, 231, 0.1);
-  z-index: 4;
+  background: linear-gradient(180deg, #e2e8f0, #cbd5e1);
+  border-radius: 13px;
+  z-index: 0;
 }
 
-.orb-platform-2 {
-  position: absolute;
-  bottom: 22px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 250px;
-  height: 48px;
-  border-radius: 50%;
-  background: rgba(248, 247, 255, 0.8);
-  border: 1px solid rgba(237, 237, 245, 0.9);
-  z-index: 5;
+.signet-bot-arm-left {
+  left: -18px;
+  transform: rotate(20deg);
+  transform-origin: top center;
+  animation: armWaveLeft 4s ease-in-out infinite;
 }
 
-.orb-platform-3 {
-  position: absolute;
-  bottom: 30px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 190px;
-  height: 34px;
+.signet-bot-arm-right {
+  right: -18px;
+  transform: rotate(-20deg);
+  transform-origin: top center;
+  animation: armWaveRight 4s ease-in-out infinite;
+}
+
+@keyframes armWaveLeft {
+  0%, 100% { transform: rotate(20deg); }
+  50% { transform: rotate(10deg); }
+}
+
+@keyframes armWaveRight {
+  0%, 100% { transform: rotate(-20deg); }
+  50% { transform: rotate(-10deg); }
+}
+
+/* --- Shadow --- */
+.signet-bot-shadow {
+  width: 120px;
+  height: 14px;
+  background: radial-gradient(ellipse, rgba(0, 0, 0, 0.12) 0%, transparent 70%);
   border-radius: 50%;
-  background: radial-gradient(ellipse at center,
-      rgba(108, 92, 231, 0.08) 0%,
-      transparent 70%);
-  z-index: 6;
+  margin-top: 20px;
+  animation: shadowPulse 6s ease-in-out infinite;
+}
+
+@keyframes shadowPulse {
+  0%, 100% { transform: scaleX(1); opacity: 0.8; }
+  50% { transform: scaleX(0.85); opacity: 0.5; }
 }
 
 /* Dashed Connector Ring */
@@ -635,13 +754,13 @@ p {
   z-index: 1;
 }
 
-/* Hover effects when hovering over the orb */
-.orb:hover ~ .connector-ring {
+/* Hover effects when hovering over the bot */
+.signet-bot:hover ~ .connector-ring {
   border-color: rgba(108, 92, 231, 0.6);
   filter: drop-shadow(0 0 12px rgba(108, 92, 231, 0.8));
 }
 
-.orb:hover ~ .connector-ring-outer {
+.signet-bot:hover ~ .connector-ring-outer {
   width: 105%;
   height: 105%;
   border-color: rgba(108, 92, 231, 0.3);
@@ -660,7 +779,7 @@ p {
   transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.orb:hover ~ .connector-dot {
+.signet-bot:hover ~ .connector-dot {
   box-shadow: 0 0 0 4px rgba(139, 124, 247, 0.4), 0 0 12px rgba(139, 124, 247, 0.8);
   transform: scale(1.2);
 }

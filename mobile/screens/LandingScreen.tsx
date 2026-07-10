@@ -174,27 +174,39 @@ export default function LandingScreen({ navigation }: Props) {
           {/* Central Robot (Pure React Native) */}
           <TouchableOpacity activeOpacity={1} onPress={handleRobotPress} style={styles.robotTouchArea}>
             <Animated.View style={[styles.robotWrapper, { transform: [{ translateY }, { scale: scaleAnim }] }]}>
-              {/* Robot Head */}
-              <View style={styles.robotHead}>
-                {/* Antennas/Ears */}
-                <View style={styles.robotEarLeft} />
-                <View style={styles.robotEarRight} />
-                
-                {/* Face/Screen */}
-                <LinearGradient
-                  colors={['#1E1B4B', '#0F172A']}
-                  style={styles.robotFace}
-                >
-                  {/* Eyes */}
-                  <View style={styles.robotEyesContainer}>
-                    <Animated.View style={[styles.robotEye, { transform: [{ scaleY: eyeBlinkAnim }] }]} />
-                    <Animated.View style={[styles.robotEye, { transform: [{ scaleY: eyeBlinkAnim }] }]} />
-                  </View>
+              
+              <View style={styles.robotContainer}>
+                {/* Robot Head */}
+                <View style={styles.robotHead}>
+                  {/* Antennas/Ears */}
+                  <View style={styles.robotEarLeft} />
+                  <View style={styles.robotEarRight} />
                   
-                  {/* Little smile / cheek details (Optional) */}
-                  <View style={styles.robotCheekLeft} />
-                  <View style={styles.robotCheekRight} />
-                </LinearGradient>
+                  {/* Face/Screen */}
+                  <LinearGradient
+                    colors={['#1E1B4B', '#0F172A']}
+                    style={styles.robotFace}
+                  >
+                    {/* Eyes */}
+                    <View style={styles.robotEyesContainer}>
+                      <Animated.View style={[styles.robotEye, { transform: [{ scaleY: eyeBlinkAnim }] }]} />
+                      <Animated.View style={[styles.robotEye, { transform: [{ scaleY: eyeBlinkAnim }] }]} />
+                    </View>
+                    
+                    {/* Little smile / cheek details */}
+                    <View style={styles.robotCheekLeft} />
+                    <View style={styles.robotCheekRight} />
+                  </LinearGradient>
+                </View>
+
+                {/* Robot Body */}
+                <View style={styles.robotBodyWrapper}>
+                  <View style={styles.robotArmLeft} />
+                  <View style={styles.robotTorso}>
+                    <View style={styles.robotChestLight} />
+                  </View>
+                  <View style={styles.robotArmRight} />
+                </View>
               </View>
               
               {/* Floating Shadow */}
@@ -371,6 +383,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  robotContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   robotHead: {
     width: 120,
     height: 100,
@@ -386,6 +402,60 @@ const styles = StyleSheet.create({
     shadowRadius: 20,
     elevation: 10,
     position: 'relative',
+    zIndex: 2,
+  },
+  robotBodyWrapper: {
+    position: 'relative',
+    alignItems: 'center',
+    marginTop: -15, // Overlap under head
+    zIndex: 1,
+  },
+  robotTorso: {
+    width: 70,
+    height: 60,
+    backgroundColor: '#E2E8F0',
+    borderBottomLeftRadius: 25,
+    borderBottomRightRadius: 25,
+    borderTopLeftRadius: 15,
+    borderTopRightRadius: 15,
+    borderWidth: 2,
+    borderColor: 'rgba(255,255,255,0.8)',
+    alignItems: 'center',
+    paddingTop: 25,
+  },
+  robotChestLight: {
+    width: 24,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: '#38BDF8',
+    opacity: 0.8,
+    shadowColor: '#38BDF8',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.8,
+    shadowRadius: 8,
+    elevation: 2,
+  },
+  robotArmLeft: {
+    position: 'absolute',
+    left: -15,
+    top: 15,
+    width: 18,
+    height: 45,
+    backgroundColor: '#cbd5e1',
+    borderRadius: 9,
+    transform: [{ rotate: '25deg' }],
+    zIndex: 0,
+  },
+  robotArmRight: {
+    position: 'absolute',
+    right: -15,
+    top: 15,
+    width: 18,
+    height: 45,
+    backgroundColor: '#cbd5e1',
+    borderRadius: 9,
+    transform: [{ rotate: '-25deg' }],
+    zIndex: 0,
   },
   robotFace: {
     width: 90,

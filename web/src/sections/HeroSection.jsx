@@ -40,19 +40,8 @@ export default function HeroSection() {
         </div>
       </div>
 
-      {/* Right: 3D Orb + Glassmorphism Cards */}
+      {/* Right: Signet Bot + Glassmorphism Cards */}
       <div style={{ position: 'relative', height: 520, display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'visible' }}>
-        <div className="orb-platform-1" />
-        <div className="orb-platform-2" />
-        <div className="orb-platform-3" />
-        
-        <div className="orb">
-          <div className="orb-eyes">
-            <div className="orb-eye" />
-            <div className="orb-eye" />
-          </div>
-        </div>
-
         <div className="connector-ring" />
         <div className="connector-ring-outer" />
         
@@ -60,6 +49,33 @@ export default function HeroSection() {
         <div className="connector-dot" style={{ top: '22%', right: '8%' }} />
         <div className="connector-dot" style={{ bottom: '32%', left: '12%' }} />
         <div className="connector-dot" style={{ bottom: '10%', right: '32%' }} />
+
+        {/* The Robot */}
+        <div className="signet-bot">
+          <div className="signet-bot-head">
+            <div className="signet-bot-ear signet-bot-ear-left" />
+            <div className="signet-bot-ear signet-bot-ear-right" />
+            <div className="signet-bot-antenna">
+              <div className="signet-bot-antenna-ball" />
+            </div>
+            <div className="signet-bot-face">
+              <div className="signet-bot-eyes">
+                <div className="signet-bot-eye" />
+                <div className="signet-bot-eye" />
+              </div>
+              <div className="signet-bot-cheek signet-bot-cheek-left" />
+              <div className="signet-bot-cheek signet-bot-cheek-right" />
+            </div>
+          </div>
+          <div className="signet-bot-body-wrapper">
+            <div className="signet-bot-arm signet-bot-arm-left" />
+            <div className="signet-bot-torso">
+              <div className="signet-bot-chest-light" />
+            </div>
+            <div className="signet-bot-arm signet-bot-arm-right" />
+          </div>
+          <div className="signet-bot-shadow" />
+        </div>
 
         {/* Floating Cards */}
         <div className="glass-card" style={{ position: 'absolute', top: '2%', left: '8%' }}>
