@@ -59,7 +59,7 @@ export default function LoginPage() {
         position: 'relative',
         width: '100%',
         maxWidth: 900,
-        height: 680,
+        height: 640,
         background: '#f9fafb',
         borderRadius: 24,
         border: '1px solid rgba(0,0,0,0.08)',
