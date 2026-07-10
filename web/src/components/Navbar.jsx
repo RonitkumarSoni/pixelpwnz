@@ -51,12 +51,13 @@ export default function Navbar() {
           </div>
         </Link>
         <ul className="nav-links">
-          <li><a href="/#how-it-works">How It Works</a></li>
-          <li><a href="/#privacy">Privacy</a></li>
-          <li><a href="/#about">About</a></li>
-          <li><a href="/#docs">Docs</a></li>
+          <li><Link to="/#how-it-works">How It Works</Link></li>
+          <li><Link to="/demo">Demo</Link></li>
+          <li><Link to="/#privacy">Privacy</Link></li>
+          <li><Link to="/#about">About</Link></li>
+          <li><Link to="/docs">Docs</Link></li>
         </ul>
-        <Link to="/upload">
+        <Link to="/login">
           <button className="btn btn-nav-cta" style={{ padding: '12px 28px' }}>
             Get Started <ArrowRight size={16} />
           </button>

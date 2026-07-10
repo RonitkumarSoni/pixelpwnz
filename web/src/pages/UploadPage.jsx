@@ -1,10 +1,37 @@
 import { useState, useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
-import { useNavigate } from 'react-router-dom';
-import { UploadCloud, CheckCircle, AlertCircle, FileText, Loader, ArrowLeft } from 'lucide-react';
+import { useNavigate, Link } from 'react-router-dom';
+import { UploadCloud, CheckCircle, AlertCircle, FileText, Loader, ArrowLeft, Shield, Upload, Cpu, User, MessageCircle, ChevronDown, ChevronUp, Send, MessageSquare } from 'lucide-react';
 import toast from 'react-hot-toast';
 import useChatStore from '../store/chatStore';
 import { uploadChat } from '../api/client';
+import Navbar from '../components/Navbar';
+import Footer from '../components/Footer';
+
+// Local FAQ Item Component
+function FaqItem({ question, answer }) {
+  const [isOpen, setIsOpen] = useState(false);
+  return (
+    <div style={{ borderBottom: '1px solid var(--glass-border)', padding: '16px 0' }}>
+      <button 
+        onClick={() => setIsOpen(!isOpen)}
+        style={{ 
+          width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center', 
+          background: 'none', border: 'none', padding: 0, cursor: 'pointer',
+          fontSize: '1rem', fontWeight: 600, color: 'var(--color-text)', textAlign: 'left'
+        }}
+      >
+        {question}
+        {isOpen ? <ChevronUp size={20} color="var(--color-text-secondary)" /> : <ChevronDown size={20} color="var(--color-text-secondary)" />}
+      </button>
+      {isOpen && (
+        <p style={{ marginTop: 12, color: 'var(--color-text-secondary)', fontSize: '0.95rem', lineHeight: 1.6 }}>
+          {answer}
+        </p>
+      )}
+    </div>
+  );
+}
 
 export default function UploadPage() {
   const navigate = useNavigate();
@@ -18,7 +45,7 @@ export default function UploadPage() {
 
   const onDrop = useCallback((accepted, rejected) => {
     if (rejected.length > 0) {
-      setErrorMsg('Only .txt files are accepted.');
+      setErrorMsg('Only .txt files are currently supported.');
       setUploadState('error');
       return;
     }
@@ -62,256 +89,296 @@ export default function UploadPage() {
   const dropzoneClass = `dropzone-clean${isDragActive ? ' active' : ''}${uploadState === 'success' ? ' success' : ''}${uploadState === 'error' ? ' error' : ''}`;
 
   return (
-    <div className="page-enter" style={{ 
-      minHeight: '100vh', 
-      position: 'relative',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      padding: '40px'
-    }}>
-
-      <div style={{
-        maxWidth: 1180, 
-        width: '100%',
-        display: 'grid', 
-        gridTemplateColumns: '45% 55%',
-        gap: 80, 
-        alignItems: 'start',
-      }}>
-        {/* ── Left Side: Instructions ── */}
-        <div>
-          <button 
-            onClick={() => navigate('/')} 
-            style={{ 
-              background: 'none', border: 'none', color: '#888B9E', 
-              cursor: 'pointer', marginBottom: 24, display: 'flex', alignItems: 'center'
-            }}
-          >
-            <ArrowLeft size={24} strokeWidth={2} />
-          </button>
-
-          <h1 style={{ 
-            fontSize: '3.5rem', 
-            lineHeight: 1.1,
-            fontWeight: 800,
-            color: '#12121A',
-            marginBottom: 16,
-            letterSpacing: '-0.02em'
-          }}>
-            Upload Your<br />
-            <span style={{ 
-              background: 'linear-gradient(90deg, #6C5CE7, #8B7CF7)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent'
-            }}>Chat History</span>
-          </h1>
+    <>
+      <Navbar />
+      <div className="page-enter" style={{ minHeight: '100vh', paddingTop: 120, paddingBottom: 60, position: 'relative' }}>
+        {/* Ambient background */}
+        <div className="ambient-orb orb-primary" style={{ opacity: 0.1 }} />
+        
+        <div style={{ maxWidth: 960, margin: '0 auto', padding: '0 24px' }}>
           
-          <p style={{ 
-            fontSize: '1.125rem', 
-            color: '#6B6F8A', 
-            lineHeight: 1.6, 
-            marginBottom: 40,
-            maxWidth: 400
-          }}>
-            Export your WhatsApp chat as a{' '}
-            <span style={{
-              background: '#EDEEFF', 
-              color: '#6C5CE7',
-              padding: '4px 8px', 
-              borderRadius: 6, 
-              fontWeight: 600,
-              fontSize: '0.9375rem'
-            }}>.txt</span> file and upload it here.
-          </p>
-
-          {/* How to export card */}
-          <div style={{
-            background: 'var(--glass-bg)',
-            backdropFilter: 'var(--glass-blur)',
-            WebkitBackdropFilter: 'var(--glass-blur)',
-            borderRadius: 24,
-            padding: '40px',
-            boxShadow: 'var(--glass-shadow)',
-            border: '1px solid var(--glass-border)'
-          }}>
-            <h3 style={{
-              fontSize: '0.8125rem', 
-              fontWeight: 700, 
-              textTransform: 'uppercase',
-              letterSpacing: '0.08em', 
-              color: '#9BA3BA', 
-              marginBottom: 32,
-            }}>
-              How to export from WhatsApp
-            </h3>
-            <ul style={{ 
-              listStyle: 'none', 
-              padding: 0, 
-              margin: 0,
-              display: 'flex', 
-              flexDirection: 'column', 
-              gap: 20, 
-              fontSize: '1.0625rem', 
-              color: '#6B728E' 
-            }}>
-              <li>
-                Open a chat in WhatsApp
-              </li>
-              <li>
-                Tap <strong style={{ color: '#000000', fontWeight: 600 }}>⋮ → More → Export Chat</strong>
-              </li>
-              <li>
-                Choose <strong style={{ color: '#000000', fontWeight: 600 }}>"Without Media"</strong>
-              </li>
-              <li>
-                Save the <strong style={{ color: '#6C5CE7', fontWeight: 600 }}>.txt</strong> file
-              </li>
-            </ul>
-          </div>
-        </div>
-
-        {/* ── Right Side: Upload Form ── */}
-        <div style={{ paddingTop: 60 }}>
-          <div style={{ marginBottom: 24 }}>
-            <label style={{ 
-              fontSize: '0.9375rem', 
-              fontWeight: 700, 
-              color: '#3D3E52', 
-              marginBottom: 10, 
-              display: 'block' 
-            }}>
-              Your name as it appears in the chat
-            </label>
-            <input
-              id="user-name" 
-              type="text" 
-              style={{
-                width: '100%',
-                padding: '16px 20px',
-                background: 'var(--glass-bg)',
-                backdropFilter: 'var(--glass-blur)',
-                WebkitBackdropFilter: 'var(--glass-blur)',
-                border: '1px solid var(--glass-border)',
-                borderRadius: 12,
-                fontSize: '1rem',
-                color: '#12121A',
-                boxShadow: 'var(--glass-shadow)',
-                outline: 'none'
-              }}
-              placeholder="e.g., Ronit"
-              value={userName} 
-              onChange={(e) => setUserName(e.target.value)}
-              disabled={uploadState === 'uploading' || uploadState === 'success'}
-            />
-          </div>
-
-          {/* Dropzone */}
-          <div {...getRootProps()} className={dropzoneClass} style={{
-            background: 'var(--glass-bg)',
-            backdropFilter: 'var(--glass-blur)',
-            WebkitBackdropFilter: 'var(--glass-blur)',
-            border: '2px dashed rgba(108, 92, 231, 0.25)',
-            boxShadow: 'var(--glass-shadow)',
-            borderRadius: 24,
-            padding: '60px 40px',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            textAlign: 'center',
-            cursor: 'pointer',
-            transition: 'all 0.2s ease',
-            minHeight: 280
-          }}>
-            <input {...getInputProps()} />
+          {/* ── Header Area ── */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 24, marginBottom: 48 }}>
             
-            {uploadState === 'success' ? (
-              <>
-                <CheckCircle size={56} color="#10B981" style={{ marginBottom: 16 }} />
-                <h3 style={{ fontSize: '1.25rem', fontWeight: 700, color: '#10B981', marginBottom: 8 }}>Clone Authenticated</h3>
-                <p style={{ color: '#6B6F8A' }}>Entering chat session...</p>
-              </>
-            ) : uploadState === 'uploading' ? (
-              <>
-                <Loader size={48} color="#6C5CE7" className="animate-spin" style={{ marginBottom: 16 }} />
-                <p style={{ color: '#6B6F8A', marginBottom: 16 }}>{progress < 100 ? 'Analyzing conversational patterns...' : 'Forging your digital twin...'}</p>
-                <div style={{ width: '100%', height: 6, background: '#F0F0F5', borderRadius: 3, overflow: 'hidden', maxWidth: 200 }}>
-                  <div style={{ width: `${progress}%`, height: '100%', background: '#6C5CE7', transition: 'width 0.3s ease' }} />
+            {/* Breadcrumb */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: '0.9rem', color: 'var(--color-primary)', fontWeight: 500 }}>
+              <Link to="/" style={{ color: 'inherit', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 6 }}>
+                <div style={{ width: 16, height: 16, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
                 </div>
-              </>
-            ) : uploadState === 'error' ? (
-              <>
-                <AlertCircle size={56} color="#EF4444" style={{ marginBottom: 16 }} />
-                <h3 style={{ fontSize: '1.125rem', fontWeight: 700, color: '#EF4444', marginBottom: 8 }}>Upload Failed</h3>
-                <p style={{ color: '#6B6F8A', maxWidth: 280 }}>{errorMsg}</p>
-              </>
-            ) : file ? (
-              <>
-                <FileText size={56} color="#6C5CE7" style={{ marginBottom: 16 }} />
-                <h3 style={{ fontSize: '1.125rem', fontWeight: 700, color: '#12121A', marginBottom: 4 }}>{file.name}</h3>
-                <p style={{ color: '#6B6F8A' }}>{(file.size / 1024).toFixed(1)} KB</p>
-              </>
-            ) : (
-              <>
-                <UploadCloud size={64} color="#888B9E" strokeWidth={1.5} style={{ marginBottom: 20 }} />
-                <h3 style={{ fontSize: '1.125rem', fontWeight: 700, color: '#12121A', marginBottom: 8 }}>
-                  Drag & drop your WhatsApp .txt
-                </h3>
-                <p style={{ fontSize: '0.9375rem', color: '#9B9FB5' }}>
-                  or click to browse • Max 50MB
+                Home
+              </Link>
+              <span style={{ color: 'var(--color-text-muted)' }}>›</span>
+              <span style={{ color: 'var(--color-text-secondary)' }}>Upload Your Chat</span>
+            </div>
+
+            {/* Title & Badge Row */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 24 }}>
+              <div style={{ maxWidth: 500 }}>
+                <h1 style={{ fontSize: '3rem', fontWeight: 800, marginBottom: 16, letterSpacing: '-0.02em', color: 'var(--color-text)' }}>
+                  Upload <span className="gradient-text">Your Chat</span>
+                </h1>
+                <p style={{ fontSize: '1rem', color: 'var(--color-text-secondary)', lineHeight: 1.6 }}>
+                  Upload your exported chat file to create your personalized AI clone. We support multiple file formats.
                 </p>
-              </>
+              </div>
+
+              {/* Security Badge */}
+              <div style={{ 
+                background: 'white', padding: '16px 20px', borderRadius: 16, border: '1px solid var(--glass-border)',
+                display: 'flex', gap: 16, maxWidth: 320, boxShadow: '0 4px 20px rgba(0,0,0,0.03)'
+              }}>
+                <div style={{ width: 40, height: 40, borderRadius: '50%', background: 'rgba(108, 92, 231, 0.1)', color: 'var(--color-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <Shield size={20} />
+                </div>
+                <div>
+                  <h4 style={{ fontSize: '0.9rem', fontWeight: 700, marginBottom: 4, color: 'var(--color-text)' }}>Your Data is Private & Secure</h4>
+                  <p style={{ fontSize: '0.8rem', color: 'var(--color-text-secondary)', lineHeight: 1.5 }}>We never store or share your files. 100% private and encrypted.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* ── Main Dropzone Area ── */}
+          <div style={{ 
+            background: 'white', border: '1px solid var(--glass-border)', borderRadius: 32, padding: '40px',
+            boxShadow: '0 10px 40px rgba(0,0,0,0.02)', marginBottom: 60
+          }}>
+            <div {...getRootProps()} className={dropzoneClass} style={{
+              background: '#FAFAFD',
+              border: '2px dashed rgba(108, 92, 231, 0.25)',
+              borderRadius: 24,
+              padding: '80px 40px',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              textAlign: 'center',
+              cursor: 'pointer',
+              transition: 'all 0.2s ease',
+              minHeight: 320
+            }}>
+              <input {...getInputProps()} />
+              
+              {uploadState === 'success' ? (
+                <>
+                  <CheckCircle size={56} color="#10B981" style={{ marginBottom: 16 }} />
+                  <h3 style={{ fontSize: '1.25rem', fontWeight: 700, color: '#10B981', marginBottom: 8 }}>Clone Authenticated</h3>
+                  <p style={{ color: 'var(--color-text-secondary)' }}>Entering chat session...</p>
+                </>
+              ) : uploadState === 'uploading' ? (
+                <>
+                  <Loader size={48} color="#6C5CE7" className="animate-spin" style={{ marginBottom: 16 }} />
+                  <p style={{ color: 'var(--color-text-secondary)', marginBottom: 16 }}>{progress < 100 ? 'Analyzing conversational patterns...' : 'Forging your digital twin...'}</p>
+                  <div style={{ width: '100%', height: 6, background: '#F0F0F5', borderRadius: 3, overflow: 'hidden', maxWidth: 200 }}>
+                    <div style={{ width: `${progress}%`, height: '100%', background: '#6C5CE7', transition: 'width 0.3s ease' }} />
+                  </div>
+                </>
+              ) : uploadState === 'error' ? (
+                <>
+                  <AlertCircle size={56} color="#EF4444" style={{ marginBottom: 16 }} />
+                  <h3 style={{ fontSize: '1.125rem', fontWeight: 700, color: '#EF4444', marginBottom: 8 }}>Upload Failed</h3>
+                  <p style={{ color: 'var(--color-text-secondary)', maxWidth: 300, margin: '0 auto' }}>{errorMsg}</p>
+                </>
+              ) : file ? (
+                <>
+                  <FileText size={56} color="#6C5CE7" style={{ marginBottom: 16 }} />
+                  <h3 style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--color-text)', marginBottom: 8 }}>{file.name}</h3>
+                  <p style={{ color: 'var(--color-text-secondary)' }}>{(file.size / 1024).toFixed(1)} KB • Click to change</p>
+                </>
+              ) : (
+                <>
+                  <div style={{ width: 64, height: 64, borderRadius: 20, background: 'rgba(108, 92, 231, 0.1)', color: 'var(--color-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 24 }}>
+                    <UploadCloud size={32} />
+                  </div>
+                  <h3 style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--color-text)', marginBottom: 12 }}>
+                    Drag & drop your chat file here
+                  </h3>
+                  <p style={{ fontSize: '0.9rem', color: 'var(--color-text-secondary)', marginBottom: 20 }}>or</p>
+                  <button className="btn btn-primary" style={{ padding: '10px 24px', borderRadius: 10, fontSize: '0.95rem', marginBottom: 24 }}>
+                    Choose File
+                  </button>
+                  <div style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)', display: 'flex', flexDirection: 'column', gap: 6 }}>
+                    <span>Supports JSON, TXT, CSV export files</span>
+                    <span>Max file size: 50MB</span>
+                  </div>
+                </>
+              )}
+            </div>
+
+            {/* Input & Upload Button (Conditional) */}
+            {file && uploadState !== 'success' && uploadState !== 'uploading' && (
+              <div style={{ marginTop: 32, padding: '0 24px', animation: 'fadeIn 0.3s ease-out' }}>
+                <div style={{ marginBottom: 20 }}>
+                  <label style={{ fontSize: '0.95rem', fontWeight: 600, color: 'var(--color-text)', marginBottom: 10, display: 'block' }}>
+                    Your Name (as it appears in the chat)
+                  </label>
+                  <input
+                    type="text" 
+                    style={{
+                      width: '100%', padding: '14px 20px', background: 'var(--glass-bg)',
+                      border: '1px solid var(--glass-border)', borderRadius: 12,
+                      fontSize: '1rem', color: 'var(--color-text)', outline: 'none'
+                    }}
+                    placeholder="e.g., Alex"
+                    value={userName} 
+                    onChange={(e) => setUserName(e.target.value)}
+                  />
+                </div>
+                <button 
+                  onClick={handleUpload} 
+                  disabled={!userName.trim()} 
+                  className="btn btn-primary"
+                  style={{ width: '100%', padding: '16px', borderRadius: 12, fontSize: '1.05rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}
+                >
+                  <UploadCloud size={20} /> Upload & Build Clone
+                </button>
+              </div>
             )}
           </div>
 
-          {file && uploadState !== 'success' && uploadState !== 'uploading' && (
-            <button 
-              onClick={handleUpload} 
-              disabled={!userName.trim()} 
-              style={{
-                width: '100%',
-                padding: '16px',
-                background: '#6C5CE7',
-                color: 'white',
-                border: 'none',
-                borderRadius: 14,
-                fontSize: '1rem',
-                fontWeight: 600,
-                marginTop: 24,
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: 8,
-                boxShadow: '0 8px 24px rgba(108, 92, 231, 0.3)'
-              }}
-            >
-              <UploadCloud size={20} /> Upload & Build Clone
-            </button>
-          )}
+          {/* ── Supported Formats ── */}
+          <div style={{ marginBottom: 60 }}>
+            <h3 style={{ fontSize: '1.25rem', fontWeight: 800, marginBottom: 8, color: 'var(--color-text)' }}>Supported Formats</h3>
+            <p style={{ fontSize: '0.95rem', color: 'var(--color-text-secondary)', marginBottom: 24 }}>Export your chat from any platform and upload it here.</p>
+            
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 24 }}>
+              {/* WhatsApp */}
+              <div className="glass-card" style={{ padding: 24, flexDirection: 'column', alignItems: 'stretch' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 12, fontWeight: 700, color: 'var(--color-text)' }}>
+                    <div style={{ width: 32, height: 32, borderRadius: '50%', background: '#25D366', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <MessageCircle size={16} />
+                    </div>
+                    WhatsApp Export
+                  </div>
+                  <span style={{ fontSize: '0.75rem', background: 'var(--glass-border)', padding: '4px 8px', borderRadius: 4, color: 'var(--color-text-secondary)' }}>.txt</span>
+                </div>
+                <ol style={{ paddingLeft: 16, margin: 0, color: 'var(--color-text-secondary)', fontSize: '0.9rem', display: 'flex', flexDirection: 'column', gap: 12, lineHeight: 1.5 }}>
+                  <li>Open WhatsApp chat</li>
+                  <li>Tap <strong>More options (⋮)</strong></li>
+                  <li>Select <strong>Export chat</strong></li>
+                  <li>Choose <strong>Without Media</strong></li>
+                  <li>Save the .txt file and upload</li>
+                </ol>
+              </div>
+
+              {/* Telegram */}
+              <div className="glass-card" style={{ padding: 24, flexDirection: 'column', alignItems: 'stretch' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 12, fontWeight: 700, color: 'var(--color-text)' }}>
+                    <div style={{ width: 32, height: 32, borderRadius: '50%', background: '#0088cc', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <Send size={16} style={{ marginLeft: -2 }} />
+                    </div>
+                    Telegram Export
+                  </div>
+                  <span style={{ fontSize: '0.75rem', background: 'var(--glass-border)', padding: '4px 8px', borderRadius: 4, color: 'var(--color-text-secondary)' }}>.json</span>
+                </div>
+                <ol style={{ paddingLeft: 16, margin: 0, color: 'var(--color-text-secondary)', fontSize: '0.9rem', display: 'flex', flexDirection: 'column', gap: 12, lineHeight: 1.5 }}>
+                  <li>Open Telegram chat</li>
+                  <li>Tap <strong>More options (⋮)</strong></li>
+                  <li>Select <strong>Export Chat History</strong></li>
+                  <li>Choose <strong>JSON format</strong></li>
+                  <li>Save the file and upload</li>
+                </ol>
+              </div>
+
+              {/* Other Platforms */}
+              <div className="glass-card" style={{ padding: 24, flexDirection: 'column', alignItems: 'stretch' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 12, fontWeight: 700, color: 'var(--color-text)' }}>
+                    <div style={{ width: 32, height: 32, borderRadius: '50%', background: 'white', border: '1px solid var(--glass-border)', color: 'var(--color-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <MessageSquare size={16} />
+                    </div>
+                    Other Platforms
+                  </div>
+                  <span style={{ fontSize: '0.75rem', background: 'var(--glass-border)', padding: '4px 8px', borderRadius: 4, color: 'var(--color-text-secondary)' }}>.csv / .txt / .json</span>
+                </div>
+                <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.9rem', lineHeight: 1.6, margin: 0 }}>
+                  Support for other platforms like Messenger, iMessage, Signal, Line, and more.<br/><br/>
+                  Export and upload the file here.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* ── What Happens Next ── */}
+          <div style={{ marginBottom: 60 }}>
+            <h3 style={{ fontSize: '1.25rem', fontWeight: 800, marginBottom: 32, color: 'var(--color-text)' }}>What Happens Next?</h3>
+            <div style={{ display: 'flex', justifyContent: 'space-between', position: 'relative', flexWrap: 'wrap', gap: 24 }}>
+              
+              <div style={{ flex: 1, minWidth: 120, display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', position: 'relative', zIndex: 2 }}>
+                <div style={{ width: 48, height: 48, borderRadius: 16, background: 'rgba(108, 92, 231, 0.1)', color: 'var(--color-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
+                  <Upload size={24} />
+                </div>
+                <h4 style={{ fontSize: '0.95rem', fontWeight: 700, marginBottom: 8, color: 'var(--color-text)' }}>1. Upload File</h4>
+                <p style={{ fontSize: '0.85rem', color: 'var(--color-text-secondary)', lineHeight: 1.5 }}>Upload your exported chat file securely.</p>
+              </div>
+
+              <div style={{ flex: 1, minWidth: 120, display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', position: 'relative', zIndex: 2 }}>
+                <div style={{ width: 48, height: 48, borderRadius: 16, background: 'rgba(108, 92, 231, 0.1)', color: 'var(--color-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
+                  <Cpu size={24} />
+                </div>
+                <h4 style={{ fontSize: '0.95rem', fontWeight: 700, marginBottom: 8, color: 'var(--color-text)' }}>2. AI Processing</h4>
+                <p style={{ fontSize: '0.85rem', color: 'var(--color-text-secondary)', lineHeight: 1.5 }}>We analyze tone, style, patterns & personality.</p>
+              </div>
+
+              <div style={{ flex: 1, minWidth: 120, display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', position: 'relative', zIndex: 2 }}>
+                <div style={{ width: 48, height: 48, borderRadius: 16, background: 'rgba(108, 92, 231, 0.1)', color: 'var(--color-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
+                  <User size={24} />
+                </div>
+                <h4 style={{ fontSize: '0.95rem', fontWeight: 700, marginBottom: 8, color: 'var(--color-text)' }}>3. Create Clone</h4>
+                <p style={{ fontSize: '0.85rem', color: 'var(--color-text-secondary)', lineHeight: 1.5 }}>Your AI clone is created based on your data.</p>
+              </div>
+
+              <div style={{ flex: 1, minWidth: 120, display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', position: 'relative', zIndex: 2 }}>
+                <div style={{ width: 48, height: 48, borderRadius: 16, background: 'rgba(108, 92, 231, 0.1)', color: 'var(--color-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
+                  <MessageCircle size={24} />
+                </div>
+                <h4 style={{ fontSize: '0.95rem', fontWeight: 700, marginBottom: 8, color: 'var(--color-text)' }}>4. Start Chatting</h4>
+                <p style={{ fontSize: '0.85rem', color: 'var(--color-text-secondary)', lineHeight: 1.5 }}>Talk to your AI clone anytime, anywhere.</p>
+              </div>
+            </div>
+          </div>
+
+          {/* ── Local FAQ Section ── */}
+          <div style={{ marginBottom: 20 }}>
+            <h3 style={{ fontSize: '1.25rem', fontWeight: 800, marginBottom: 24, color: 'var(--color-text)' }}>Frequently Asked Questions</h3>
+            <div style={{ display: 'flex', flexDirection: 'column' }}>
+              <FaqItem 
+                question="Is my data safe?" 
+                answer="Yes. We prioritize your privacy. Chat files are processed locally or via encrypted transit and are never permanently stored on our servers." 
+              />
+              <FaqItem 
+                question="What file formats are supported?" 
+                answer="Currently, we support .txt files (like WhatsApp exports). We are actively working on adding support for Telegram (.json) and generic .csv files." 
+              />
+              <FaqItem 
+                question="How long does it take to create my AI clone?" 
+                answer="It typically takes less than 30 seconds depending on the size of your chat history. Our AI analyzes your message patterns and vocabulary rapidly." 
+              />
+              <FaqItem 
+                question="Can I delete my data later?" 
+                answer="Absolutely. You can clear your session at any time from the chat interface, which instantly drops your memory collection from the database." 
+              />
+            </div>
+          </div>
+          
         </div>
       </div>
+      <Footer />
 
       <style>{`
-        .dropzone-clean:hover { border-color: #6C5CE7 !important; background: rgba(255, 255, 255, 0.8) !important; box-shadow: var(--glass-shadow-hover) !important; }
-        .dropzone-clean.active { border-color: #6C5CE7 !important; background: rgba(255, 255, 255, 0.9) !important; box-shadow: var(--glass-shadow-hover) !important; }
+        .dropzone-clean:hover { border-color: #6C5CE7 !important; background: rgba(255, 255, 255, 0.8) !important; }
+        .dropzone-clean.active { border-color: #6C5CE7 !important; background: rgba(255, 255, 255, 0.9) !important; }
         .dropzone-clean.success { border-color: #10B981 !important; border-style: solid !important; }
         .dropzone-clean.error { border-color: #EF4444 !important; border-style: solid !important; }
         
-        @media (max-width: 768px) {
-          div[style*="grid-template-columns"] {
-            grid-template-columns: 1fr !important;
-            gap: 40px !important;
-          }
-          div[style*="paddingTop: 60"] {
-            padding-top: 0 !important;
-          }
-          .page-enter {
-            padding: 24px 16px !important;
-          }
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(10px); }
+          to { opacity: 1; transform: translateY(0); }
         }
       `}</style>
-    </div>
+    </>
   );
 }

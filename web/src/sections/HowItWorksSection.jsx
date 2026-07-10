@@ -1,5 +1,6 @@
 import { Upload, FileSearch, BrainCircuit, MessageSquare, BarChart2, ShieldCheck, Lock, CloudLightning, ArrowRight, Play } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 
 export default function HowItWorksSection() {
   const steps = [
@@ -9,6 +10,32 @@ export default function HowItWorksSection() {
     { num: '04', icon: <MessageSquare size={28} />, title: 'Start Chatting', desc: 'Chat with your AI clone that replies just like them. Feel the real connection.', badge: 'Realistic Responses' },
     { num: '05', icon: <BarChart2 size={28} />, title: 'Insights & Analytics', desc: 'Get deep insights into their chatting behavior, patterns, and personality.', badge: 'Smart Analytics' }
   ];
+
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [isHovered, setIsHovered] = useState(false);
+  const [cardsToShow, setCardsToShow] = useState(3);
+
+  // Responsive cards to show
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 768) setCardsToShow(1);
+      else if (window.innerWidth < 1024) setCardsToShow(2);
+      else setCardsToShow(3);
+    };
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  const maxIndex = Math.max(0, steps.length - cardsToShow);
+
+  useEffect(() => {
+    if (isHovered) return;
+    const timer = setInterval(() => {
+      setActiveIndex((prev) => (prev >= maxIndex ? 0 : prev + 1));
+    }, 3000);
+    return () => clearInterval(timer);
+  }, [maxIndex, isHovered]);
 
   return (
     <section id="how-it-works" style={{ maxWidth: 1180, margin: '0 auto', padding: '120px 24px', position: 'relative', zIndex: 5 }}>
@@ -26,55 +53,90 @@ export default function HowItWorksSection() {
         </p>
       </div>
       
-      {/* Horizontal Steps Layout */}
-      <div className="how-it-works-grid" style={{ position: 'relative', marginBottom: 60 }}>
-        {/* Dotted connector line for desktop */}
-        <div className="steps-connector-line" style={{
-          position: 'absolute', top: '35%', left: '5%', right: '5%',
-          height: 2, borderBottom: '2px dashed rgba(108, 92, 231, 0.3)',
-          zIndex: 0
-        }}></div>
-
-        <div style={{
-          display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-          gap: 24, position: 'relative', zIndex: 1
-        }}>
-          {steps.map((step) => (
-            <div key={step.num} className="glass-card step-card" style={{
-              flexDirection: 'column', textAlign: 'center', padding: '40px 20px 30px',
-              position: 'relative', background: 'var(--color-surface)',
-              alignItems: 'center', justifyContent: 'space-between', height: '100%'
-            }}>
-              {/* Top Number Badge */}
-              <div style={{
-                position: 'absolute', top: -16, left: '50%', transform: 'translateX(-50%)',
-                width: 32, height: 32, borderRadius: '50%', background: 'linear-gradient(135deg, #6C5CE7, #8B7CF7)',
-                color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontWeight: 700, fontSize: '0.9rem', boxShadow: '0 4px 12px rgba(108, 92, 231, 0.4)'
-              }}>
-                {step.num}
-              </div>
-
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1 }}>
-                <div style={{
-                  width: 72, height: 72, borderRadius: 20, background: 'linear-gradient(135deg, rgba(108, 92, 231, 0.1), rgba(139, 124, 247, 0.05))',
-                  color: 'var(--color-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  marginBottom: 24, boxShadow: 'inset 0 0 20px rgba(108, 92, 231, 0.05)'
+      {/* Horizontal Slider Layout */}
+      <div 
+        className="how-it-works-carousel" 
+        style={{ position: 'relative', marginBottom: 40 }}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+      >
+        <div style={{ overflow: 'hidden', paddingBottom: 40, paddingTop: 20 }}>
+          <div 
+            style={{
+              display: 'flex',
+              gap: 24,
+              transition: 'transform 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
+              transform: `translateX(calc(-${activeIndex * (100 / cardsToShow)}% - ${activeIndex * (24 / cardsToShow)}px))`
+            }}
+          >
+            {steps.map((step, idx) => {
+              // Calculate if the card is completely visible
+              const isVisible = idx >= activeIndex && idx < activeIndex + cardsToShow;
+              return (
+                <div key={step.num} className="glass-card step-card" style={{
+                  display: 'flex', flexDirection: 'column', textAlign: 'center', padding: '40px 20px 30px',
+                  position: 'relative', background: 'var(--color-surface)',
+                  alignItems: 'center', justifyContent: 'space-between',
+                  flex: `0 0 calc(${100 / cardsToShow}% - ${24 * (cardsToShow - 1) / cardsToShow}px)`,
+                  border: isVisible ? '1px solid var(--color-primary)' : '1px solid var(--glass-border)',
+                  boxShadow: isVisible ? '0 10px 30px rgba(108,92,231,0.15)' : 'none',
+                  transition: 'all 0.5s ease',
+                  opacity: isVisible ? 1 : 0.6,
+                  transform: isVisible ? 'scale(1)' : 'scale(0.95)'
                 }}>
-                  {step.icon}
-                </div>
-                <h3 style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: 12, color: 'var(--color-text)' }}>{step.title}</h3>
-                <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.85rem', lineHeight: 1.6, marginBottom: 24 }}>{step.desc}</p>
-              </div>
+                  {/* Top Number Badge */}
+                  <div style={{
+                    position: 'absolute', top: -16, left: '50%', transform: 'translateX(-50%)',
+                    width: 32, height: 32, borderRadius: '50%', background: 'linear-gradient(135deg, #6C5CE7, #8B7CF7)',
+                    color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    fontWeight: 700, fontSize: '0.9rem', boxShadow: '0 4px 12px rgba(108, 92, 231, 0.4)'
+                  }}>
+                    {step.num}
+                  </div>
 
-              {/* Bottom Badge */}
-              <div style={{
-                background: 'rgba(108, 92, 231, 0.08)', color: 'var(--color-primary)',
-                padding: '6px 14px', borderRadius: 99, fontSize: '0.75rem', fontWeight: 600, width: '100%'
-              }}>
-                {step.badge}
-              </div>
-            </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1, width: '100%' }}>
+                    <div style={{
+                      width: 72, height: 72, borderRadius: 20, background: 'linear-gradient(135deg, rgba(108, 92, 231, 0.1), rgba(139, 124, 247, 0.05))',
+                      color: 'var(--color-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      marginBottom: 24, boxShadow: 'inset 0 0 20px rgba(108, 92, 231, 0.05)'
+                    }}>
+                      {step.icon}
+                    </div>
+                    <h3 style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: 12, color: 'var(--color-text)' }}>{step.title}</h3>
+                    <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.85rem', lineHeight: 1.6, marginBottom: 24 }}>{step.desc}</p>
+                  </div>
+
+                  {/* Bottom Badge */}
+                  <div style={{
+                    background: 'rgba(108, 92, 231, 0.08)', color: 'var(--color-primary)',
+                    padding: '6px 14px', borderRadius: 99, fontSize: '0.75rem', fontWeight: 600, width: '100%'
+                  }}>
+                    {step.badge}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Navigation Dots */}
+        <div style={{ display: 'flex', justifyContent: 'center', gap: 8, marginTop: 10 }}>
+          {Array.from({ length: maxIndex + 1 }).map((_, idx) => (
+            <button 
+              key={idx}
+              onClick={() => setActiveIndex(idx)}
+              style={{
+                width: activeIndex === idx ? 24 : 8,
+                height: 8,
+                borderRadius: 4,
+                background: activeIndex === idx ? 'var(--color-primary)' : 'var(--glass-border)',
+                border: 'none',
+                cursor: 'pointer',
+                transition: 'all 0.3s ease',
+                padding: 0
+              }}
+              aria-label={`Go to slide ${idx + 1}`}
+            />
           ))}
         </div>
       </div>
@@ -122,19 +184,12 @@ export default function HowItWorksSection() {
             Create Your AI Clone <ArrowRight size={18} />
           </button>
         </Link>
-        <a href="#demo" style={{ textDecoration: 'none' }}>
+        <Link to="/demo" style={{ textDecoration: 'none' }}>
           <button className="btn btn-ghost" style={{ padding: '16px 32px' }}>
             <Play size={18} fill="#6C5CE7" color="#6C5CE7" /> Watch Demo
           </button>
-        </a>
+        </Link>
       </div>
-
-      {/* Responsive styles */}
-      <style>{`
-        @media (max-width: 1024px) {
-          .steps-connector-line { display: none !important; }
-        }
-      `}</style>
     </section>
   );
 }

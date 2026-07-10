@@ -25,14 +25,10 @@ export default function LandingPage() {
         <TrustedSection />
         <FeaturesPreviewSection />
       <HowItWorksSection />
-      <DemoSection />
-      <SecuritySection />
       <PrivacySection />
-      <FaqSection />
       <AboutSection />
-      <DocsSection />
+      <FaqSection />
       <CtaSection />
-
       <Footer />
 
       {/* Responsive overrides */}

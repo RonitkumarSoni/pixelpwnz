@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
-import { Bot, User, Send } from 'lucide-react';
+import { Bot, User } from 'lucide-react';
 
 export default function DemoSection() {
   const [messages, setMessages] = useState([
-    { role: 'user', content: 'hey are we still on for tonight?' }
+    { role: 'user', content: 'Hey! How are you?' }
   ]);
   const [typing, setTyping] = useState(false);
 
@@ -14,107 +14,87 @@ export default function DemoSection() {
         setTyping(false);
         setMessages([
           ...messages,
-          { role: 'assistant', content: 'yeah for sure, same place as last time? ill be there around 8' }
+          { role: 'assistant', content: "I'm good! Just working on some things. How about you? What's up?" }
         ]);
       }, 1500);
     }
   }, [messages]);
 
-  const handleSend = (e) => {
-    e.preventDefault();
-    if (messages.length > 2) return; // limit demo
-    setMessages([...messages, { role: 'user', content: 'perfect see u then!' }]);
-    setTyping(true);
-    setTimeout(() => {
-      setTyping(false);
-      setMessages(prev => [
-        ...prev,
-        { role: 'assistant', content: 'bet. drive safe' }
-      ]);
-    }, 1200);
-  };
-
   return (
-    <section id="demo" style={{ maxWidth: 1000, margin: '0 auto', padding: '100px 24px', position: 'relative', zIndex: 5 }}>
-      <div style={{ textAlign: 'center', marginBottom: 60 }}>
-        <h2 style={{ fontSize: '2.5rem', marginBottom: 16 }}>Interactive <span className="gradient-text">Demo</span></h2>
-        <p style={{ fontSize: '1.1rem', color: 'var(--color-text-secondary)' }}>See how the AI perfectly mimics lowercase texting, abbreviations, and tone.</p>
-      </div>
-
-      <div className="glass-card" style={{ maxWidth: 600, margin: '0 auto', display: 'flex', flexDirection: 'column', height: 400, padding: 0, overflow: 'hidden' }}>
-        {/* Demo Header */}
-        <div style={{ padding: '16px 24px', borderBottom: '1px solid var(--glass-border)', display: 'flex', alignItems: 'center', gap: 12, background: 'rgba(255,255,255,0.02)' }}>
-          <div style={{ width: 40, height: 40, borderRadius: '50%', background: 'linear-gradient(135deg, #6C5CE7, #8B7CF7)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <Bot size={20} />
-          </div>
-          <div>
-            <div style={{ fontWeight: 600 }}>Your AI Clone</div>
-            <div style={{ fontSize: '0.8rem', color: '#10B981' }}>Online</div>
-          </div>
-        </div>
-
-        {/* Demo Messages */}
-        <div style={{ flex: 1, padding: 24, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 16 }}>
-          {messages.map((m, i) => (
-            <div key={i} style={{ display: 'flex', gap: 12, alignSelf: m.role === 'user' ? 'flex-end' : 'flex-start', maxWidth: '80%' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', padding: '24px 0' }}>
+      
+      {/* Demo Messages */}
+      <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 24, padding: '0 24px' }}>
+        {messages.map((m, i) => (
+          <div key={i} style={{ display: 'flex', flexDirection: 'column', gap: 8, alignSelf: m.role === 'user' ? 'flex-end' : 'flex-start', maxWidth: '85%' }}>
+            
+            {/* Header info for the message */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, alignSelf: m.role === 'user' ? 'flex-end' : 'flex-start' }}>
               {m.role === 'assistant' && (
-                <div style={{ width: 32, height: 32, borderRadius: '50%', background: 'rgba(108, 92, 231, 0.2)', color: 'var(--color-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                  <Bot size={16} />
+                <div style={{ width: 24, height: 24, borderRadius: '50%', background: 'rgba(108, 92, 231, 0.1)', color: 'var(--color-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <Bot size={14} />
                 </div>
               )}
+              {m.role === 'user' && (
+                <div style={{ width: 24, height: 24, borderRadius: '50%', background: '#E5E7EB', color: '#6B7280', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, order: 2 }}>
+                  <User size={14} />
+                </div>
+              )}
+              <span style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--color-text)', order: m.role === 'user' ? 1 : 2 }}>
+                {m.role === 'user' ? 'You' : 'AI Clone'}
+              </span>
+            </div>
+
+            {/* Message Bubble */}
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: m.role === 'user' ? 'flex-end' : 'flex-start' }}>
               <div style={{
-                background: m.role === 'user' ? 'var(--color-primary)' : 'rgba(255,255,255,0.05)',
-                color: m.role === 'user' ? 'white' : 'var(--color-text)',
-                padding: '12px 16px',
+                background: m.role === 'user' ? '#F3F4F6' : '#FFFFFF',
+                color: 'var(--color-text)',
+                padding: '16px 20px',
                 borderRadius: '16px',
                 borderBottomRightRadius: m.role === 'user' ? 4 : 16,
                 borderBottomLeftRadius: m.role === 'assistant' ? 4 : 16,
                 border: m.role === 'assistant' ? '1px solid var(--glass-border)' : 'none',
+                boxShadow: m.role === 'assistant' ? '0 4px 12px rgba(0,0,0,0.02)' : 'none',
+                fontSize: '0.95rem',
+                lineHeight: 1.5,
               }}>
                 {m.content}
               </div>
+              <span style={{ fontSize: '0.7rem', color: 'var(--color-text-muted)', marginTop: 6 }}>11:30 AM</span>
             </div>
-          ))}
-          {typing && (
-            <div style={{ display: 'flex', gap: 12, alignSelf: 'flex-start' }}>
-              <div style={{ width: 32, height: 32, borderRadius: '50%', background: 'rgba(108, 92, 231, 0.2)', color: 'var(--color-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                <Bot size={16} />
+          </div>
+        ))}
+        
+        {/* Typing Indicator */}
+        {typing && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8, alignSelf: 'flex-start' }}>
+             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <div style={{ width: 24, height: 24, borderRadius: '50%', background: 'rgba(108, 92, 231, 0.1)', color: 'var(--color-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <Bot size={14} />
               </div>
-              <div style={{ background: 'rgba(255,255,255,0.05)', padding: '12px 16px', borderRadius: '16px', borderBottomLeftRadius: 4, display: 'flex', gap: 4, alignItems: 'center' }}>
-                <div className="typing-dot"></div>
-                <div className="typing-dot" style={{ animationDelay: '0.2s' }}></div>
-                <div className="typing-dot" style={{ animationDelay: '0.4s' }}></div>
-              </div>
+              <span style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>AI Clone is typing</span>
             </div>
-          )}
-        </div>
-
-        {/* Demo Input */}
-        <form onSubmit={handleSend} style={{ padding: 16, borderTop: '1px solid var(--glass-border)', display: 'flex', gap: 12, background: 'rgba(255,255,255,0.02)' }}>
-          <input 
-            type="text" 
-            placeholder="Type a message..." 
-            disabled={messages.length > 2}
-            style={{ 
-              flex: 1, background: 'rgba(255,255,255,0.05)', border: '1px solid var(--glass-border)', 
-              borderRadius: 24, padding: '12px 20px', color: 'white', outline: 'none' 
-            }} 
-          />
-          <button type="submit" className="btn btn-primary" disabled={messages.length > 2} style={{ borderRadius: '50%', width: 44, height: 44, padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <Send size={18} />
-          </button>
-        </form>
+            
+            <div style={{ background: '#FFFFFF', padding: '12px 16px', borderRadius: '16px', borderBottomLeftRadius: 4, display: 'flex', gap: 4, alignItems: 'center', border: '1px solid var(--glass-border)', boxShadow: '0 4px 12px rgba(0,0,0,0.02)' }}>
+              <div className="typing-dot-demo"></div>
+              <div className="typing-dot-demo" style={{ animationDelay: '0.2s' }}></div>
+              <div className="typing-dot-demo" style={{ animationDelay: '0.4s' }}></div>
+            </div>
+          </div>
+        )}
       </div>
+
       <style>{`
-        .typing-dot {
-          width: 6px; height: 6px; border-radius: 50%; background: var(--color-text-secondary);
-          animation: bounce 1.4s infinite ease-in-out both;
+        .typing-dot-demo {
+          width: 6px; height: 6px; border-radius: 50%; background: var(--color-primary);
+          animation: bounceDemo 1.4s infinite ease-in-out both;
         }
-        @keyframes bounce {
-          0%, 80%, 100% { transform: scale(0); }
-          40% { transform: scale(1); }
+        @keyframes bounceDemo {
+          0%, 80%, 100% { transform: scale(0); opacity: 0.5; }
+          40% { transform: scale(1); opacity: 1; }
         }
       `}</style>
-    </section>
+    </div>
   );
 }

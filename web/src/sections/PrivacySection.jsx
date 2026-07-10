@@ -1,4 +1,5 @@
 import { Lock, FileText, ShieldCheck, User, Database, MessageSquare, Trash2, EyeOff, Server, Shield, Globe, RefreshCcw } from 'lucide-react';
+import { useState, useEffect } from 'react';
 
 export default function PrivacySection() {
   const cards = [
@@ -8,6 +9,32 @@ export default function PrivacySection() {
     { icon: <EyeOff size={28} />, title: 'No Data Sharing', desc: 'We never sell or share your data with anyone. Ever. No exceptions.' },
     { icon: <Server size={28} />, title: 'Minimal Data Retention', desc: 'We retain data only for as long as necessary to deliver the service you use.' }
   ];
+
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [isHovered, setIsHovered] = useState(false);
+  const [cardsToShow, setCardsToShow] = useState(3);
+
+  // Responsive cards to show
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 768) setCardsToShow(1);
+      else if (window.innerWidth < 1024) setCardsToShow(2);
+      else setCardsToShow(3);
+    };
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  const maxIndex = Math.max(0, cards.length - cardsToShow);
+
+  useEffect(() => {
+    if (isHovered) return;
+    const timer = setInterval(() => {
+      setActiveIndex((prev) => (prev >= maxIndex ? 0 : prev + 1));
+    }, 3000);
+    return () => clearInterval(timer);
+  }, [maxIndex, isHovered]);
 
   return (
     <section id="privacy" style={{ position: 'relative', padding: '100px 0', overflow: 'hidden' }}>
@@ -85,22 +112,71 @@ export default function PrivacySection() {
           </div>
         </div>
 
-        {/* 5 Column Cards Section */}
+        {/* 5 Column Cards Section -> Now Carousel */}
         <div style={{ textAlign: 'center', marginBottom: 50 }}>
           <h3 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: 12 }}>How We Keep You Safe</h3>
           <p style={{ color: 'var(--color-text-secondary)', fontSize: '1.05rem' }}>Privacy isn't a feature — it's our foundation.</p>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 20, marginBottom: 60 }}>
-          {cards.map((card, idx) => (
-            <div key={idx} className="glass-card" style={{ flexDirection: 'column', alignItems: 'center', textAlign: 'center', padding: '32px 16px', background: 'var(--color-surface)', height: '100%' }}>
-              <div style={{ width: 56, height: 56, borderRadius: 16, background: 'rgba(108, 92, 231, 0.08)', color: 'var(--color-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 20 }}>
-                {card.icon}
-              </div>
-              <h4 style={{ fontSize: '0.95rem', fontWeight: 700, marginBottom: 12, lineHeight: 1.3 }}>{card.title}</h4>
-              <p style={{ fontSize: '0.8rem', color: 'var(--color-text-secondary)', lineHeight: 1.6 }}>{card.desc}</p>
+        <div 
+          style={{ position: 'relative', marginBottom: 60 }}
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+        >
+          <div style={{ overflow: 'hidden', paddingBottom: 40, paddingTop: 20 }}>
+            <div 
+              style={{
+                display: 'flex',
+                gap: 20,
+                alignItems: 'stretch',
+                transition: 'transform 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
+                transform: `translateX(calc(-${activeIndex * (100 / cardsToShow)}% - ${activeIndex * (20 / cardsToShow)}px))`
+              }}
+            >
+              {cards.map((card, idx) => {
+                const isVisible = idx >= activeIndex && idx < activeIndex + cardsToShow;
+                return (
+                  <div key={idx} className="glass-card" style={{ 
+                    flexDirection: 'column', alignItems: 'center', textAlign: 'center', padding: '32px 16px', background: 'var(--color-surface)',
+                    justifyContent: 'flex-start',
+                    flex: `0 0 calc(${100 / cardsToShow}% - ${20 * (cardsToShow - 1) / cardsToShow}px)`,
+                    border: isVisible ? '1px solid var(--color-primary)' : '1px solid var(--glass-border)',
+                    boxShadow: isVisible ? '0 10px 30px rgba(108,92,231,0.15)' : 'none',
+                    transition: 'all 0.5s ease',
+                    opacity: isVisible ? 1 : 0.6,
+                    transform: isVisible ? 'scale(1)' : 'scale(0.95)'
+                  }}>
+                    <div style={{ width: 56, height: 56, borderRadius: 16, background: 'rgba(108, 92, 231, 0.08)', color: 'var(--color-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 20, flexShrink: 0 }}>
+                      {card.icon}
+                    </div>
+                    <h4 style={{ fontSize: '0.95rem', fontWeight: 700, marginBottom: 12, lineHeight: 1.3 }}>{card.title}</h4>
+                    <p style={{ fontSize: '0.8rem', color: 'var(--color-text-secondary)', lineHeight: 1.6, flexGrow: 1 }}>{card.desc}</p>
+                  </div>
+                );
+              })}
             </div>
-          ))}
+          </div>
+
+          {/* Navigation Dots */}
+          <div style={{ display: 'flex', justifyContent: 'center', gap: 8, marginTop: 10 }}>
+            {Array.from({ length: maxIndex + 1 }).map((_, idx) => (
+              <button 
+                key={idx}
+                onClick={() => setActiveIndex(idx)}
+                style={{
+                  width: activeIndex === idx ? 24 : 8,
+                  height: 8,
+                  borderRadius: 4,
+                  background: activeIndex === idx ? 'var(--color-primary)' : 'var(--glass-border)',
+                  border: 'none',
+                  cursor: 'pointer',
+                  transition: 'all 0.3s ease',
+                  padding: 0
+                }}
+                aria-label={`Go to slide ${idx + 1}`}
+              />
+            ))}
+          </div>
         </div>
 
         {/* Bottom Banner */}

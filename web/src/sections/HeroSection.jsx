@@ -26,11 +26,11 @@ export default function HeroSection() {
               <Upload size={18} /> Upload Your Chat
             </button>
           </Link>
-          <a href="#demo" style={{ textDecoration: 'none' }}>
+          <Link to="/demo" style={{ textDecoration: 'none' }}>
             <button className="btn btn-ghost" id="hero-demo-btn">
               <Play size={16} fill="#6C5CE7" color="#6C5CE7" /> Watch Demo
             </button>
-          </a>
+          </Link>
         </div>
         <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
           <ShieldCheck size={22} color="#6C5CE7" style={{ flexShrink: 0, marginTop: 1 }} />
