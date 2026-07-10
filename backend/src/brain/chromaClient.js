@@ -85,3 +85,36 @@ export async function countVectors(sessionId) {
     return 0;
   }
 }
+
+/**
+ * On server startup, delete all orphaned session_* collections.
+ * Since sessions are in-memory, any existing collections after a
+ * restart are orphans from a previous run.
+ * @returns {Promise<number>} number of collections deleted
+ */
+export async function cleanupOrphanedCollections() {
+  try {
+    const collections = await chroma.listCollections();
+    const sessionPattern = /^session_/;
+
+    let deleted = 0;
+    for (const col of collections) {
+      if (sessionPattern.test(col.name)) {
+        try {
+          await chroma.deleteCollection({ name: col.name });
+          deleted++;
+        } catch {
+          // Collection may already be gone — safe to skip
+        }
+      }
+    }
+
+    if (deleted > 0) {
+      console.log(`[ChromaDB] Cleaned up ${deleted} orphaned session collection(s)`);
+    }
+    return deleted;
+  } catch (err) {
+    console.warn('[ChromaDB] Could not clean up orphaned collections:', err.message);
+    return 0;
+  }
+}

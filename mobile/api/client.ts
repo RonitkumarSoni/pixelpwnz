@@ -6,7 +6,8 @@ const getBaseUrl = (): string => {
   if (process.env.EXPO_PUBLIC_API_URL) {
     return process.env.EXPO_PUBLIC_API_URL;
   }
-  return 'http://localhost:5000/api';
+  // Android emulator uses 10.0.2.2 to reach the host machine
+  return 'http://10.0.2.2:5000/api';
 };
 
 const apiClient = axios.create({

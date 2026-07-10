@@ -11,6 +11,7 @@ import chatRoutes from './routes/chat.js';
 import statsRoutes from './routes/stats.js';
 import sessionRoutes from './routes/session.js';
 import { startCleanup } from './store/sessionStore.js';
+import { cleanupOrphanedCollections } from './brain/chromaClient.js';
 
 const app = express();
 
@@ -49,8 +50,9 @@ const isMainModule = process.argv[1] && (
 );
 
 if (isMainModule) {
-  const server = app.listen(config.port, () => {
+  const server = app.listen(config.port, async () => {
     console.log(`[Signet] Server running on port ${config.port}`);
+    await cleanupOrphanedCollections();
   });
 
   function shutdown() {
