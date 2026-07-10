@@ -64,7 +64,6 @@ export default function UploadPage() {
   return (
     <div className="page-enter" style={{ 
       minHeight: '100vh', 
-      background: '#F8F8FC', // Very light lavender/gray
       position: 'relative',
       display: 'flex',
       alignItems: 'center',
@@ -73,7 +72,7 @@ export default function UploadPage() {
     }}>
 
       <div style={{
-        maxWidth: 1200, 
+        maxWidth: 1180, 
         width: '100%',
         display: 'grid', 
         gridTemplateColumns: '45% 55%',
@@ -128,11 +127,13 @@ export default function UploadPage() {
 
           {/* How to export card */}
           <div style={{
-            background: '#FFFFFF',
+            background: 'var(--glass-bg)',
+            backdropFilter: 'var(--glass-blur)',
+            WebkitBackdropFilter: 'var(--glass-blur)',
             borderRadius: 24,
             padding: '40px',
-            boxShadow: '0 8px 30px rgba(108, 92, 231, 0.04)',
-            border: '1px solid rgba(230, 230, 240, 0.8)'
+            boxShadow: 'var(--glass-shadow)',
+            border: '1px solid var(--glass-border)'
           }}>
             <h3 style={{
               fontSize: '0.8125rem', 
@@ -188,12 +189,14 @@ export default function UploadPage() {
               style={{
                 width: '100%',
                 padding: '16px 20px',
-                background: '#FFFFFF',
-                border: 'none',
+                background: 'var(--glass-bg)',
+                backdropFilter: 'var(--glass-blur)',
+                WebkitBackdropFilter: 'var(--glass-blur)',
+                border: '1px solid var(--glass-border)',
                 borderRadius: 12,
                 fontSize: '1rem',
                 color: '#12121A',
-                boxShadow: '0 2px 8px rgba(0,0,0,0.02)',
+                boxShadow: 'var(--glass-shadow)',
                 outline: 'none'
               }}
               placeholder="e.g., Ronit"
@@ -205,9 +208,12 @@ export default function UploadPage() {
 
           {/* Dropzone */}
           <div {...getRootProps()} className={dropzoneClass} style={{
-            background: '#FFFFFF',
-            border: '2px dashed #E5E5F0',
-            borderRadius: 20,
+            background: 'var(--glass-bg)',
+            backdropFilter: 'var(--glass-blur)',
+            WebkitBackdropFilter: 'var(--glass-blur)',
+            border: '2px dashed rgba(108, 92, 231, 0.25)',
+            boxShadow: 'var(--glass-shadow)',
+            borderRadius: 24,
             padding: '60px 40px',
             display: 'flex',
             flexDirection: 'column',
@@ -223,13 +229,13 @@ export default function UploadPage() {
             {uploadState === 'success' ? (
               <>
                 <CheckCircle size={56} color="#10B981" style={{ marginBottom: 16 }} />
-                <h3 style={{ fontSize: '1.25rem', fontWeight: 700, color: '#10B981', marginBottom: 8 }}>Upload Complete!</h3>
-                <p style={{ color: '#6B6F8A' }}>Redirecting to chat...</p>
+                <h3 style={{ fontSize: '1.25rem', fontWeight: 700, color: '#10B981', marginBottom: 8 }}>Clone Authenticated</h3>
+                <p style={{ color: '#6B6F8A' }}>Entering chat session...</p>
               </>
             ) : uploadState === 'uploading' ? (
               <>
                 <Loader size={48} color="#6C5CE7" className="animate-spin" style={{ marginBottom: 16 }} />
-                <p style={{ color: '#6B6F8A', marginBottom: 16 }}>{progress < 100 ? 'Uploading...' : 'Building clone...'}</p>
+                <p style={{ color: '#6B6F8A', marginBottom: 16 }}>{progress < 100 ? 'Analyzing conversational patterns...' : 'Forging your digital twin...'}</p>
                 <div style={{ width: '100%', height: 6, background: '#F0F0F5', borderRadius: 3, overflow: 'hidden', maxWidth: 200 }}>
                   <div style={{ width: `${progress}%`, height: '100%', background: '#6C5CE7', transition: 'width 0.3s ease' }} />
                 </div>
@@ -288,18 +294,21 @@ export default function UploadPage() {
       </div>
 
       <style>{`
-        .dropzone-clean:hover { border-color: #6C5CE7 !important; background: rgba(108, 92, 231, 0.02) !important; }
-        .dropzone-clean.active { border-color: #6C5CE7 !important; background: rgba(108, 92, 231, 0.04) !important; }
+        .dropzone-clean:hover { border-color: #6C5CE7 !important; background: rgba(255, 255, 255, 0.8) !important; box-shadow: var(--glass-shadow-hover) !important; }
+        .dropzone-clean.active { border-color: #6C5CE7 !important; background: rgba(255, 255, 255, 0.9) !important; box-shadow: var(--glass-shadow-hover) !important; }
         .dropzone-clean.success { border-color: #10B981 !important; border-style: solid !important; }
         .dropzone-clean.error { border-color: #EF4444 !important; border-style: solid !important; }
         
-        @media (max-width: 900px) {
+        @media (max-width: 768px) {
           div[style*="grid-template-columns"] {
             grid-template-columns: 1fr !important;
             gap: 40px !important;
           }
           div[style*="paddingTop: 60"] {
             padding-top: 0 !important;
+          }
+          .page-enter {
+            padding: 24px 16px !important;
           }
         }
       `}</style>

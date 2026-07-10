@@ -6,12 +6,14 @@ const useChatStore = create((set, get) => ({
   userName: null,
   contactName: null,
   totalPairs: 0,
+  temperature: 0.7, // Default temperature
 
   // Chat messages
   messages: [],
   isLoading: false,
 
   // Actions
+  setTemperature: (temperature) => set({ temperature }),
   setSession: (sessionId, userName, contactName, totalPairs) =>
     set({
       sessionId,
@@ -40,6 +42,7 @@ const useChatStore = create((set, get) => ({
       userName: null,
       contactName: null,
       totalPairs: 0,
+      temperature: 0.7,
       messages: [],
       isLoading: false,
     }),
