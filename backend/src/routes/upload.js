@@ -23,10 +23,14 @@ router.post('/', upload.single('chatFile'), async (req, res, next) => {
       throw err;
     }
 
-    const { contactName, pairs, totalMessagesParsed } = parseWhatsAppChat(
+    const { contactName, pairs: parsedPairs, totalMessagesParsed } = parseWhatsAppChat(
       req.file.buffer,
       userName
     );
+
+    // Limit to 750 pairs to safely process a larger chunk of the conversation
+    // We slice the last 750 pairs to preserve the most recent part of the conversation
+    const pairs = parsedPairs.slice(-750);
 
     const sessionId = uuidv4();
 

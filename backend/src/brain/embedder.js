@@ -21,7 +21,9 @@ async function getEmbedder() {
  */
 export async function embed(text) {
   const embedder = await getEmbedder();
-  const output = await embedder(text, { pooling: 'mean', normalize: true });
+  // Ensure we do not pass more than 1000 characters to the local embedder to prevent WebGL/WASM memory crashes
+  const safeText = text && text.length > 1000 ? text.substring(0, 1000) : text;
+  const output = await embedder(safeText, { pooling: 'mean', normalize: true });
   return Array.from(output.data);
 }
 

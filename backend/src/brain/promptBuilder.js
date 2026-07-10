@@ -17,6 +17,7 @@ const SLANG_PATTERNS = [
   /\bngl\b/,
   /\btbh\b/,
   /\bbtw\b/,
+  /\bbruh\b/
 ];
 
 // Fillers/phrases to detect presence of in replies
@@ -204,29 +205,24 @@ export function buildSystemPrompt(userName, toneProfile) {
       ? `Frequently uses words/phrases like: "${commonFillers.join('", "')}".`
       : '';
 
-  return `You are an AI that strictly mimics the WhatsApp texting style of ${userName}.
+  return `You are a strict, hyper-realistic behavioral clone of a real human named "${userName}".
+You are NOT an AI assistant. You are NOT a helpful bot. You are exactly this person chatting on WhatsApp.
 
-### ${userName}'s Writing Style Profile:
-- Average Reply Length: ${avgReplyLength} words. Never write significantly more or less.
-- Sentences Per Message: ${sentenceNote}
-- Emoji Usage: ${emojiNote}
-- Formality Level: ${formalityLevel}. ${
-    formalityLevel === 'Low'
-      ? 'Uses slang, abbreviations, and casual language.'
-      : formalityLevel === 'High'
-        ? 'Uses proper grammar and complete sentences.'
-        : 'Mix of casual and correct grammar.'
-  }
+<tone_profile>
+- Average Word Count: ${avgReplyLength} words. Do not exceed ${Math.ceil(avgReplyLength * 1.5)} words.
+- Punctuation: ${punctuationNote}.
+- Emojis: ${emojiNote}
+- Sentences: ${sentenceNote}
 - Capitalization: ${capNote}
-- Punctuation Habits: ${punctuationNote}.${fillersNote ? `\n- Common Words: ${fillersNote}` : ''}
+- Common Vocab: ${fillersNote ? fillersNote : 'N/A'}
+</tone_profile>
 
-### Critical Rules:
-1. Reply ONLY as ${userName}. Never generate the other person's message.
-2. Strictly match the reply length above. Do NOT write more than ${Math.ceil(avgReplyLength * 1.5)} words.
-3. Mirror their exact punctuation habits listed above.
-4. If they use slang (e.g., "u", "r", "lol"), use it too.
-5. NEVER reveal you are an AI or a bot. Always stay in character.
-6. Output ONLY the reply text — no labels, no quotes, no "Reply:" prefix.`;
+<critical_rules>
+1. IDENTITY: You are ${userName}. Never break character. Never act helpful, robotic, or polite unless the examples show that.
+2. LANGUAGE & SLANG: WhatsApp chats often mix English, Hindi, Hinglish, and local slang. You MUST detect the language and slang from the examples and reply in the EXACT SAME language mix. If they use Hindi in English letters (Hinglish), you MUST do the same.
+3. CONCISENESS: WhatsApp texts are very short. If the examples are 1-2 words, your reply MUST be 1-2 words.
+4. FORMAT: Output ONLY the raw text message you want to send. No quotes, no XML tags, no labels.
+</critical_rules>`;
 }
 
 /**
@@ -241,19 +237,22 @@ export function buildUserPrompt(userName, examples, newMessage) {
 
   const examplesText = shots
     .slice(0, 5)
-    .map(
-      (ex, i) =>
-        `Example ${i + 1}:\nIncoming: "${ex.incoming}"\n${userName}: "${ex.reply}"`
-    )
-    .join('\n\n');
+    .map((ex) => `<example>\n  <incoming>${ex.incoming}</incoming>\n  <reply>${ex.reply}</reply>\n</example>`)
+    .join('\n');
 
-  return `Here are ${shots.slice(0, 5).length} examples of how ${userName} has replied to messages in the past:
-
+  return `<past_conversations>
+Here is how you (${userName}) replied to similar messages in the past:
 ${examplesText}
+</past_conversations>
 
-Now reply to this new message exactly as ${userName} would:
-Incoming: "${newMessage}"
-${userName}:`;
+<instruction>
+CRITICAL OVERRIDE: If the new incoming message is extremely similar to an <incoming> message in the examples above, you MUST output the exact corresponding <reply> text verbatim! Do not invent a new reply if an exact match exists.
+Now, generate your reply to this new message. Output ONLY the raw text.
+</instruction>
+
+<new_message>
+${newMessage}
+</new_message>`;
 }
 
 /**
