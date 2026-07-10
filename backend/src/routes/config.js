@@ -10,19 +10,14 @@ const router = Router();
  */
 router.get('/', (_req, res) => {
   const hasGroq = Boolean(config.groq?.apiKey);
-  const hasOpenAI = Boolean(config.openai?.apiKey);
-  const llmProvider = hasGroq ? 'groq' : hasOpenAI ? 'openai' : 'ollama';
-  const llmModel = hasGroq
-    ? config.groq.model
-    : hasOpenAI
-      ? config.openai.model
-      : config.ollama.model;
 
   res.status(200).json({
     success: true,
     config: {
-      llm_provider: llmProvider,
-      llm_model: llmModel,
+      llm_provider: 'ollama',
+      llm_model: config.ollama.model,
+      llm_fallback_provider: hasGroq ? 'groq' : null,
+      llm_fallback_model: hasGroq ? config.groq.model : null,
       max_file_size_bytes: config.maxFileSize,
       max_file_size_mb: Math.round(config.maxFileSize / (1024 * 1024)),
       session_ttl_seconds: config.session.ttl,

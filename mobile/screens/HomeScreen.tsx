@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, Image, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Feather } from '@expo/vector-icons';
+import { Feather, FontAwesome5 } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Colors, Typography, Spacing, Radii, Gradients } from '../constants/theme';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/AppNavigator';
+import { useAppSelector } from '../store/hooks';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
@@ -25,6 +26,7 @@ const RECENT_PERSONAS = [
 ];
 
 export default function HomeScreen() {
+  const { userName } = useAppSelector((s) => s.session);
   const [activeTab, setActiveTab] = useState('Recent');
   const navigation = useNavigation<NavigationProp>();
 
@@ -76,14 +78,18 @@ export default function HomeScreen() {
     <SafeAreaView style={styles.safeArea}>
       {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>Signet</Text>
+        <View style={styles.headerLeft}>
+          <FontAwesome5 name="fingerprint" size={24} color={Colors.primarySolid} style={{ marginRight: 8 }} />
+          <Text style={styles.headerTitle}>Signet</Text>
+        </View>
         <View style={styles.headerRight}>
           <TouchableOpacity style={styles.headerIconBtn}>
             <Feather name="search" size={22} color={Colors.text} />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.headerIconBtn}>
-            <Feather name="bell" size={22} color={Colors.text} />
-          </TouchableOpacity>
+          <View style={styles.userInfo}>
+            <Text style={styles.userName}>{userName || 'Guest'}</Text>
+            <Image source={{ uri: 'https://i.pravatar.cc/150?img=11' }} style={styles.userAvatarTop} />
+          </View>
         </View>
       </View>
 
@@ -113,6 +119,12 @@ export default function HomeScreen() {
           ))}
         </View>
 
+        {/* WhatsApp Integration Button */}
+        <TouchableOpacity style={styles.whatsappBtn}>
+          <FontAwesome5 name="whatsapp" size={20} color="#FFF" />
+          <Text style={styles.whatsappBtnText}>Integrate Personas with WhatsApp</Text>
+        </TouchableOpacity>
+
         {/* Chat list */}
         {MY_PERSONAS.length > 0 ? (
           MY_PERSONAS.map((item) => (
@@ -121,11 +133,11 @@ export default function HomeScreen() {
         ) : (
           <View style={styles.emptyState}>
             <View style={styles.emptyIcon}>
-              <Feather name="message-circle" size={32} color={Colors.textMuted} />
+              <FontAwesome5 name="user-astronaut" size={32} color={Colors.textMuted} />
             </View>
-            <Text style={styles.emptyTitle}>No conversations yet</Text>
+            <Text style={styles.emptyTitle}>No Personas Yet</Text>
             <Text style={styles.emptySub}>
-              Create your first persona to start chatting with your AI clone.
+              You haven't created any personas. Tap the '+' button to train your first AI clone!
             </Text>
           </View>
         )}
@@ -146,6 +158,10 @@ const styles = StyleSheet.create({
     paddingTop: Spacing.md,
     paddingBottom: Spacing.sm,
   },
+  headerLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
   headerTitle: {
     fontSize: 26,
     fontWeight: '800',
@@ -155,7 +171,7 @@ const styles = StyleSheet.create({
   headerRight: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
+    gap: 12,
   },
   headerIconBtn: {
     width: 40,
@@ -163,6 +179,43 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  userInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  userName: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: Colors.text,
+  },
+  userAvatarTop: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+  },
+
+  /* WhatsApp Integration */
+  whatsappBtn: {
+    marginHorizontal: Spacing.lg,
+    backgroundColor: '#25D366', // WhatsApp Brand Color
+    borderRadius: 12,
+    paddingVertical: 14,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 10,
+    marginBottom: Spacing.md,
+    shadowColor: '#25D366',
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 4 },
+  },
+  whatsappBtnText: {
+    color: '#FFF',
+    fontSize: 15,
+    fontWeight: '700',
   },
 
   /* Persona circles */

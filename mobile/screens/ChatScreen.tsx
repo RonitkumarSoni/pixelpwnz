@@ -99,7 +99,6 @@ export default function ChatScreen() {
             }
             dispatch(clearMessages());
             dispatch(clearSession());
-            navigation.navigate('Upload');
           },
         },
       ]

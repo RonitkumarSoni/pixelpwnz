@@ -54,7 +54,9 @@ router.post('/', optionalAuth, async (req, res, next) => {
       session_id,
       finalMessage,
       session.userName,
-      session.pairs
+      session.toneProfile
+        ? { toneProfile: session.toneProfile }
+        : { allPairs: session.pairs }
     );
 
     const { reply, usage, fallback } = await generateReply(

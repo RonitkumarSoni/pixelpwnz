@@ -25,9 +25,15 @@ import { setSession, setUploading, setUploadProgress } from '../store/sessionSli
 import apiClient from '../api/client';
 import { Colors, Spacing, Typography, Radii, Gradients } from '../constants/theme';
 import { RootStackParamList } from '../navigation/AppNavigator';
+import { MainTabParamList } from '../navigation/MainTabNavigator';
+import { CompositeNavigationProp } from '@react-navigation/native';
+import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import MaskedView from '@react-native-masked-view/masked-view';
 
-type UploadNavProp = NativeStackNavigationProp<RootStackParamList, 'Upload'>;
+type UploadNavProp = CompositeNavigationProp<
+  BottomTabNavigationProp<MainTabParamList, 'Create'>,
+  NativeStackNavigationProp<RootStackParamList>
+>;
 
 export default function UploadScreen() {
   const dispatch = useAppDispatch();
