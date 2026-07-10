@@ -1,10 +1,13 @@
 import React, { useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, ScrollView, Animated, TouchableOpacity, SafeAreaView, Dimensions } from 'react-native';
+import { 
+  View, Text, StyleSheet, ScrollView, Animated, TouchableOpacity, SafeAreaView, Dimensions, Image, Easing 
+} from 'react-native';
 import { BlurView } from 'expo-blur';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Feather } from '@expo/vector-icons';
+import { Feather, FontAwesome5 } from '@expo/vector-icons';
 import MaskedView from '@react-native-masked-view/masked-view';
-import { Colors, Spacing, Typography, Radii, Gradients } from '../constants/theme';
+import * as Haptics from 'expo-haptics';
+import { Colors, Spacing, Typography, Radii } from '../constants/theme';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../navigation/AppNavigator';
 import { useAppDispatch } from '../store/hooks';
@@ -17,6 +20,7 @@ type Props = NativeStackScreenProps<RootStackParamList, 'Landing'>;
 export default function LandingScreen({ navigation }: Props) {
   const dispatch = useAppDispatch();
   const floatAnim = useRef(new Animated.Value(0)).current;
+  const scaleAnim = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
     Animated.loop(
@@ -24,11 +28,13 @@ export default function LandingScreen({ navigation }: Props) {
         Animated.timing(floatAnim, {
           toValue: 1,
           duration: 3000,
+          easing: Easing.inOut(Easing.ease),
           useNativeDriver: true,
         }),
         Animated.timing(floatAnim, {
           toValue: 0,
           duration: 3000,
+          easing: Easing.inOut(Easing.ease),
           useNativeDriver: true,
         }),
       ])
@@ -37,16 +43,41 @@ export default function LandingScreen({ navigation }: Props) {
 
   const translateY = floatAnim.interpolate({
     inputRange: [0, 1],
-    outputRange: [0, -14],
+    outputRange: [0, -12],
   });
+
+  const handleRobotPress = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    Animated.sequence([
+      Animated.timing(scaleAnim, {
+        toValue: 0.9,
+        duration: 100,
+        useNativeDriver: true,
+      }),
+      Animated.timing(scaleAnim, {
+        toValue: 1.1,
+        duration: 150,
+        useNativeDriver: true,
+      }),
+      Animated.timing(scaleAnim, {
+        toValue: 1,
+        duration: 150,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  };
+
+  const handleGuestLogin = () => {
+    dispatch(setIsLoggedIn(true));
+  };
 
   return (
     <SafeAreaView style={styles.safeArea}>
       <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
         
-        {/* Soft Radial Glow Background Illusion using LinearGradient */}
+        {/* Soft Radial Glow */}
         <LinearGradient
-          colors={['rgba(108, 92, 231, 0.08)', 'transparent']}
+          colors={['rgba(108, 92, 231, 0.05)', 'transparent']}
           style={styles.bgGlow}
           start={{ x: 0.5, y: 0 }}
           end={{ x: 0.5, y: 1 }}
@@ -56,148 +87,130 @@ export default function LandingScreen({ navigation }: Props) {
         <View style={styles.topTagContainer}>
           <View style={styles.tag}>
             <Text style={styles.tagIcon}>✦</Text>
-            <Text style={styles.tagText}>Your Conversations, Your AI</Text>
+            <Text style={styles.tagText}>Your digital twin. Written in your hand.</Text>
           </View>
         </View>
 
-        {/* Hero Text & Content */}
+        {/* Hero Text */}
         <View style={styles.heroTextContainer}>
-
           <Text style={styles.title}>Meet Your</Text>
-          
           <MaskedView
-            style={{ height: 60, width: '100%', alignItems: 'center' }}
-            maskElement={<Text style={styles.titleMask}>AI Persona</Text>}
+            style={{ height: 56, width: '100%', alignItems: 'center' }}
+            maskElement={<Text style={styles.titleMask}>Personal Clone</Text>}
           >
             <LinearGradient
-              colors={['#5F5AFF', '#9155FF']}
+              colors={['#7E6CFF', '#9155FF']}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
               style={StyleSheet.absoluteFill}
             />
           </MaskedView>
 
-          {/* 3D Orb Section */}
-          <View style={styles.orbContainer}>
-            {/* Concentric Platforms */}
-            <View style={styles.platform1} />
-            <View style={styles.platform2} />
-            <View style={styles.platform3} />
-
-            {/* Animated Orb */}
-            <Animated.View style={[styles.orbWrapper, { transform: [{ translateY }] }]}>
-              <LinearGradient
-                colors={['#C5B8FF', '#7560F0', '#2E1A9E']}
-                start={{ x: 0.2, y: 0.1 }}
-                end={{ x: 0.9, y: 0.9 }}
-                style={styles.orb}
-              >
-                {/* Specular Highlight */}
-                <LinearGradient
-                  colors={['rgba(255, 255, 255, 0.7)', 'transparent']}
-                  start={{ x: 0, y: 0 }}
-                  end={{ x: 1, y: 1 }}
-                  style={styles.orbHighlight}
-                />
-                {/* Eyes */}
-                <View style={styles.orbEyes}>
-                  <View style={styles.orbEye} />
-                  <View style={styles.orbEye} />
-                </View>
-              </LinearGradient>
-            </Animated.View>
-
-            {/* Glass Cards (Positioned around Orb) */}
-            <View style={[styles.glassCardWrapper, { top: 20, left: 10 }]}>
-              <BlurView intensity={40} tint="light" style={styles.glassCard}>
-                <View style={styles.glassCardBg} />
-                <View style={styles.glassCardIcon}><Feather name="message-circle" size={16} color={Colors.primarySolid} /></View>
-                <View>
-                  <Text style={styles.glassCardTitle}>Your Chat</Text>
-                  <Text style={styles.glassCardDesc}>Upload your{'\n'}conversations</Text>
-                </View>
-              </BlurView>
-            </View>
-
-            <View style={[styles.glassCardWrapper, { bottom: 60, right: 10 }]}>
-              <BlurView intensity={40} tint="light" style={styles.glassCard}>
-                <View style={styles.glassCardBg} />
-                <View style={styles.glassCardIcon}><Feather name="cpu" size={16} color={Colors.primarySolid} /></View>
-                <View>
-                  <Text style={styles.glassCardTitle}>Smart AI</Text>
-                  <Text style={styles.glassCardDesc}>Analyzes tone,{'\n'}pattern & style</Text>
-                </View>
-              </BlurView>
-            </View>
-          </View>
-
           <Text style={styles.subtitle}>
-            Signet creates a personalized AI clone from your chat history, built to reflect the way they truly talk.
+            Upload a chat export and Signet learns exactly how you talk, think and reply to create an AI that sounds just like you.
           </Text>
+        </View>
 
-          {/* CTA Buttons */}
-          <View style={styles.ctaRow}>
-            <TouchableOpacity
-              style={styles.btnPrimary}
-              activeOpacity={0.8}
-              onPress={() => dispatch(setIsLoggedIn(true))}
-            >
-              <Feather name="log-in" size={18} color="#FFF" />
-              <Text style={styles.btnPrimaryText}>Login / Register</Text>
-            </TouchableOpacity>
+        {/* Interactive Robot Section */}
+        <View style={styles.robotSection}>
+          {/* Faint dashed circles background (approximated with borders) */}
+          <View style={styles.bgCircleLarge} />
+          <View style={styles.bgCircleSmall} />
 
-            <TouchableOpacity
-              style={styles.btnGhost}
-              activeOpacity={0.8}
-              onPress={() => dispatch(setIsLoggedIn(true))}
-            >
-              <Feather name="user" size={16} color={Colors.primarySolid} />
-              <Text style={styles.btnGhostText}>Continue as Guest</Text>
-            </TouchableOpacity>
+          {/* 4 Floating Cards */}
+          <View style={[styles.floatingCard, { top: 10, left: 0 }]}>
+            <View style={styles.cardIconBox}><Feather name="message-circle" size={14} color={Colors.primarySolid} /></View>
+            <View>
+              <Text style={styles.cardTitle}>Your Chat</Text>
+              <Text style={styles.cardDesc}>Upload your{'\n'}conversations</Text>
+            </View>
           </View>
 
-          <View style={styles.privacyNote}>
-            <Feather name="shield" size={18} color={Colors.primarySolid} style={{ marginTop: 2 }} />
-            <Text style={styles.privacyNoteText}>
-              Your data stays private and secure.{'\n'}We never store your conversations.
-            </Text>
+          <View style={[styles.floatingCard, { top: 10, right: 0 }]}>
+            <View style={styles.cardIconBox}><Feather name="cpu" size={14} color={Colors.primarySolid} /></View>
+            <View>
+              <Text style={styles.cardTitle}>AI Processing</Text>
+              <Text style={styles.cardDesc}>We analyze tone,{'\n'}pattern & style</Text>
+            </View>
+          </View>
+
+          <View style={[styles.floatingCard, { bottom: 10, left: 0 }]}>
+            <View style={styles.cardIconBox}><Feather name="zap" size={14} color={Colors.primarySolid} /></View>
+            <View>
+              <Text style={styles.cardTitle}>Smart Learning</Text>
+              <Text style={styles.cardDesc}>Advanced AI creates{'\n'}your unique clone</Text>
+            </View>
+          </View>
+
+          <View style={[styles.floatingCard, { bottom: 10, right: 0 }]}>
+            <View style={styles.cardIconBox}><Feather name="user" size={14} color={Colors.primarySolid} /></View>
+            <View>
+              <Text style={styles.cardTitle}>Your AI Clone</Text>
+              <Text style={styles.cardDesc}>Talk like you.{'\n'}Respond like you.</Text>
+            </View>
+          </View>
+
+          {/* Central Robot */}
+          <TouchableOpacity activeOpacity={1} onPress={handleRobotPress} style={styles.robotTouchArea}>
+            <Animated.View style={[styles.robotWrapper, { transform: [{ translateY }, { scale: scaleAnim }] }]}>
+              <Image 
+                source={{ uri: 'https://cdn3d.iconscout.com/3d/premium/thumb/robot-6987747-5735414.png' }} 
+                style={styles.robotImage}
+                resizeMode="contain"
+              />
+            </Animated.View>
+          </TouchableOpacity>
+        </View>
+
+        {/* Auth Buttons */}
+        <View style={styles.authContainer}>
+          <TouchableOpacity style={styles.btnGuest} activeOpacity={0.7} onPress={handleGuestLogin}>
+            <Feather name="user" size={18} color={Colors.primarySolid} />
+            <Text style={styles.btnGuestText}>Continue as Guest</Text>
+          </TouchableOpacity>
+
+          <View style={styles.dividerRow}>
+            <View style={styles.dividerLine} />
+            <Text style={styles.dividerText}>or continue with</Text>
+            <View style={styles.dividerLine} />
+          </View>
+
+          <TouchableOpacity style={styles.btnOutline} activeOpacity={0.7} onPress={handleGuestLogin}>
+            <FontAwesome5 name="google" size={18} color="#EA4335" />
+            <Text style={styles.btnOutlineText}>Continue with Google</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.btnOutline} activeOpacity={0.7} onPress={handleGuestLogin}>
+            <FontAwesome5 name="apple" size={20} color="#000" />
+            <Text style={styles.btnOutlineText}>Continue with Apple</Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* Features Row */}
+        <View style={styles.featuresRow}>
+          <View style={styles.featureItem}>
+            <View style={styles.featureIconBox}><Feather name="shield" size={18} color={Colors.primarySolid} /></View>
+            <Text style={styles.featureTitle}>100% Private</Text>
+            <Text style={styles.featureDesc}>Your chats stay{'\n'}only on your device.</Text>
+          </View>
+          <View style={styles.featureItem}>
+            <View style={styles.featureIconBox}><Feather name="cpu" size={18} color={Colors.primarySolid} /></View>
+            <Text style={styles.featureTitle}>Learns Your Style</Text>
+            <Text style={styles.featureDesc}>Tone, emojis, slang{'\n'}and reply patterns.</Text>
+          </View>
+          <View style={styles.featureItem}>
+            <View style={styles.featureIconBox}><Feather name="zap" size={18} color={Colors.primarySolid} /></View>
+            <Text style={styles.featureTitle}>Ready in Minutes</Text>
+            <Text style={styles.featureDesc}>Build your AI twin{'\n'}in less than a minute.</Text>
           </View>
         </View>
 
-        {/* Feature Badges */}
-        <View style={styles.badgeSection}>
-          <View style={styles.glassBadgeWrapper}>
-            <BlurView intensity={40} tint="light" style={styles.glassBadge}>
-              <View style={styles.glassCardBg} />
-              <View style={styles.glassBadgeIcon}><Feather name="shield" size={20} color={Colors.primarySolid} /></View>
-              <View>
-                <Text style={styles.glassBadgeTitle}>100% Private</Text>
-                <Text style={styles.glassBadgeDesc}>Your chats stay on your device.</Text>
-              </View>
-            </BlurView>
-          </View>
-
-          <View style={styles.glassBadgeWrapper}>
-            <BlurView intensity={40} tint="light" style={styles.glassBadge}>
-              <View style={styles.glassCardBg} />
-              <View style={styles.glassBadgeIcon}><Feather name="user-check" size={20} color={Colors.primarySolid} /></View>
-              <View>
-                <Text style={styles.glassBadgeTitle}>AI Clone</Text>
-                <Text style={styles.glassBadgeDesc}>AI that talks like your person.</Text>
-              </View>
-            </BlurView>
-          </View>
-
-          <View style={styles.glassBadgeWrapper}>
-            <BlurView intensity={40} tint="light" style={styles.glassBadge}>
-              <View style={styles.glassCardBg} />
-              <View style={styles.glassBadgeIcon}><Feather name="lock" size={20} color={Colors.primarySolid} /></View>
-              <View>
-                <Text style={styles.glassBadgeTitle}>Secure & Safe</Text>
-                <Text style={styles.glassBadgeDesc}>We never store your data.</Text>
-              </View>
-            </BlurView>
-          </View>
+        {/* Footer Privacy Note */}
+        <View style={styles.footerNote}>
+          <Feather name="shield" size={16} color={Colors.primarySolid} style={{ marginTop: 2 }} />
+          <Text style={styles.footerNoteText}>
+            Your data stays private and secure.{'\n'}We never store your conversations.
+          </Text>
         </View>
 
       </ScrollView>
@@ -208,12 +221,12 @@ export default function LandingScreen({ navigation }: Props) {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#FDFDFD', // Much lighter, closer to web F5F4FA
+    backgroundColor: '#F8F8FC', 
   },
   container: {
     flexGrow: 1,
     paddingTop: Spacing.xl,
-    paddingBottom: Spacing['5xl'],
+    paddingBottom: Spacing['4xl'],
     alignItems: 'center',
   },
   bgGlow: {
@@ -231,288 +244,245 @@ const styles = StyleSheet.create({
     zIndex: 10,
     marginTop: Spacing.sm,
   },
-  heroTextContainer: {
-    paddingHorizontal: Spacing.xl,
-    alignItems: 'center',
-    width: '100%',
-    marginBottom: Spacing.md,
-    zIndex: 10,
-  },
   tag: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: 'rgba(108, 92, 231, 0.08)',
-    paddingVertical: 8,
-    paddingHorizontal: 16,
+    paddingVertical: 6,
+    paddingHorizontal: 14,
     borderRadius: 99,
-    borderWidth: 1,
-    borderColor: 'rgba(108, 92, 231, 0.12)',
     marginBottom: Spacing.xl,
     gap: 8,
   },
   tagIcon: {
     color: Colors.primarySolid,
-    fontSize: 14,
+    fontSize: 12,
   },
   tagText: {
     color: Colors.primarySolid,
     fontWeight: '600',
-    fontSize: 14,
+    fontSize: 12,
+  },
+  heroTextContainer: {
+    paddingHorizontal: Spacing.xl,
+    alignItems: 'center',
+    width: '100%',
+    zIndex: 10,
   },
   title: {
-    fontSize: 46,
-    lineHeight: 52,
+    fontSize: 44,
+    lineHeight: 48,
     fontWeight: '800',
     letterSpacing: -1,
-    color: Colors.text,
+    color: '#111',
     textAlign: 'center',
   },
   titleMask: {
-    fontSize: 46,
-    lineHeight: 52,
+    fontSize: 44,
+    lineHeight: 48,
     fontWeight: '800',
     letterSpacing: -1,
     textAlign: 'center',
     color: '#000',
   },
   subtitle: {
-    ...Typography.bodyLarge,
+    ...Typography.body,
     color: Colors.textSecondary,
     textAlign: 'center',
     marginTop: Spacing.md,
-    marginBottom: Spacing.xl,
-    paddingHorizontal: Spacing.md,
+    paddingHorizontal: Spacing.sm,
+    lineHeight: 22,
   },
-  ctaRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexWrap: 'wrap',
-    gap: Spacing.sm,
-    marginBottom: Spacing.xl,
+  
+  /* Robot Section */
+  robotSection: {
+    position: 'relative',
+    height: 300,
     width: '100%',
-    paddingHorizontal: Spacing.md,
-  },
-  btnPrimary: {
-    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: Colors.primarySolid,
-    paddingVertical: 14,
-    paddingHorizontal: 20,
+    marginVertical: Spacing.xl,
+  },
+  bgCircleLarge: {
+    position: 'absolute',
+    width: 280,
+    height: 280,
+    borderRadius: 140,
+    borderWidth: 1,
+    borderColor: 'rgba(108, 92, 231, 0.1)',
+    borderStyle: 'dashed',
+  },
+  bgCircleSmall: {
+    position: 'absolute',
+    width: 200,
+    height: 200,
+    borderRadius: 100,
+    borderWidth: 1,
+    borderColor: 'rgba(108, 92, 231, 0.15)',
+    borderStyle: 'dashed',
+  },
+  robotTouchArea: {
+    zIndex: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  robotWrapper: {
+    width: 180,
+    height: 180,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  robotImage: {
+    width: '100%',
+    height: '100%',
+  },
+  
+  /* Floating Cards */
+  floatingCard: {
+    position: 'absolute',
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#FFF',
+    padding: 10,
     borderRadius: 14,
+    gap: 10,
     shadowColor: Colors.primarySolid,
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.35,
-    shadowRadius: 14,
-    elevation: 4,
-    gap: 6,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.05,
+    shadowRadius: 10,
+    elevation: 2,
+    borderWidth: 1,
+    borderColor: Colors.border,
+    zIndex: 15,
+    width: 145,
   },
-  btnPrimaryText: {
-    color: '#FFF',
-    fontWeight: '600',
-    fontSize: 14,
+  cardIconBox: {
+    width: 28,
+    height: 28,
+    borderRadius: 8,
+    backgroundColor: 'rgba(108, 92, 231, 0.1)',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  btnGhost: {
+  cardTitle: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: '#111',
+    marginBottom: 2,
+  },
+  cardDesc: {
+    fontSize: 9,
+    color: Colors.textSecondary,
+    lineHeight: 12,
+  },
+
+  /* Auth Container */
+  authContainer: {
+    width: '100%',
+    paddingHorizontal: Spacing.xl,
+    gap: 12,
+    marginBottom: Spacing.xl,
+  },
+  btnGuest: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'transparent',
+    backgroundColor: 'rgba(108, 92, 231, 0.08)',
     paddingVertical: 14,
-    paddingHorizontal: 20,
     borderRadius: 14,
-    gap: 6,
+    gap: 8,
   },
-  btnGhostText: {
-    color: Colors.text,
+  btnGuestText: {
+    color: Colors.primarySolid,
+    fontWeight: '700',
+    fontSize: 15,
+  },
+  dividerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 4,
+  },
+  dividerLine: {
+    flex: 1,
+    height: 1,
+    backgroundColor: Colors.border,
+  },
+  dividerText: {
+    color: Colors.textMuted,
+    paddingHorizontal: 10,
+    fontSize: 13,
+  },
+  btnOutline: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#FFF',
+    borderWidth: 1,
+    borderColor: Colors.border,
+    paddingVertical: 14,
+    borderRadius: 14,
+    gap: 10,
+  },
+  btnOutlineText: {
+    color: '#111',
     fontWeight: '600',
-    fontSize: 14,
+    fontSize: 15,
   },
-  privacyNote: {
+
+  /* Features */
+  featuresRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+    paddingHorizontal: Spacing.lg,
+    backgroundColor: '#FFF',
+    paddingVertical: 24,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: Colors.border,
+    marginHorizontal: Spacing.xl,
+    marginBottom: Spacing.xl,
+  },
+  featureItem: {
+    flex: 1,
+    alignItems: 'center',
+    paddingHorizontal: 4,
+  },
+  featureIconBox: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: 'rgba(108, 92, 231, 0.1)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 8,
+  },
+  featureTitle: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: '#111',
+    marginBottom: 4,
+    textAlign: 'center',
+  },
+  featureDesc: {
+    fontSize: 10,
+    color: Colors.textSecondary,
+    textAlign: 'center',
+    lineHeight: 14,
+  },
+
+  /* Footer */
+  footerNote: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    gap: 10,
-    maxWidth: 300,
+    justifyContent: 'center',
+    gap: 8,
+    paddingHorizontal: Spacing.xl,
   },
-  privacyNoteText: {
-    fontSize: 13,
-    lineHeight: 20,
+  footerNoteText: {
+    fontSize: 12,
+    lineHeight: 18,
     color: Colors.textSecondary,
     textAlign: 'left',
   },
-  orbContainer: {
-    position: 'relative',
-    height: 420,
-    width: '100%',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: Spacing['xl'],
-    zIndex: 5,
-  },
-  orbWrapper: {
-    zIndex: 10,
-    shadowColor: Colors.primarySolid,
-    shadowOffset: { width: 0, height: 25 },
-    shadowOpacity: 0.45,
-    shadowRadius: 40,
-    elevation: 15,
-  },
-  orb: {
-    width: 240,
-    height: 240,
-    borderRadius: 120,
-    overflow: 'hidden',
-  },
-  orbHighlight: {
-    position: 'absolute',
-    top: '8%',
-    left: '14%',
-    width: '50%',
-    height: '45%',
-    borderRadius: 60,
-    transform: [{ rotate: '-25deg' }],
-  },
-  orbEyes: {
-    position: 'absolute',
-    top: '44%',
-    left: '50%',
-    transform: [{ translateX: -24 }], // 11 + 11 + 26 spacing = 48 / 2 = 24
-    flexDirection: 'row',
-    gap: 26,
-    zIndex: 20,
-  },
-  orbEye: {
-    width: 22,
-    height: 22,
-    borderRadius: 11,
-    backgroundColor: 'rgba(255, 255, 255, 0.95)',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.18,
-    shadowRadius: 5,
-    elevation: 4,
-  },
-  platform1: {
-    position: 'absolute',
-    bottom: 40,
-    width: 320,
-    height: 320,
-    borderRadius: 160,
-    backgroundColor: 'rgba(255, 255, 255, 0.6)',
-    borderColor: 'rgba(255, 255, 255, 0.85)',
-    borderWidth: 1,
-    transform: [{ scaleY: 0.2 }],
-    zIndex: 4,
-  },
-  platform2: {
-    position: 'absolute',
-    bottom: 50,
-    width: 250,
-    height: 250,
-    borderRadius: 125,
-    backgroundColor: 'rgba(248, 247, 255, 0.8)',
-    borderColor: 'rgba(237, 237, 245, 0.9)',
-    borderWidth: 1,
-    transform: [{ scaleY: 0.2 }],
-    zIndex: 5,
-  },
-  platform3: {
-    position: 'absolute',
-    bottom: 55,
-    width: 190,
-    height: 190,
-    borderRadius: 95,
-    backgroundColor: 'rgba(108, 92, 231, 0.08)',
-    transform: [{ scaleY: 0.2 }],
-    zIndex: 6,
-  },
-  glassCardWrapper: {
-    position: 'absolute',
-    zIndex: 20,
-    borderRadius: Radii.card,
-    overflow: 'hidden',
-    shadowColor: Colors.primarySolid,
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.07,
-    shadowRadius: 24,
-    elevation: 5,
-    borderWidth: 1,
-    borderColor: Colors.glass.border,
-  },
-  glassCard: {
-    paddingVertical: 14,
-    paddingHorizontal: 18,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 14,
-  },
-  glassCardBg: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: Colors.glass.bg,
-  },
-  glassCardIcon: {
-    width: 44,
-    height: 44,
-    borderRadius: 11,
-    backgroundColor: 'rgba(108, 92, 231, 0.1)',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  glassCardTitle: {
-    fontWeight: '700',
-    fontSize: 14,
-    color: Colors.text,
-    marginBottom: 2,
-  },
-  glassCardDesc: {
-    fontSize: 12,
-    color: Colors.textSecondary,
-    lineHeight: 16,
-  },
-  badgeSection: {
-    width: '100%',
-    paddingHorizontal: Spacing.xl,
-    gap: Spacing.base,
-    backgroundColor: Colors.bgLavender,
-    borderRadius: 24,
-    paddingVertical: 28,
-    marginHorizontal: Spacing.xl,
-    width: width - (Spacing.xl * 2), // constrain width to screen minus padding
-  },
-  glassBadgeWrapper: {
-    borderRadius: 20,
-    overflow: 'hidden',
-    borderWidth: 1,
-    borderColor: Colors.glass.border,
-    shadowColor: Colors.primarySolid,
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.07,
-    shadowRadius: 24,
-    elevation: 3,
-  },
-  glassBadge: {
-    padding: 22,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 16,
-  },
-  glassBadgeIcon: {
-    width: 50,
-    height: 50,
-    borderRadius: 13,
-    backgroundColor: 'rgba(108, 92, 231, 0.1)',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  glassBadgeTitle: {
-    fontSize: 15,
-    fontWeight: '700',
-    color: Colors.text,
-    marginBottom: 3,
-  },
-  glassBadgeDesc: {
-    fontSize: 13,
-    color: Colors.textSecondary,
-    lineHeight: 18,
-  }
 });
