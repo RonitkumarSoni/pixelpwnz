@@ -238,39 +238,27 @@ requests.post(
                 </div>
               </div>
 
-              {/* Take Signet With You */}
-              <div>
-                <h2 style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--color-text)', marginBottom: 8 }}>Take Signet With You</h2>
-                <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.95rem', marginBottom: 24 }}>Download the mobile app and chat with your AI clone anytime, anywhere.</p>
-                
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 24 }}>
-                  {/* Android */}
-                  <div style={{ padding: '24px', border: '1px solid var(--glass-border)', borderRadius: 16, display: 'flex', flexDirection: 'column', gap: 24, background: 'white', transition: 'all 0.2s', cursor: 'pointer' }} className="hover-card">
-                    <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
-                      <img src="https://upload.wikimedia.org/wikipedia/commons/7/7a/Google_Play_2022_logo.svg" alt="Google Play" style={{ width: 48, height: 48, objectFit: 'contain' }} />
-                      <div>
-                        <h4 style={{ fontSize: '1.1rem', fontWeight: 800, margin: 0, color: 'var(--color-text)' }}>Download for Android</h4>
-                        <p style={{ fontSize: '0.85rem', color: 'var(--color-text-secondary)', margin: 0 }}>Get the Signet app on<br/>Google Play Store.</p>
-                      </div>
-                    </div>
-                    <div style={{ color: 'var(--color-primary)', fontSize: '0.9rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: 4 }}>
-                      Get it on Google Play <ChevronRight size={16} />
+              {/* Download App */}
+              <div style={{ padding: '48px 64px', textAlign: 'center', background: 'rgba(108, 92, 231, 0.03)', borderRadius: 24, border: '1px solid var(--glass-border)' }}>
+                <h2 style={{ fontSize: '2rem', marginBottom: 16, fontWeight: 700, color: 'var(--color-text)' }}>Download the Signet App</h2>
+                <p style={{ fontSize: '1.1rem', color: 'var(--color-text-secondary)', marginBottom: 40 }}>
+                  Chat with your AI clone anytime, anywhere.
+                </p>
+                <div style={{ display: 'flex', gap: 24, justifyContent: 'center', flexWrap: 'wrap' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 20, padding: '20px 28px', background: 'white', borderRadius: 20, boxShadow: '0 10px 30px rgba(0,0,0,0.05)', textAlign: 'left', minWidth: 280, border: '1px solid var(--glass-border)', cursor: 'pointer' }} className="hover-card">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/7/7a/Google_Play_2022_logo.svg" alt="Google Play" style={{ width: 80, height: 80, objectFit: 'contain' }} />
+                    <div>
+                      <div style={{ fontWeight: 800, fontSize: '1.3rem', color: '#111827' }}>Android App</div>
+                      <div style={{ fontSize: '1rem', color: 'var(--color-text-secondary)', marginBottom: 6 }}>Get it on Google Play</div>
+                      <div style={{ color: 'var(--color-primary)', fontSize: '1rem', fontWeight: 700 }}>Download →</div>
                     </div>
                   </div>
-
-                  {/* iOS */}
-                  <div style={{ padding: '24px', border: '1px solid var(--glass-border)', borderRadius: 16, display: 'flex', flexDirection: 'column', gap: 24, background: 'white', transition: 'all 0.2s', cursor: 'pointer' }} className="hover-card">
-                    <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
-                      <div style={{ width: 48, height: 48, background: '#000', borderRadius: 12, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <Apple size={28} color="white" fill="white" />
-                      </div>
-                      <div>
-                        <h4 style={{ fontSize: '1.1rem', fontWeight: 800, margin: 0, color: 'var(--color-text)' }}>Download for iOS</h4>
-                        <p style={{ fontSize: '0.85rem', color: 'var(--color-text-secondary)', margin: 0 }}>Get the Signet app on<br/>the App Store.</p>
-                      </div>
-                    </div>
-                    <div style={{ color: 'var(--color-primary)', fontSize: '0.9rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: 4 }}>
-                      Download on the App Store <ChevronRight size={16} />
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 20, padding: '20px 28px', background: 'white', borderRadius: 20, boxShadow: '0 10px 30px rgba(0,0,0,0.05)', textAlign: 'left', minWidth: 280, border: '1px solid var(--glass-border)', cursor: 'pointer' }} className="hover-card">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg" alt="Apple Logo" style={{ width: 72, height: 72, objectFit: 'contain' }} />
+                    <div>
+                      <div style={{ fontWeight: 800, fontSize: '1.3rem', color: '#111827' }}>iOS App</div>
+                      <div style={{ fontSize: '1rem', color: 'var(--color-text-secondary)', marginBottom: 6 }}>Download on the App Store</div>
+                      <div style={{ color: 'var(--color-primary)', fontSize: '1rem', fontWeight: 700 }}>Download →</div>
                     </div>
                   </div>
                 </div>
