@@ -65,12 +65,16 @@ export default function HomeScreen() {
             }));
           }
         }}
-        style={{ padding: Spacing.sm }}
+        style={[{ padding: Spacing.sm }, bookmarks.some(b => b.id === item.id) && {
+          backgroundColor: Colors.primarySolid,
+          borderRadius: 12,
+        }]}
       >
-        <Feather 
+        <FontAwesome5 
           name="bookmark" 
-          size={20} 
-          color={bookmarks.some(b => b.id === item.id) ? Colors.primarySolid : Colors.textMuted} 
+          solid={bookmarks.some(b => b.id === item.id)}
+          size={18} 
+          color={bookmarks.some(b => b.id === item.id) ? '#FFF' : Colors.textMuted} 
         />
       </TouchableOpacity>
     </TouchableOpacity>

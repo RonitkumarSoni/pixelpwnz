@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, Image, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Feather } from '@expo/vector-icons';
+import { Feather, FontAwesome5 } from '@expo/vector-icons';
 import { Colors, Typography, Spacing, Radii } from '../constants/theme';
 import { useAppSelector, useAppDispatch } from '../store/hooks';
 import { removeBookmark } from '../store/bookmarksSlice';
@@ -70,9 +70,9 @@ export default function BookmarksScreen() {
           e.stopPropagation();
           dispatch(removeBookmark(item.id));
         }}
-        style={{ padding: Spacing.sm }}
+        style={[{ padding: Spacing.sm }, { backgroundColor: Colors.primarySolid, borderRadius: 12 }]}
       >
-        <Feather name="bookmark" size={20} color={Colors.primarySolid} />
+        <FontAwesome5 name="bookmark" solid={true} size={18} color="#FFF" />
       </TouchableOpacity>
     </TouchableOpacity>
   );

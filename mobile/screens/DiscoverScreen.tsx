@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, Image, TextInput, ScrollView, Dimensions, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Feather } from '@expo/vector-icons';
+import { Feather, FontAwesome5 } from '@expo/vector-icons';
 import { Colors, Typography, Spacing, Radii } from '../constants/theme';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -163,7 +163,7 @@ export default function DiscoverScreen() {
           >
             <Image source={{ uri: item.image }} style={styles.cardImage} />
             <TouchableOpacity 
-              style={styles.bookmarkBtn}
+              style={[styles.bookmarkBtn, bookmarks.some(b => b.id === item.id) && styles.bookmarkBtnActive]}
               onPress={(e) => {
                 e.stopPropagation(); // prevent card press
                 const isBookmarked = bookmarks.some(b => b.id === item.id);
@@ -174,9 +174,10 @@ export default function DiscoverScreen() {
                 }
               }}
             >
-              <Feather 
+              <FontAwesome5 
                 name="bookmark" 
-                size={20} 
+                solid={bookmarks.some(b => b.id === item.id)}
+                size={16} 
                 color={bookmarks.some(b => b.id === item.id) ? Colors.primarySolid : '#FFF'} 
               />
             </TouchableOpacity>
@@ -309,6 +310,23 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0.5)',
     alignItems: 'center',
     justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.2)',
+  },
+  bookmarkBtnActive: {
+    backgroundColor: '#FFF',
+    borderColor: '#FFF',
+    ...Platform.select({
+      ios: {
+        shadowColor: Colors.primarySolid,
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.3,
+        shadowRadius: 4,
+      },
+      android: {
+        elevation: 4,
+      },
+    }),
   },
   cardInfo: {
     padding: 12,
