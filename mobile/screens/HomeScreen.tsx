@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, Image, ScrollView } from 'react-native';
+import React from 'react';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, Image, ScrollView, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Feather, FontAwesome5 } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -13,346 +13,403 @@ type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
 /* ── Mock data ── */
 const MY_PERSONAS = [
-  { id: 'p1', name: 'Best Friend', lastMsg: 'haha yeah that was wild 😂', time: '2m ago', avatar: 'https://i.pravatar.cc/150?img=5', unread: 3 },
-  { id: 'p2', name: 'Mom', lastMsg: 'Don\'t forget to eat lunch beta', time: '1h ago', avatar: 'https://i.pravatar.cc/150?img=9', unread: 0 },
-  { id: 'p3', name: 'College Roommate', lastMsg: 'bro remember that night...', time: '3h ago', avatar: 'https://i.pravatar.cc/150?img=12', unread: 1 },
-];
-
-const RECENT_PERSONAS = [
-  { id: 'r1', name: 'Best Friend', avatar: 'https://i.pravatar.cc/150?img=5' },
-  { id: 'r2', name: 'Mom', avatar: 'https://i.pravatar.cc/150?img=9' },
-  { id: 'r3', name: 'Roommate', avatar: 'https://i.pravatar.cc/150?img=12' },
-  { id: 'r4', name: 'Create', avatar: '' },
+  { id: 'p1', name: 'My AI Clone', desc: 'Chats based on your personality', metaType: 'badge', metaText: 'Most used', avatar: 'https://i.pravatar.cc/150?img=11' },
+  { id: 'p2', name: 'Best Friend', desc: 'Fun • Sarcastic • Always there', metaType: 'text', metaText: 'Last chat 2h ago', avatar: 'https://i.pravatar.cc/150?img=5' },
+  { id: 'p3', name: 'College Buddy', desc: 'Study • Memes • Late night talks', metaType: 'text', metaText: 'Last chat yesterday', avatar: 'https://i.pravatar.cc/150?img=12' },
 ];
 
 export default function HomeScreen() {
   const { userName } = useAppSelector((s) => s.session);
-  const [activeTab, setActiveTab] = useState('Recent');
   const navigation = useNavigation<NavigationProp>();
 
-  const renderPersonaCircle = ({ item }: { item: typeof RECENT_PERSONAS[0] }) => {
-    if (item.id === 'r4') {
-      return (
-        <TouchableOpacity style={styles.circleItem}>
-          <LinearGradient
-            colors={[...Gradients.primary]}
-            style={styles.circleCreate}
-          >
-            <Feather name="plus" size={24} color="#FFF" />
-          </LinearGradient>
-          <Text style={styles.circleName}>Create</Text>
-        </TouchableOpacity>
-      );
-    }
-    return (
-      <TouchableOpacity style={styles.circleItem} onPress={() => navigation.navigate('Chat')}>
-        <Image source={{ uri: item.avatar }} style={styles.circleAvatar} />
-        <Text style={styles.circleName} numberOfLines={1}>{item.name}</Text>
-      </TouchableOpacity>
-    );
-  };
+  const displayName = userName || 'Daksh';
 
-  const renderChatRow = ({ item }: { item: typeof MY_PERSONAS[0] }) => (
+  const renderPersonaCard = ({ item }: { item: typeof MY_PERSONAS[0] }) => (
     <TouchableOpacity
-      style={styles.chatRow}
+      style={styles.personaCard}
       onPress={() => navigation.navigate('Chat')}
       activeOpacity={0.7}
     >
-      <Image source={{ uri: item.avatar }} style={styles.chatAvatar} />
-      <View style={styles.chatMid}>
-        <Text style={styles.chatName}>{item.name}</Text>
-        <Text style={styles.chatPreview} numberOfLines={1}>{item.lastMsg}</Text>
+      <View style={styles.cardAvatarContainer}>
+        <Image source={{ uri: item.avatar }} style={styles.cardAvatar} />
+        <View style={styles.onlineDot} />
       </View>
-      <View style={styles.chatMeta}>
-        <Text style={styles.chatTime}>{item.time}</Text>
-        {item.unread > 0 && (
-          <View style={styles.unreadBadge}>
-            <Text style={styles.unreadText}>{item.unread}</Text>
+      <View style={styles.cardMid}>
+        <Text style={styles.cardName}>{item.name}</Text>
+        <Text style={styles.cardDesc} numberOfLines={1}>{item.desc}</Text>
+        {item.metaType === 'badge' ? (
+          <View style={styles.cardBadge}>
+            <Feather name="bar-chart-2" size={10} color={Colors.primarySolid} style={{ marginRight: 4 }} />
+            <Text style={styles.cardBadgeText}>{item.metaText}</Text>
           </View>
+        ) : (
+          <Text style={styles.cardMetaText}>{item.metaText}</Text>
         )}
       </View>
+      <Feather name="chevron-right" size={20} color={Colors.textMuted} />
     </TouchableOpacity>
   );
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      {/* Header */}
-      <View style={styles.header}>
-        <View style={styles.headerLeft}>
-          <FontAwesome5 name="fingerprint" size={24} color={Colors.primarySolid} style={{ marginRight: 8 }} />
-          <Text style={styles.headerTitle}>Signet</Text>
-        </View>
-        <View style={styles.headerRight}>
-          <TouchableOpacity style={styles.headerIconBtn}>
-            <Feather name="search" size={22} color={Colors.text} />
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
+        
+        {/* TOP HEADER */}
+        <View style={styles.header}>
+          <View style={styles.headerLeft}>
+            <FontAwesome5 name="sparkles" size={20} color={Colors.primarySolid} style={{ marginRight: 8 }} />
+            <Text style={styles.headerTitle}>Signet</Text>
+          </View>
+          <TouchableOpacity style={styles.searchBtn}>
+            <Feather name="search" size={20} color={Colors.text} />
           </TouchableOpacity>
-          <View style={styles.userInfo}>
-            <Text style={styles.userName}>{userName || 'Guest'}</Text>
-            <Image source={{ uri: 'https://i.pravatar.cc/150?img=11' }} style={styles.userAvatarTop} />
+        </View>
+
+        {/* USER PROFILE SECTION */}
+        <View style={styles.userSection}>
+          <View style={styles.mainAvatarContainer}>
+            <Image source={{ uri: 'https://i.pravatar.cc/150?img=11' }} style={styles.mainAvatar} />
+            <View style={styles.mainOnlineDot} />
+          </View>
+          <View style={styles.userSectionText}>
+            <Text style={styles.greetingText}>Good evening,</Text>
+            <Text style={styles.userNameText}>{displayName} <Text style={{fontSize: 20}}>👋</Text></Text>
+            <Text style={styles.taglineText}>Build. Chat. Be yourself.</Text>
           </View>
         </View>
-      </View>
 
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 100 }}>
-        {/* Quick-access persona circles */}
-        <FlatList
-          data={RECENT_PERSONAS}
-          keyExtractor={item => item.id}
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.circlesContainer}
-          renderItem={renderPersonaCircle}
-        />
-
-        {/* Filter pills */}
-        <View style={styles.pillsContainer}>
-          {['Recent', 'My Personas', 'Favorites'].map((tab) => (
-            <TouchableOpacity
-              key={tab}
-              style={[styles.pill, activeTab === tab && styles.pillActive]}
-              onPress={() => setActiveTab(tab)}
-            >
-              <Text style={[styles.pillText, activeTab === tab && styles.pillTextActive]}>
-                {tab}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </View>
-
-        {/* WhatsApp Integration Button */}
-        <TouchableOpacity style={styles.whatsappBtn}>
-          <FontAwesome5 name="whatsapp" size={20} color="#FFF" />
-          <Text style={styles.whatsappBtnText}>Integrate Personas with WhatsApp</Text>
-        </TouchableOpacity>
-
-        {/* Chat list */}
-        {MY_PERSONAS.length > 0 ? (
-          MY_PERSONAS.map((item) => (
-            <View key={item.id}>{renderChatRow({ item })}</View>
-          ))
-        ) : (
-          <View style={styles.emptyState}>
-            <View style={styles.emptyIcon}>
-              <FontAwesome5 name="user-astronaut" size={32} color={Colors.textMuted} />
+        {/* YOUR PERSONAS HEADER */}
+        <View style={styles.sectionHeader}>
+          <View style={styles.sectionHeaderLeft}>
+            <Text style={styles.sectionTitle}>Your Personas</Text>
+            <View style={styles.countBadge}>
+              <Text style={styles.countBadgeText}>{MY_PERSONAS.length}</Text>
             </View>
-            <Text style={styles.emptyTitle}>No Personas Yet</Text>
-            <Text style={styles.emptySub}>
-              You haven't created any personas. Tap the '+' button to train your first AI clone!
-            </Text>
           </View>
-        )}
+          <TouchableOpacity>
+            <Text style={styles.viewAllText}>View all <Feather name="chevron-right" size={14} /></Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* PERSONAS LIST */}
+        <View style={styles.personasContainer}>
+          {MY_PERSONAS.length > 0 ? (
+            MY_PERSONAS.map((item) => (
+              <View key={item.id}>{renderPersonaCard({ item })}</View>
+            ))
+          ) : (
+            <View style={styles.emptyState}>
+              <View style={styles.emptyIcon}>
+                <FontAwesome5 name="user-astronaut" size={32} color={Colors.textMuted} />
+              </View>
+              <Text style={styles.emptyTitle}>No Personas Yet</Text>
+              <Text style={styles.emptySub}>
+                You haven't created any personas. Tap the '+' button below to train your first AI clone!
+              </Text>
+            </View>
+          )}
+        </View>
+
+        {/* WHATSAPP BANNER */}
+        <LinearGradient
+          colors={['#F5F3FF', '#EEECFC']}
+          style={styles.waBanner}
+        >
+          <View style={styles.waIconContainer}>
+            <View style={styles.waIconBg}>
+              <FontAwesome5 name="whatsapp" size={26} color="#FFF" />
+            </View>
+            <FontAwesome5 name="sparkles" size={12} color="#A78BFA" style={{position: 'absolute', top: -5, left: -5}} />
+          </View>
+          <View style={styles.waTextContainer}>
+            <Text style={styles.waTitle}>Talk with your persona on WhatsApp</Text>
+            <Text style={styles.waDesc}>Integrate your AI clone and chat seamlessly on WhatsApp.</Text>
+          </View>
+          <TouchableOpacity style={styles.waBtn}>
+            <Text style={styles.waBtnText}>Integrate Now</Text>
+            <Feather name="chevron-right" size={14} color="#FFF" />
+          </TouchableOpacity>
+        </LinearGradient>
+
       </ScrollView>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: Colors.bg },
+  safeArea: { flex: 1, backgroundColor: '#FAFAFF' },
+  scrollContent: { paddingBottom: 100 },
 
-  /* Header */
+  /* Top Header */
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: Spacing.lg,
+    paddingHorizontal: Spacing.xl,
     paddingTop: Spacing.md,
-    paddingBottom: Spacing.sm,
+    paddingBottom: Spacing.md,
   },
   headerLeft: {
     flexDirection: 'row',
     alignItems: 'center',
   },
   headerTitle: {
-    fontSize: 26,
+    fontSize: 22,
     fontWeight: '800',
-    color: Colors.primarySolid,
-    letterSpacing: -0.5,
+    color: '#1E1E28',
   },
-  headerRight: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-  },
-  headerIconBtn: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  userInfo: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  userName: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: Colors.text,
-  },
-  userAvatarTop: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-  },
-
-  /* WhatsApp Integration */
-  whatsappBtn: {
-    marginHorizontal: Spacing.lg,
-    backgroundColor: '#25D366', // WhatsApp Brand Color
+  searchBtn: {
+    width: 44,
+    height: 44,
     borderRadius: 12,
-    paddingVertical: 14,
-    flexDirection: 'row',
+    borderWidth: 1,
+    borderColor: '#EAEAEA',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 10,
-    marginBottom: Spacing.md,
-    shadowColor: '#25D366',
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    shadowOffset: { width: 0, height: 4 },
-  },
-  whatsappBtnText: {
-    color: '#FFF',
-    fontSize: 15,
-    fontWeight: '700',
+    backgroundColor: '#FFF',
   },
 
-  /* Persona circles */
-  circlesContainer: {
-    paddingHorizontal: Spacing.lg,
+  /* User Profile Section */
+  userSection: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: Spacing.xl,
     paddingVertical: Spacing.md,
+  },
+  mainAvatarContainer: {
+    position: 'relative',
+    marginRight: Spacing.lg,
+  },
+  mainAvatar: {
+    width: 76,
+    height: 76,
+    borderRadius: 38,
+    borderWidth: 3,
+    borderColor: Colors.primarySolid,
+  },
+  mainOnlineDot: {
+    position: 'absolute',
+    bottom: 2,
+    right: 2,
+    width: 18,
+    height: 18,
+    borderRadius: 9,
+    backgroundColor: '#34D399',
+    borderWidth: 3,
+    borderColor: '#FAFAFF',
+  },
+  userSectionText: {
+    justifyContent: 'center',
+  },
+  greetingText: {
+    fontSize: 14,
+    color: '#8E8E9F',
+    marginBottom: 2,
+  },
+  userNameText: {
+    fontSize: 24,
+    fontWeight: '800',
+    color: '#1E1E28',
+    marginBottom: 4,
+  },
+  taglineText: {
+    fontSize: 13,
+    color: '#8E8E9F',
+  },
+
+  /* Section Header */
+  sectionHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: Spacing.xl,
+    marginTop: Spacing.xl,
+    marginBottom: Spacing.md,
+  },
+  sectionHeaderLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: '800',
+    color: '#1E1E28',
+  },
+  countBadge: {
+    backgroundColor: '#E0E7FF',
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 10,
+  },
+  countBadgeText: {
+    fontSize: 12,
+    fontWeight: 'bold',
+    color: Colors.primarySolid,
+  },
+  viewAllText: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: Colors.primarySolid,
+  },
+
+  /* Personas Container */
+  personasContainer: {
+    paddingHorizontal: Spacing.xl,
     gap: 16,
   },
-  circleItem: {
-    alignItems: 'center',
-    width: 64,
-  },
-  circleAvatar: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    borderWidth: 2,
-    borderColor: Colors.primarySolid,
-    marginBottom: 6,
-  },
-  circleCreate: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 6,
-  },
-  circleName: {
-    fontSize: 11,
-    color: Colors.textMuted,
-    textAlign: 'center',
-  },
-
-  /* Pills */
-  pillsContainer: {
-    flexDirection: 'row',
-    paddingHorizontal: Spacing.lg,
-    paddingBottom: Spacing.sm,
-    gap: 8,
-  },
-  pill: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
+  personaCard: {
+    backgroundColor: '#FFF',
     borderRadius: 20,
-    borderWidth: 1,
-    borderColor: Colors.border,
-  },
-  pillActive: {
-    backgroundColor: Colors.text,
-    borderColor: Colors.text,
-  },
-  pillText: {
-    fontSize: 13,
-    color: Colors.textMuted,
-    fontWeight: '600',
-  },
-  pillTextActive: {
-    color: Colors.bg,
-    fontWeight: 'bold',
-  },
-
-  /* Chat rows */
-  chatRow: {
+    padding: 16,
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: Spacing.lg,
-    paddingVertical: 12,
+    ...Platform.select({
+      ios: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.04,
+        shadowRadius: 12,
+      },
+      android: {
+        elevation: 2,
+      },
+    }),
   },
-  chatAvatar: {
-    width: 52,
-    height: 52,
-    borderRadius: 26,
-    marginRight: Spacing.md,
+  cardAvatarContainer: {
+    position: 'relative',
+    marginRight: 16,
   },
-  chatMid: {
+  cardAvatar: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+  },
+  onlineDot: {
+    position: 'absolute',
+    bottom: 2,
+    right: 2,
+    width: 14,
+    height: 14,
+    borderRadius: 7,
+    backgroundColor: '#34D399',
+    borderWidth: 2,
+    borderColor: '#FFF',
+  },
+  cardMid: {
     flex: 1,
   },
-  chatName: {
-    fontSize: 15,
-    fontWeight: '700',
-    color: Colors.text,
-    marginBottom: 3,
+  cardName: {
+    fontSize: 16,
+    fontWeight: '800',
+    color: '#1E1E28',
+    marginBottom: 4,
   },
-  chatPreview: {
-    fontSize: 13,
-    color: Colors.textMuted,
+  cardDesc: {
+    fontSize: 12,
+    color: '#8E8E9F',
+    marginBottom: 8,
   },
-  chatMeta: {
-    alignItems: 'flex-end',
-    gap: 6,
-  },
-  chatTime: {
-    fontSize: 11,
-    color: Colors.textMuted,
-  },
-  unreadBadge: {
-    backgroundColor: Colors.primarySolid,
-    width: 20,
-    height: 20,
-    borderRadius: 10,
+  cardBadge: {
+    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
+    alignSelf: 'flex-start',
+    backgroundColor: '#EEF2FF',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 8,
   },
-  unreadText: {
-    color: '#FFF',
+  cardBadgeText: {
     fontSize: 11,
-    fontWeight: 'bold',
+    fontWeight: '700',
+    color: Colors.primarySolid,
+  },
+  cardMetaText: {
+    fontSize: 12,
+    color: '#A1A1AA',
+    fontWeight: '500',
   },
 
-  /* Empty state */
+  /* Empty State */
   emptyState: {
     alignItems: 'center',
-    justifyContent: 'center',
-    paddingTop: 80,
-    paddingHorizontal: Spacing.xl,
+    paddingVertical: 40,
   },
   emptyIcon: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    backgroundColor: Colors.glass.bg,
-    borderWidth: 1,
-    borderColor: Colors.border,
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    backgroundColor: '#F3F4F6',
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: Spacing.lg,
+    marginBottom: 16,
   },
   emptyTitle: {
-    ...Typography.h3,
-    color: Colors.text,
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#1E1E28',
     marginBottom: 8,
   },
   emptySub: {
-    ...Typography.body,
-    color: Colors.textMuted,
+    fontSize: 14,
+    color: '#8E8E9F',
     textAlign: 'center',
-    lineHeight: 22,
+    paddingHorizontal: 32,
+    lineHeight: 20,
+  },
+
+  /* WhatsApp Banner */
+  waBanner: {
+    marginHorizontal: Spacing.xl,
+    marginTop: 24,
+    borderRadius: 20,
+    padding: 20,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  waIconContainer: {
+    marginRight: 16,
+    position: 'relative',
+  },
+  waIconBg: {
+    width: 52,
+    height: 52,
+    borderRadius: 26,
+    backgroundColor: '#25D366',
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#25D366',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+  },
+  waTextContainer: {
+    flex: 1,
+    marginRight: 12,
+  },
+  waTitle: {
+    fontSize: 13,
+    fontWeight: '800',
+    color: '#1E1E28',
+    marginBottom: 4,
+  },
+  waDesc: {
+    fontSize: 11,
+    color: '#6B7280',
+    lineHeight: 16,
+  },
+  waBtn: {
+    backgroundColor: Colors.primarySolid,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    borderRadius: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  waBtnText: {
+    color: '#FFF',
+    fontSize: 12,
+    fontWeight: '700',
   },
 });
