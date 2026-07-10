@@ -2,7 +2,6 @@ import React, { useEffect, useRef } from 'react';
 import { 
   View, Text, StyleSheet, ScrollView, Animated, TouchableOpacity, SafeAreaView, Dimensions, Image, Easing 
 } from 'react-native';
-import { WebView } from 'react-native-webview';
 import { BlurView } from 'expo-blur';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Feather, FontAwesome5 } from '@expo/vector-icons';
@@ -22,8 +21,10 @@ export default function LandingScreen({ navigation }: Props) {
   const dispatch = useAppDispatch();
   const floatAnim = useRef(new Animated.Value(0)).current;
   const scaleAnim = useRef(new Animated.Value(1)).current;
+  const eyeBlinkAnim = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
+    // Floating animation
     Animated.loop(
       Animated.sequence([
         Animated.timing(floatAnim, {
@@ -40,7 +41,30 @@ export default function LandingScreen({ navigation }: Props) {
         }),
       ])
     ).start();
-  }, [floatAnim]);
+
+    // Blinking animation
+    const blink = () => {
+      Animated.sequence([
+        Animated.timing(eyeBlinkAnim, {
+          toValue: 0.1,
+          duration: 100,
+          useNativeDriver: true,
+        }),
+        Animated.timing(eyeBlinkAnim, {
+          toValue: 1,
+          duration: 100,
+          useNativeDriver: true,
+        }),
+      ]).start();
+      
+      // Randomize next blink (between 2s and 6s)
+      const nextBlink = Math.random() * 4000 + 2000;
+      setTimeout(blink, nextBlink);
+    };
+    
+    const timeout = setTimeout(blink, 2000);
+    return () => clearTimeout(timeout);
+  }, [floatAnim, eyeBlinkAnim]);
 
   const translateY = floatAnim.interpolate({
     inputRange: [0, 1],
@@ -49,22 +73,18 @@ export default function LandingScreen({ navigation }: Props) {
 
   const handleRobotPress = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    Animated.sequence([
-      Animated.timing(scaleAnim, {
-        toValue: 0.9,
-        duration: 100,
-        useNativeDriver: true,
-      }),
-      Animated.timing(scaleAnim, {
-        toValue: 1.1,
-        duration: 150,
-        useNativeDriver: true,
-      }),
-      Animated.timing(scaleAnim, {
-        toValue: 1,
-        duration: 150,
-        useNativeDriver: true,
-      }),
+    
+    // Manual Blink + Bounce
+    Animated.parallel([
+      Animated.sequence([
+        Animated.timing(scaleAnim, { toValue: 0.9, duration: 100, useNativeDriver: true }),
+        Animated.timing(scaleAnim, { toValue: 1.1, duration: 150, useNativeDriver: true }),
+        Animated.timing(scaleAnim, { toValue: 1, duration: 150, useNativeDriver: true }),
+      ]),
+      Animated.sequence([
+        Animated.timing(eyeBlinkAnim, { toValue: 0.1, duration: 100, useNativeDriver: true }),
+        Animated.timing(eyeBlinkAnim, { toValue: 1, duration: 100, useNativeDriver: true }),
+      ])
     ]).start();
   };
 
@@ -151,51 +171,36 @@ export default function LandingScreen({ navigation }: Props) {
             </View>
           </View>
 
-          {/* Central Robot via Spline */}
-          <View style={styles.robotTouchArea}>
-            <View style={styles.robotWrapper}>
-              <WebView
-                originWhitelist={['*']}
-                javaScriptEnabled={true}
-                domStorageEnabled={true}
-                source={{
-                  uri: `data:text/html;charset=utf-8,${encodeURIComponent(`
-                    <!DOCTYPE html>
-                    <html>
-                      <head>
-                        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-                        <script type="module" src="https://unpkg.com/@splinetool/viewer@1.9.0/build/spline-viewer.js"></script>
-                        <style>
-                          body, html {
-                            margin: 0;
-                            padding: 0;
-                            width: 100%;
-                            height: 100%;
-                            overflow: hidden;
-                            background-color: transparent;
-                          }
-                          spline-viewer {
-                            width: 100%;
-                            height: 100%;
-                            background-color: transparent;
-                          }
-                        </style>
-                      </head>
-                      <body>
-                        <spline-viewer loading-anim-type="spinner-small-light" url="https://prod.spline.design/twLIj7hBhI8aQwjq/scene.splinecode"></spline-viewer>
-                      </body>
-                    </html>
-                  `)}`
-                }}
-                style={{ backgroundColor: 'transparent', width: '100%', height: '100%' }}
-                scrollEnabled={false}
-                bounces={false}
-                showsHorizontalScrollIndicator={false}
-                showsVerticalScrollIndicator={false}
-                androidLayerType="hardware"
-              />
-            </View>
-          </View>
+          {/* Central Robot (Pure React Native) */}
+          <TouchableOpacity activeOpacity={1} onPress={handleRobotPress} style={styles.robotTouchArea}>
+            <Animated.View style={[styles.robotWrapper, { transform: [{ translateY }, { scale: scaleAnim }] }]}>
+              {/* Robot Head */}
+              <View style={styles.robotHead}>
+                {/* Antennas/Ears */}
+                <View style={styles.robotEarLeft} />
+                <View style={styles.robotEarRight} />
+                
+                {/* Face/Screen */}
+                <LinearGradient
+                  colors={['#1E1B4B', '#0F172A']}
+                  style={styles.robotFace}
+                >
+                  {/* Eyes */}
+                  <View style={styles.robotEyesContainer}>
+                    <Animated.View style={[styles.robotEye, { transform: [{ scaleY: eyeBlinkAnim }] }]} />
+                    <Animated.View style={[styles.robotEye, { transform: [{ scaleY: eyeBlinkAnim }] }]} />
+                  </View>
+                  
+                  {/* Little smile / cheek details (Optional) */}
+                  <View style={styles.robotCheekLeft} />
+                  <View style={styles.robotCheekRight} />
+                </LinearGradient>
+              </View>
+              
+              {/* Floating Shadow */}
+              <View style={styles.robotShadow} />
+            </Animated.View>
+          </TouchableOpacity>
         </View>
 
         {/* Auth Buttons */}
@@ -363,10 +368,96 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   robotWrapper: {
-    width: 180,
-    height: 180,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  robotHead: {
+    width: 120,
+    height: 100,
+    backgroundColor: '#E2E8F0',
+    borderRadius: 40,
+    borderWidth: 2,
+    borderColor: 'rgba(255,255,255,0.8)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: Colors.primarySolid,
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.2,
+    shadowRadius: 20,
+    elevation: 10,
+    position: 'relative',
+  },
+  robotFace: {
+    width: 90,
+    height: 60,
+    borderRadius: 24,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    position: 'relative',
+    overflow: 'hidden',
+  },
+  robotEyesContainer: {
+    flexDirection: 'row',
+    gap: 20,
+  },
+  robotEye: {
+    width: 12,
+    height: 24,
+    backgroundColor: '#38BDF8',
+    borderRadius: 6,
+    shadowColor: '#38BDF8',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.8,
+    shadowRadius: 8,
+    elevation: 5,
+  },
+  robotEarLeft: {
+    position: 'absolute',
+    left: -10,
+    top: 30,
+    width: 14,
+    height: 40,
+    backgroundColor: '#94A3B8',
+    borderTopLeftRadius: 10,
+    borderBottomLeftRadius: 10,
+  },
+  robotEarRight: {
+    position: 'absolute',
+    right: -10,
+    top: 30,
+    width: 14,
+    height: 40,
+    backgroundColor: '#94A3B8',
+    borderTopRightRadius: 10,
+    borderBottomRightRadius: 10,
+  },
+  robotCheekLeft: {
+    position: 'absolute',
+    left: 10,
+    bottom: 12,
+    width: 12,
+    height: 6,
+    backgroundColor: '#F472B6',
+    borderRadius: 3,
+    opacity: 0.6,
+  },
+  robotCheekRight: {
+    position: 'absolute',
+    right: 10,
+    bottom: 12,
+    width: 12,
+    height: 6,
+    backgroundColor: '#F472B6',
+    borderRadius: 3,
+    opacity: 0.6,
+  },
+  robotShadow: {
+    width: 80,
+    height: 10,
+    backgroundColor: 'rgba(0,0,0,0.1)',
+    borderRadius: 50,
+    marginTop: 30,
   },
   robotImage: {
     width: '100%',
