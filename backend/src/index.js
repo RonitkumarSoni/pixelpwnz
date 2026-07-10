@@ -35,11 +35,19 @@ const chatLimiter = rateLimit({
   message: { success: false, error: 'Too many requests. Try again shortly.' },
 });
 
+const uploadLimiter = rateLimit({
+  windowMs: 60 * 1000 * 5, // 5 minutes
+  max: 5,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { success: false, error: 'Too many uploads. Try again later.' },
+});
+
 // Auth routes (no rate limit)
 app.use('/api/auth', authRoutes);
 
 // API routes
-app.use('/api/upload', uploadRoutes);
+app.use('/api/upload', uploadLimiter, uploadRoutes);
 app.use('/api/chat', chatLimiter, chatRoutes);
 app.use('/api/stats', statsRoutes);
 app.use('/api/session', sessionRoutes);

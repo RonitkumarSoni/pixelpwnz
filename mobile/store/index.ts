@@ -3,16 +3,18 @@ import { persistStore, persistReducer, FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import sessionReducer from './sessionSlice';
 import chatReducer from './chatSlice';
+import authReducer from './authSlice';
 
 const persistConfig = {
   key: 'signet-root',
   storage: AsyncStorage,
-  whitelist: ['session'], // Only persist session (not chat messages)
+  whitelist: ['session', 'auth'], // Persist session and auth
 };
 
 const rootReducer = combineReducers({
   session: sessionReducer,
   chat: chatReducer,
+  auth: authReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

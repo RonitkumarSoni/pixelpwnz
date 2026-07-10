@@ -1,9 +1,31 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { MessageSquare, Lock, Zap, Sparkles, EyeOff, ShieldCheck, ArrowRight } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { useAuthStore } from '../store/authStore';
 
 export default function LoginPage() {
   const [isLogin, setIsLogin] = useState(true);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [name, setName] = useState('');
+  
+  const navigate = useNavigate();
+  const { login, register, isLoading, error, isAuthenticated } = useAuthStore();
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/dashboard');
+    }
+  }, [isAuthenticated, navigate]);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (isLogin) {
+      await login(email, password);
+    } else {
+      await register(email, password, name);
+    }
+  };
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -167,12 +189,21 @@ export default function LoginPage() {
               <div style={{ flex: 1, height: 1, background: '#F3F4F6' }} />
             </div>
 
-            <form style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              {error && (
+                <div style={{ color: '#ef4444', fontSize: '0.85rem', background: '#fef2f2', padding: '8px 12px', borderRadius: 8, border: '1px solid #fecaca' }}>
+                  {error}
+                </div>
+              )}
+              
               {!isLogin && (
                 <div>
                   <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: '#374151', marginBottom: 8 }}>Full Name</label>
                   <input
                     type="text"
+                    required
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
                     placeholder="John Doe"
                     style={{
                       width: '100%', padding: '10px 14px', borderRadius: 8, border: '1px solid #D1D5DB',
@@ -187,6 +218,9 @@ export default function LoginPage() {
                 <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: '#374151', marginBottom: 8 }}>Email address</label>
                 <input
                   type="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   placeholder="you@example.com"
                   style={{
                     width: '100%', padding: '10px 14px', borderRadius: 8, border: '1px solid #D1D5DB',
@@ -204,6 +238,9 @@ export default function LoginPage() {
                 <div style={{ position: 'relative' }}>
                   <input
                     type="password"
+                    required
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
                     placeholder="Enter your password"
                     style={{
                       width: '100%', padding: '10px 14px', borderRadius: 8, border: '1px solid #D1D5DB',
@@ -222,8 +259,8 @@ export default function LoginPage() {
                 </div>
               )}
 
-              <button type="button" className="btn btn-primary" style={{ width: '100%', padding: '12px', borderRadius: 8, fontSize: '0.95rem', marginTop: 8, display: 'flex', justifyContent: 'center', gap: 8, boxShadow: '0 4px 12px rgba(108, 92, 231, 0.2)' }}>
-                {isLogin ? 'Log in' : 'Sign up'} <ArrowRight size={16} />
+              <button disabled={isLoading} type="submit" className="btn btn-primary" style={{ width: '100%', padding: '12px', borderRadius: 8, fontSize: '0.95rem', marginTop: 8, display: 'flex', justifyContent: 'center', gap: 8, boxShadow: '0 4px 12px rgba(108, 92, 231, 0.2)', opacity: isLoading ? 0.7 : 1 }}>
+                {isLoading ? 'Processing...' : (isLogin ? 'Log in' : 'Sign up')} {!isLoading && <ArrowRight size={16} />}
               </button>
             </form>
 

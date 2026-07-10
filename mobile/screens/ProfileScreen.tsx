@@ -5,6 +5,7 @@ import { Feather } from '@expo/vector-icons';
 import { Colors, Typography, Spacing, Radii } from '../constants/theme';
 import { useAppDispatch } from '../store/hooks';
 import { clearSession } from '../store/sessionSlice';
+import { logout } from '../store/authSlice';
 
 export default function ProfileScreen() {
   const [activeTab, setActiveTab] = useState('liked');
@@ -55,7 +56,13 @@ export default function ProfileScreen() {
             <TouchableOpacity style={styles.btnIcon}>
               <Feather name="trending-up" size={16} color={Colors.text} />
             </TouchableOpacity>
-            <TouchableOpacity style={styles.btnIcon} onPress={() => dispatch(clearSession())}>
+            <TouchableOpacity 
+              style={styles.btnIcon} 
+              onPress={() => {
+                dispatch(clearSession());
+                dispatch(logout());
+              }}
+            >
               <Feather name="log-out" size={16} color={Colors.text} />
             </TouchableOpacity>
           </View>

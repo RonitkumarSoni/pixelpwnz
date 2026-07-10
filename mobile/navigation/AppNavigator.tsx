@@ -14,7 +14,7 @@ export type RootStackParamList = {
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export default function AppNavigator() {
-  const { isLoggedIn } = useAppSelector((s) => s.session);
+  const { isAuthenticated } = useAppSelector((s) => s.auth);
 
   return (
     <Stack.Navigator
@@ -23,7 +23,7 @@ export default function AppNavigator() {
         animation: 'fade',
       }}
     >
-      {!isLoggedIn ? (
+      {!isAuthenticated ? (
         <Stack.Screen name="Auth" component={AuthNavigator} />
       ) : (
         <>

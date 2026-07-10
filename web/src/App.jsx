@@ -17,6 +17,22 @@ import DashboardPage from './pages/DashboardPage';
 import CreateNewPage from './pages/CreateNewPage';
 
 import InteractiveDotGrid from './components/InteractiveDotGrid';
+import { useAuthStore } from './store/authStore';
+import { Navigate } from 'react-router-dom';
+
+function ProtectedRoute({ children }) {
+  const { isAuthenticated, isLoading } = useAuthStore();
+  
+  if (isLoading) {
+    return <div style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>Loading...</div>;
+  }
+  
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
+  
+  return children;
+}
 
 function ScrollHandler() {
   const { pathname, hash } = useLocation();
@@ -39,11 +55,17 @@ function ScrollHandler() {
 
 export default function App() {
   const { theme } = useUiStore();
+  const { checkAuth } = useAuthStore();
 
   // Apply theme on mount
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
   }, [theme]);
+
+  // Check authentication on mount
+  useEffect(() => {
+    checkAuth();
+  }, [checkAuth]);
 
   return (
     <Router>
@@ -55,16 +77,19 @@ export default function App() {
       <div style={{ position: 'relative', zIndex: 1 }}>
         <Routes>
           <Route path="/" element={<LandingPage />} />
-          <Route path="/upload" element={<UploadPage />} />
-          <Route path="/chat" element={<ChatPage />} />
           <Route path="/docs" element={<DocsPage />} />
           <Route path="/demo" element={<DemoPage />} />
           <Route path="/security" element={<SecurityPage />} />
           <Route path="/login" element={<LoginPage />} />
-          <Route path="/profile" element={<ProfilePage />} />
           <Route path="/explore" element={<ExplorePage />} />
-          <Route path="/dashboard" element={<DashboardPage />} />
-          <Route path="/create" element={<CreateNewPage />} />
+          
+          {/* Protected Routes */}
+          <Route path="/upload" element={<ProtectedRoute><UploadPage /></ProtectedRoute>} />
+          <Route path="/chat" element={<ProtectedRoute><ChatPage /></ProtectedRoute>} />
+          <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
+          <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
+          <Route path="/create" element={<ProtectedRoute><CreateNewPage /></ProtectedRoute>} />
+          
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </div>

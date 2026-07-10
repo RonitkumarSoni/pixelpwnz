@@ -88,8 +88,24 @@ export default function LandingScreen({ navigation }: Props) {
     ]).start();
   };
 
-  const handleGuestLogin = () => {
-    dispatch(setIsLoggedIn(true));
+  const handleGuestLogin = async () => {
+    try {
+      // Simulate Guest Login by generating a random guest account
+      const randomId = Math.floor(Math.random() * 1000000);
+      const email = `guest${randomId}@signet.ai`;
+      const password = 'guestpassword';
+      const name = `Guest User ${randomId}`;
+
+      const { registerUser } = require('../api/client');
+      const data = await registerUser(email, password, name);
+
+      if (data.success && data.token) {
+        const { setAuthCredentials } = require('../store/authSlice');
+        dispatch(setAuthCredentials({ token: data.token, user: data.user }));
+      }
+    } catch (err) {
+      console.error('Guest login failed:', err);
+    }
   };
 
   return (
@@ -217,25 +233,23 @@ export default function LandingScreen({ navigation }: Props) {
 
         {/* Auth Buttons */}
         <View style={styles.authContainer}>
-          <TouchableOpacity style={styles.btnGuest} activeOpacity={0.7} onPress={handleGuestLogin}>
-            <Feather name="user" size={18} color={Colors.primarySolid} />
-            <Text style={styles.btnGuestText}>Continue as Guest</Text>
+          <TouchableOpacity style={styles.btnPrimary} activeOpacity={0.7} onPress={() => navigation.navigate('Register')}>
+            <Text style={styles.btnPrimaryText}>Create an Account</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.btnOutline} activeOpacity={0.7} onPress={() => navigation.navigate('Login')}>
+            <Text style={styles.btnOutlineText}>Sign In</Text>
           </TouchableOpacity>
 
           <View style={styles.dividerRow}>
             <View style={styles.dividerLine} />
-            <Text style={styles.dividerText}>or continue with</Text>
+            <Text style={styles.dividerText}>or</Text>
             <View style={styles.dividerLine} />
           </View>
 
-          <TouchableOpacity style={styles.btnOutline} activeOpacity={0.7} onPress={handleGuestLogin}>
-            <FontAwesome5 name="google" size={18} color="#000" />
-            <Text style={styles.btnOutlineText}>Continue with Google</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.btnOutline} activeOpacity={0.7} onPress={handleGuestLogin}>
-            <FontAwesome5 name="apple" size={20} color="#000" />
-            <Text style={styles.btnOutlineText}>Continue with Apple</Text>
+          <TouchableOpacity style={styles.btnGuest} activeOpacity={0.7} onPress={handleGuestLogin}>
+            <Feather name="user" size={18} color={Colors.primarySolid} />
+            <Text style={styles.btnGuestText}>Continue as Guest</Text>
           </TouchableOpacity>
         </View>
 
@@ -591,6 +605,18 @@ const styles = StyleSheet.create({
   },
   btnGuestText: {
     color: Colors.primarySolid,
+    fontWeight: '700',
+    fontSize: 15,
+  },
+  btnPrimary: {
+    backgroundColor: Colors.primarySolid,
+    paddingVertical: 14,
+    borderRadius: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  btnPrimaryText: {
+    color: '#FFF',
     fontWeight: '700',
     fontSize: 15,
   },

@@ -13,8 +13,25 @@ const CLONES = [
 ];
 
 export default function ExplorePage() {
+  const [personas, setPersonas] = React.useState([]);
+  const [isLoading, setIsLoading] = React.useState(true);
+
   React.useEffect(() => {
     window.scrollTo(0, 0);
+    
+    // Fetch custom personas
+    fetch('http://localhost:5000/api/persona')
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          setPersonas(data.personas);
+        }
+        setIsLoading(false);
+      })
+      .catch(err => {
+        console.error('Failed to fetch personas:', err);
+        setIsLoading(false);
+      });
   }, []);
 
   return (
@@ -68,31 +85,46 @@ export default function ExplorePage() {
 
           {/* Grid */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: 24 }}>
-            {CLONES.map(clone => (
+            {isLoading ? (
+              <p>Loading personas...</p>
+            ) : personas.map(clone => (
               <div key={clone.id} className="glass-card" style={{ padding: 24, borderRadius: 24, display: 'flex', flexDirection: 'column', transition: 'transform 0.2s', cursor: 'pointer' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
                   <div style={{ width: 64, height: 64, borderRadius: 16, background: 'linear-gradient(135deg, rgba(108, 92, 231, 0.1), rgba(168, 159, 245, 0.2))', color: 'var(--color-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    {clone.icon}
+                    <Star size={24} />
                   </div>
-                  <button className="btn btn-primary" style={{ padding: '6px 16px', fontSize: '0.85rem', borderRadius: 99 }}>
+                  <button 
+                    className="btn btn-primary" 
+                    style={{ padding: '6px 16px', fontSize: '0.85rem', borderRadius: 99 }}
+                    onClick={() => {
+                      // Call backend to initialize this session and redirect
+                      fetch(`http://localhost:5000/api/persona/${clone.id}`, { method: 'POST' })
+                        .then(res => res.json())
+                        .then(data => {
+                          if (data.success && data.session_id) {
+                            window.location.href = `/chat?session_id=${data.session_id}`;
+                          }
+                        });
+                    }}
+                  >
                     Chat
                   </button>
                 </div>
                 
                 <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--color-text)', marginBottom: 4 }}>{clone.name}</h3>
-                <p style={{ fontSize: '0.875rem', color: 'var(--color-primary)', fontWeight: 600, marginBottom: 12 }}>{clone.creator}</p>
+                <p style={{ fontSize: '0.875rem', color: 'var(--color-primary)', fontWeight: 600, marginBottom: 12 }}>@signet_official</p>
                 <p style={{ color: 'var(--color-text-muted)', fontSize: '0.95rem', lineHeight: 1.5, marginBottom: 24, flexGrow: 1 }}>
-                  {clone.description}
+                  Official predefined persona. Ready to chat!
                 </p>
 
                 <div style={{ display: 'flex', gap: 16, paddingTop: 16, borderTop: '1px solid var(--color-border)' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'var(--color-text-muted)', fontSize: '0.875rem', fontWeight: 600 }}>
                     <MessageSquare size={16} />
-                    {clone.chats}
+                    10.5k
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'var(--color-text-muted)', fontSize: '0.875rem', fontWeight: 600 }}>
                     <Heart size={16} />
-                    {clone.likes}
+                    4.2k
                   </div>
                 </div>
               </div>
