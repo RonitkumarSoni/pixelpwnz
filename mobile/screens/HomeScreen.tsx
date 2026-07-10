@@ -20,12 +20,14 @@ type PersonaItem = {
 };
 
 export default function HomeScreen() {
-  const { userName } = useAppSelector((s) => s.session);
+  const { userName, avatarUrl } = useAppSelector((s) => s.session);
+  const { user } = useAppSelector((s) => s.auth);
   const bookmarks = useAppSelector((s) => s.bookmarks.bookmarks);
   const dispatch = useAppDispatch();
   const navigation = useNavigation<NavigationProp>();
 
-  const displayName = userName || 'Daksh';
+  const displayName = user?.name || userName || 'Guest';
+  const displayAvatar = user?.avatarUrl || avatarUrl || 'https://i.pravatar.cc/150?img=11';
 
   // User-created personas — currently empty, will be fetched from backend when available
   const myPersonas: PersonaItem[] = [];
@@ -93,7 +95,7 @@ export default function HomeScreen() {
         {/* USER PROFILE SECTION */}
         <View style={styles.userSection}>
           <View style={styles.mainAvatarContainer}>
-            <Image source={{ uri: 'https://i.pravatar.cc/150?img=11' }} style={styles.mainAvatar} />
+            <Image source={{ uri: displayAvatar }} style={styles.mainAvatar} />
             <View style={styles.mainOnlineDot} />
           </View>
           <View style={styles.userSectionText}>
