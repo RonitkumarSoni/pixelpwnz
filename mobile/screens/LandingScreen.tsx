@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import { 
   View, Text, StyleSheet, ScrollView, Animated, TouchableOpacity, SafeAreaView, Dimensions, Image, Easing 
 } from 'react-native';
+import { WebView } from 'react-native-webview';
 import { BlurView } from 'expo-blur';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Feather, FontAwesome5 } from '@expo/vector-icons';
@@ -150,16 +151,48 @@ export default function LandingScreen({ navigation }: Props) {
             </View>
           </View>
 
-          {/* Central Robot */}
-          <TouchableOpacity activeOpacity={1} onPress={handleRobotPress} style={styles.robotTouchArea}>
-            <Animated.View style={[styles.robotWrapper, { transform: [{ translateY }, { scale: scaleAnim }] }]}>
-              <Image 
-                source={{ uri: 'https://cdn3d.iconscout.com/3d/premium/thumb/robot-6987747-5735414.png' }} 
-                style={styles.robotImage}
-                resizeMode="contain"
+          {/* Central Robot via Spline */}
+          <View style={styles.robotTouchArea}>
+            <View style={styles.robotWrapper}>
+              <WebView
+                source={{
+                  html: `
+                    <!DOCTYPE html>
+                    <html>
+                      <head>
+                        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+                        <script type="module" src="https://unpkg.com/@splinetool/viewer/build/spline-viewer.js"></script>
+                        <style>
+                          body, html {
+                            margin: 0;
+                            padding: 0;
+                            width: 100%;
+                            height: 100%;
+                            overflow: hidden;
+                            background-color: transparent;
+                          }
+                          spline-viewer {
+                            width: 100%;
+                            height: 100%;
+                            background-color: transparent;
+                          }
+                        </style>
+                      </head>
+                      <body>
+                        <spline-viewer loading-anim-type="spinner-small-light" url="https://prod.spline.design/twLIj7hBhI8aQwjq/scene.splinecode"></spline-viewer>
+                      </body>
+                    </html>
+                  `
+                }}
+                style={{ backgroundColor: 'transparent', width: '100%', height: '100%' }}
+                scrollEnabled={false}
+                bounces={false}
+                showsHorizontalScrollIndicator={false}
+                showsVerticalScrollIndicator={false}
+                androidLayerType="hardware"
               />
-            </Animated.View>
-          </TouchableOpacity>
+            </View>
+          </View>
         </View>
 
         {/* Auth Buttons */}
