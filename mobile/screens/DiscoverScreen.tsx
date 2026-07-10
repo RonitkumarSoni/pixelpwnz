@@ -6,9 +6,10 @@ import { Colors, Typography, Spacing, Radii } from '../constants/theme';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/AppNavigator';
-import { useAppDispatch } from '../store/hooks';
+import { useAppDispatch, useAppSelector } from '../store/hooks';
 import { setSession } from '../store/sessionSlice';
 import { clearMessages } from '../store/chatSlice';
+import { addBookmark, removeBookmark } from '../store/bookmarksSlice';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
@@ -25,6 +26,7 @@ export default function DiscoverScreen() {
   const [startingSessionId, setStartingSessionId] = React.useState<string | null>(null);
   const navigation = useNavigation<NavigationProp>();
   const dispatch = useAppDispatch();
+  const bookmarks = useAppSelector((s) => s.bookmarks.bookmarks);
 
   React.useEffect(() => {
     const fetchPersonas = async () => {
@@ -160,6 +162,24 @@ export default function DiscoverScreen() {
             disabled={startingSessionId !== null}
           >
             <Image source={{ uri: item.image }} style={styles.cardImage} />
+            <TouchableOpacity 
+              style={styles.bookmarkBtn}
+              onPress={(e) => {
+                e.stopPropagation(); // prevent card press
+                const isBookmarked = bookmarks.some(b => b.id === item.id);
+                if (isBookmarked) {
+                  dispatch(removeBookmark(item.id));
+                } else {
+                  dispatch(addBookmark({ ...item, type: 'public' }));
+                }
+              }}
+            >
+              <Feather 
+                name="bookmark" 
+                size={20} 
+                color={bookmarks.some(b => b.id === item.id) ? Colors.primarySolid : '#FFF'} 
+              />
+            </TouchableOpacity>
             <View style={styles.cardInfo}>
               <Text style={styles.cardTitle} numberOfLines={1}>{item.title}</Text>
               <Text style={styles.cardSub} numberOfLines={2}>{item.sub}</Text>
@@ -276,6 +296,19 @@ const styles = StyleSheet.create({
   cardImage: {
     width: '100%',
     height: 180,
+    backgroundColor: Colors.surfaceElevated,
+    position: 'relative',
+  },
+  bookmarkBtn: {
+    position: 'absolute',
+    top: 8,
+    right: 8,
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   cardInfo: {
     padding: 12,

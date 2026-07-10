@@ -7,7 +7,8 @@ import { Colors, Typography, Spacing, Radii, Gradients } from '../constants/them
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/AppNavigator';
-import { useAppSelector } from '../store/hooks';
+import { useAppSelector, useAppDispatch } from '../store/hooks';
+import { addBookmark, removeBookmark } from '../store/bookmarksSlice';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
@@ -20,6 +21,8 @@ const MY_PERSONAS = [
 
 export default function HomeScreen() {
   const { userName } = useAppSelector((s) => s.session);
+  const bookmarks = useAppSelector((s) => s.bookmarks.bookmarks);
+  const dispatch = useAppDispatch();
   const navigation = useNavigation<NavigationProp>();
 
   const displayName = userName || 'Daksh';
@@ -46,7 +49,30 @@ export default function HomeScreen() {
           <Text style={styles.cardMetaText}>{item.metaText}</Text>
         )}
       </View>
-      <Feather name="chevron-right" size={20} color={Colors.textMuted} />
+      <TouchableOpacity
+        onPress={(e) => {
+          e.stopPropagation();
+          const isBookmarked = bookmarks.some(b => b.id === item.id);
+          if (isBookmarked) {
+            dispatch(removeBookmark(item.id));
+          } else {
+            dispatch(addBookmark({
+              id: item.id,
+              title: item.name,
+              sub: item.desc,
+              image: item.avatar,
+              type: 'personal'
+            }));
+          }
+        }}
+        style={{ padding: Spacing.sm }}
+      >
+        <Feather 
+          name="bookmark" 
+          size={20} 
+          color={bookmarks.some(b => b.id === item.id) ? Colors.primarySolid : Colors.textMuted} 
+        />
+      </TouchableOpacity>
     </TouchableOpacity>
   );
 
