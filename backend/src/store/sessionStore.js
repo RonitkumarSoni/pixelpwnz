@@ -1,5 +1,7 @@
 import config from '../config.js';
 import SessionModel from './Session.js';
+import ChatMessage from '../models/ChatMessage.js';
+import { deleteCollection } from '../brain/chromaClient.js';
 
 // In-memory cache for fast reads (LRU-like, auto-expire via TTL check)
 const cache = new Map();
@@ -105,8 +107,10 @@ export async function deleteSession(sessionId) {
   cache.delete(sessionId);
   try {
     await SessionModel.deleteOne({ session_id: sessionId });
+    await ChatMessage.deleteMany({ session_id: sessionId });
+    await deleteCollection(sessionId);
   } catch (err) {
-    console.warn('[SessionStore] MongoDB delete failed:', err.message);
+    console.warn('[SessionStore] Session cleanup failed:', err.message);
   }
 }
 

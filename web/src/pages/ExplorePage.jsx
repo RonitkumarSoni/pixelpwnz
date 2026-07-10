@@ -2,6 +2,7 @@ import React from 'react';
 import { Search, Filter, MessageSquare, Heart, TrendingUp, Star, Award, Zap } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
+import apiClient from '../api/client';
 
 const CLONES = [
   { id: 1, name: "Albert Einstein", creator: "@historybuff", description: "Discuss physics and philosophy with the genius himself.", chats: "12.4k", likes: "4.2k", icon: <Star size={24} /> },
@@ -13,9 +14,45 @@ const CLONES = [
 ];
 
 export default function ExplorePage() {
+  const [personas, setPersonas] = React.useState([]);
+  const [isLoading, setIsLoading] = React.useState(true);
+  const [selectedCategory, setSelectedCategory] = React.useState('All');
+
   React.useEffect(() => {
     window.scrollTo(0, 0);
+    
+    // Fetch custom personas
+    apiClient.get('/persona')
+      .then(res => {
+        if (res.data.success) {
+          setPersonas(res.data.personas);
+        }
+        setIsLoading(false);
+      })
+      .catch(err => {
+        console.error('Failed to fetch personas:', err);
+        setIsLoading(false);
+      });
   }, []);
+
+  const toggleBookmark = async (id, index) => {
+    try {
+      const res = await apiClient.post(`/persona/${id}/bookmark`);
+      if (res.data.success) {
+        setPersonas(prev => {
+          const newPersonas = [...prev];
+          newPersonas[index] = { 
+            ...newPersonas[index], 
+            is_liked: res.data.is_liked, 
+            likes_count: res.data.likes_count 
+          };
+          return newPersonas;
+        });
+      }
+    } catch (err) {
+      console.error('Failed to bookmark:', err);
+    }
+  };
 
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: 'var(--color-bg)' }}>
@@ -49,50 +86,83 @@ export default function ExplorePage() {
 
           {/* Categories */}
           <div style={{ display: 'flex', gap: 12, overflowX: 'auto', paddingBottom: 16, marginBottom: 40, msOverflowStyle: 'none', scrollbarWidth: 'none' }}>
-            {['All', 'Trending', 'Historical', 'Entertainment', 'Tech', 'Educational', 'Funny'].map((cat, i) => (
-              <div key={cat} style={{ 
-                padding: '8px 20px', 
-                borderRadius: 99, 
-                background: i === 0 ? 'var(--color-primary)' : 'var(--color-surface)', 
-                color: i === 0 ? 'white' : 'var(--color-text)',
-                border: i === 0 ? 'none' : '1px solid var(--color-border)',
-                fontWeight: 600,
-                fontSize: '0.95rem',
-                cursor: 'pointer',
-                whiteSpace: 'nowrap'
-              }}>
-                {cat}
-              </div>
-            ))}
+            {['All', 'Trending', 'Historical', 'Entertainment', 'Tech', 'Educational', 'Funny'].map((cat, i) => {
+              const isActive = selectedCategory === cat;
+              return (
+                <div 
+                  key={cat}
+                  onClick={() => setSelectedCategory(cat)}
+                  style={{ 
+                    padding: '8px 20px', 
+                    borderRadius: 99, 
+                    background: isActive ? 'var(--color-primary)' : 'var(--color-surface)', 
+                    color: isActive ? 'white' : 'var(--color-text)',
+                    border: isActive ? 'none' : '1px solid var(--color-border)',
+                    fontWeight: 600,
+                    fontSize: '0.95rem',
+                    cursor: 'pointer',
+                    whiteSpace: 'nowrap',
+                    transition: 'all 0.2s'
+                  }}>
+                  {cat}
+                </div>
+              );
+            })}
           </div>
 
           {/* Grid */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: 24 }}>
-            {CLONES.map(clone => (
+            {isLoading ? (
+              <p>Loading personas...</p>
+            ) : personas.filter(p => selectedCategory === 'All' || p.category === selectedCategory).map(clone => (
               <div key={clone.id} className="glass-card" style={{ padding: 24, borderRadius: 24, display: 'flex', flexDirection: 'column', transition: 'transform 0.2s', cursor: 'pointer' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
                   <div style={{ width: 64, height: 64, borderRadius: 16, background: 'linear-gradient(135deg, rgba(108, 92, 231, 0.1), rgba(168, 159, 245, 0.2))', color: 'var(--color-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    {clone.icon}
+                    <Star size={24} />
                   </div>
-                  <button className="btn btn-primary" style={{ padding: '6px 16px', fontSize: '0.85rem', borderRadius: 99 }}>
+                  <button 
+                    className="btn btn-primary" 
+                    style={{ padding: '6px 16px', fontSize: '0.85rem', borderRadius: 99 }}
+                    onClick={() => {
+                      // Call backend to initialize this session and redirect
+                      apiClient.post(`/persona/${clone.id}`)
+                        .then(res => {
+                          if (res.data.success && res.data.session_id) {
+                            window.location.href = `/chat?session_id=${res.data.session_id}`;
+                          }
+                        });
+                    }}
+                  >
                     Chat
                   </button>
                 </div>
                 
                 <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--color-text)', marginBottom: 4 }}>{clone.name}</h3>
-                <p style={{ fontSize: '0.875rem', color: 'var(--color-primary)', fontWeight: 600, marginBottom: 12 }}>{clone.creator}</p>
+                <p style={{ fontSize: '0.875rem', color: 'var(--color-primary)', fontWeight: 600, marginBottom: 12 }}>@signet_official</p>
                 <p style={{ color: 'var(--color-text-muted)', fontSize: '0.95rem', lineHeight: 1.5, marginBottom: 24, flexGrow: 1 }}>
-                  {clone.description}
+                  {clone.description || 'Official predefined persona. Ready to chat!'}
                 </p>
 
                 <div style={{ display: 'flex', gap: 16, paddingTop: 16, borderTop: '1px solid var(--color-border)' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'var(--color-text-muted)', fontSize: '0.875rem', fontWeight: 600 }}>
                     <MessageSquare size={16} />
-                    {clone.chats}
+                    {(clone.chat_count || 0).toLocaleString()}
                   </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'var(--color-text-muted)', fontSize: '0.875rem', fontWeight: 600 }}>
-                    <Heart size={16} />
-                    {clone.likes}
+                  <div 
+                    onClick={() => toggleBookmark(clone.id, personas.findIndex(p => p.id === clone.id))}
+                    style={{ 
+                      display: 'flex', 
+                      alignItems: 'center', 
+                      gap: 6, 
+                      color: clone.is_liked ? '#ff4757' : 'var(--color-text-muted)', 
+                      fontSize: '0.875rem', 
+                      fontWeight: 600,
+                      cursor: 'pointer',
+                      transition: 'color 0.2s'
+                    }}
+                  >
+                    <Heart size={16} fill={clone.is_liked ? '#ff4757' : 'none'} />
+                    {(clone.likes_count || 0).toLocaleString()}
                   </div>
                 </div>
               </div>

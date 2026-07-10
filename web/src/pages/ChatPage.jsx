@@ -6,6 +6,7 @@ import useChatStore from '../store/chatStore';
 import { sendMessage, clearSession as clearSessionApi } from '../api/client';
 import MessageList from '../components/MessageList';
 import InsightsModal from '../components/InsightsModal';
+import DeleteModal from '../components/DeleteModal';
 
 export default function ChatPage() {
   const navigate = useNavigate();
@@ -17,6 +18,7 @@ export default function ChatPage() {
 
   const [inputText, setInputText] = useState('');
   const [isInsightsOpen, setIsInsightsOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   // No session → redirect prompt
   if (!sessionId) {
@@ -100,11 +102,11 @@ export default function ChatPage() {
           </Link>
           <div>
             <h2 style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--color-text)' }}>
-              Conversing as <span className="gradient-text">{userName}</span>
+              Chatting with <span className="gradient-text">{userName}</span>
             </h2>
             {contactName && (
               <p style={{ fontSize: '0.75rem', color: 'var(--color-text-secondary)', marginTop: 1 }}>
-                Chatting with {contactName}
+                Simulating conversation as {contactName}
               </p>
             )}
           </div>
@@ -118,7 +120,7 @@ export default function ChatPage() {
           >
             <span style={{ fontSize: 14 }}>✦</span> {totalPairs} memories loaded <ChevronDown size={14} style={{ opacity: 0.7 }} />
           </div>
-          <button className="btn-icon" onClick={handleClear} title="Clear session" style={{ color: 'var(--color-error)' }} id="clear-session-btn">
+          <button className="btn-icon" onClick={() => setIsDeleteModalOpen(true)} title="Clear session" style={{ color: 'var(--color-error)' }} id="clear-session-btn">
             <Trash2 size={18} />
           </button>
         </div>
@@ -128,6 +130,12 @@ export default function ChatPage() {
         isOpen={isInsightsOpen} 
         onClose={() => setIsInsightsOpen(false)} 
         sessionId={sessionId} 
+      />
+
+      <DeleteModal 
+        isOpen={isDeleteModalOpen} 
+        onClose={() => setIsDeleteModalOpen(false)} 
+        onConfirm={handleClear} 
       />
 
       {/* ── Chat Container ── */}
@@ -148,22 +156,7 @@ export default function ChatPage() {
         flexShrink: 0, zIndex: 10,
       }}>
         <div style={{ maxWidth: 768, margin: '0 auto' }}>
-          <div style={{
-            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-            padding: '0 16px 12px', opacity: 0.85
-          }}>
-            <span style={{ fontSize: '0.75rem', fontWeight: 500, color: 'var(--color-text-secondary)' }}>Precise</span>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12, flex: 1, padding: '0 16px' }}>
-              <input
-                type="range" min="0.1" max="1.0" step="0.1"
-                value={temperature}
-                onChange={(e) => setTemperature(parseFloat(e.target.value))}
-                style={{ width: '100%', cursor: 'pointer', accentColor: 'var(--color-primary)' }}
-                title={`Temperature: ${temperature}`}
-              />
-            </div>
-            <span style={{ fontSize: '0.75rem', fontWeight: 500, color: 'var(--color-text-secondary)' }}>Creative</span>
-          </div>
+
 
           <div className="chat-input-container" id="chat-input-container">
             <input

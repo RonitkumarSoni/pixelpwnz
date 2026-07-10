@@ -5,7 +5,7 @@ const useUiStore = create((set) => ({
   theme: localStorage.getItem('signet-theme') || 'dark',
 
   // Privacy
-  privacyAccepted: sessionStorage.getItem('signet-privacy') === 'true',
+  privacyAccepted: localStorage.getItem('signet-privacy') === 'true',
 
   // Actions
   toggleTheme: () =>
@@ -23,12 +23,12 @@ const useUiStore = create((set) => ({
   },
 
   acceptPrivacy: () => {
-    sessionStorage.setItem('signet-privacy', 'true');
+    localStorage.setItem('signet-privacy', 'true');
     set({ privacyAccepted: true });
   },
 
   resetPrivacy: () => {
-    sessionStorage.removeItem('signet-privacy');
+    localStorage.removeItem('signet-privacy');
     set({ privacyAccepted: false });
   },
 }));

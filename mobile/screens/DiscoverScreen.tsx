@@ -1,26 +1,19 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, Image, TextInput, ScrollView, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, Image, TextInput, ScrollView, Dimensions, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Feather } from '@expo/vector-icons';
+import { Feather, FontAwesome5 } from '@expo/vector-icons';
 import { Colors, Typography, Spacing, Radii } from '../constants/theme';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/AppNavigator';
+import { useAppDispatch, useAppSelector } from '../store/hooks';
+import { setSession } from '../store/sessionSlice';
+import { clearMessages } from '../store/chatSlice';
+import { addBookmark, removeBookmark } from '../store/bookmarksSlice';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
 const CATEGORIES = ['Explore', 'Trending', 'Celebrities', 'Anime', 'Historical', 'Sports', 'Fictional'];
-
-const MOCK_PERSONAS = [
-  { id: '1', title: 'Elon Musk', sub: 'CEO of Tesla & SpaceX. Let\'s talk Mars.', author: '@signet', interactions: '4.2m', image: 'https://i.pravatar.cc/400?img=68' },
-  { id: '2', title: 'Naruto Uzumaki', sub: 'Believe it! Future Hokage of the Leaf.', author: '@signet', interactions: '8.5m', image: 'https://i.pravatar.cc/400?img=33' },
-  { id: '3', title: 'Iron Man', sub: 'Genius, billionaire, philanthropist.', author: '@signet', interactions: '6.1m', image: 'https://i.pravatar.cc/400?img=51' },
-  { id: '4', title: 'Cristiano Ronaldo', sub: 'SIUUUU! Legend of football.', author: '@signet', interactions: '12.6m', image: 'https://i.pravatar.cc/400?img=59' },
-  { id: '5', title: 'Albert Einstein', sub: 'Let me explain relativity simply.', author: '@signet', interactions: '3.8m', image: 'https://i.pravatar.cc/400?img=60' },
-  { id: '6', title: 'Sherlock Holmes', sub: 'The game is afoot, Watson.', author: '@signet', interactions: '5.2m', image: 'https://i.pravatar.cc/400?img=14' },
-  { id: '7', title: 'Cleopatra', sub: 'Queen of Egypt. Ruler of Nile.', author: '@signet', interactions: '2.1m', image: 'https://i.pravatar.cc/400?img=47' },
-  { id: '8', title: 'Goku', sub: 'Always ready for a fight!', author: '@signet', interactions: '9.7m', image: 'https://i.pravatar.cc/400?img=52' },
-];
 
 const { width } = Dimensions.get('window');
 const CARD_WIDTH = (width - Spacing.lg * 2 - 12) / 2;
@@ -28,11 +21,55 @@ const CARD_WIDTH = (width - Spacing.lg * 2 - 12) / 2;
 export default function DiscoverScreen() {
   const [activeTab, setActiveTab] = useState('Explore');
   const [searchQuery, setSearchQuery] = useState('');
+  const [personas, setPersonas] = React.useState<any[]>([]);
+  const [loading, setLoading] = React.useState(true);
+  const [startingSessionId, setStartingSessionId] = React.useState<string | null>(null);
   const navigation = useNavigation<NavigationProp>();
+  const dispatch = useAppDispatch();
+  const bookmarks = useAppSelector((s) => s.bookmarks.bookmarks);
+
+  React.useEffect(() => {
+    const fetchPersonas = async () => {
+      try {
+        const { getPersonas } = require('../api/client');
+        const data = await getPersonas();
+        if (data.success && data.personas) {
+          const mapped = data.personas.map((p: any) => {
+            let image = 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400&q=80';
+            let sub = 'Public Persona';
+            if (p.id === 'pirate') {
+              image = 'https://images.unsplash.com/photo-1549488344-c6c747971775?w=400&q=80';
+              sub = 'Ahoy there, matey!';
+            } else if (p.id === 'shakespeare') {
+              image = 'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?w=400&q=80';
+              sub = 'To be, or not to be...';
+            } else if (p.id === 'bro') {
+              image = 'https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?w=400&q=80';
+              sub = 'Do you even lift, bro?';
+            }
+            return {
+              id: p.id,
+              title: p.name,
+              sub,
+              author: '@signet',
+              interactions: (Math.random() * 10).toFixed(1) + 'm',
+              image
+            };
+          });
+          setPersonas(mapped);
+        }
+      } catch (err) {
+        console.error('Failed to fetch personas:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchPersonas();
+  }, []);
 
   const filteredPersonas = searchQuery.trim()
-    ? MOCK_PERSONAS.filter(p => p.title.toLowerCase().includes(searchQuery.toLowerCase()))
-    : MOCK_PERSONAS;
+    ? personas.filter(p => p.title.toLowerCase().includes(searchQuery.toLowerCase()))
+    : personas;
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -40,16 +77,11 @@ export default function DiscoverScreen() {
       <View style={styles.header}>
         <View style={styles.headerTop}>
           <Text style={styles.headerLogo}>Explore</Text>
-          <View style={styles.headerRight}>
-            <TouchableOpacity style={styles.headerIconBtn}>
-              <Feather name="bell" size={22} color={Colors.text} />
-            </TouchableOpacity>
-          </View>
         </View>
 
         {/* Search */}
         <View style={styles.searchBar}>
-          <Feather name="search" size={18} color={Colors.textMuted} />
+          <Feather name="search" size={20} color={Colors.textMuted} style={{ marginRight: 8 }} />
           <TextInput
             style={styles.searchInput}
             placeholder="Search public personas..."
@@ -66,19 +98,25 @@ export default function DiscoverScreen() {
       </View>
 
       {/* Category pills */}
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.pillsContainer}>
-        {CATEGORIES.map((tab) => (
-          <TouchableOpacity
-            key={tab}
-            style={[styles.pill, activeTab === tab && styles.pillActive]}
-            onPress={() => setActiveTab(tab)}
-          >
-            <Text style={[styles.pillText, activeTab === tab && styles.pillTextActive]}>
-              {tab}
-            </Text>
-          </TouchableOpacity>
-        ))}
-      </ScrollView>
+      <View style={styles.pillsWrapper}>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.pillsContainer}>
+          {CATEGORIES.map((tab, index) => (
+            <TouchableOpacity
+              key={tab}
+              style={[
+                styles.pill,
+                activeTab === tab && styles.pillActive,
+                { marginRight: index === CATEGORIES.length - 1 ? 0 : 8 }
+              ]}
+              onPress={() => setActiveTab(tab)}
+            >
+              <Text style={[styles.pillText, activeTab === tab && styles.pillTextActive]}>
+                {tab}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+      </View>
 
       {/* Grid */}
       <FlatList
@@ -96,11 +134,53 @@ export default function DiscoverScreen() {
         )}
         renderItem={({ item }) => (
           <TouchableOpacity
-            style={styles.card}
-            onPress={() => navigation.navigate('Chat')}
+            style={[styles.card, startingSessionId === item.id && { opacity: 0.5 }]}
+            onPress={async () => {
+              try {
+                if (startingSessionId) return;
+                setStartingSessionId(item.id);
+                const { createPersonaSession } = require('../api/client');
+                const res = await createPersonaSession(item.id);
+                if (res.success && res.session_id) {
+                  dispatch(clearMessages());
+                  dispatch(setSession({
+                    sessionId: res.session_id,
+                    userName: item.title,
+                    pairCount: res.total_pairs_extracted || 0,
+                    avatarUrl: item.image,
+                  }));
+                  navigation.navigate('Chat');
+                }
+              } catch (err) {
+                console.error('Failed to start persona session', err);
+                alert('Could not start chat session. Please check your connection.');
+              } finally {
+                setStartingSessionId(null);
+              }
+            }}
             activeOpacity={0.8}
+            disabled={startingSessionId !== null}
           >
             <Image source={{ uri: item.image }} style={styles.cardImage} />
+            <TouchableOpacity 
+              style={[styles.bookmarkBtn, bookmarks.some(b => b.id === item.id) && styles.bookmarkBtnActive]}
+              onPress={(e) => {
+                e.stopPropagation(); // prevent card press
+                const isBookmarked = bookmarks.some(b => b.id === item.id);
+                if (isBookmarked) {
+                  dispatch(removeBookmark(item.id));
+                } else {
+                  dispatch(addBookmark({ ...item, type: 'public' }));
+                }
+              }}
+            >
+              <FontAwesome5 
+                name="bookmark" 
+                solid={bookmarks.some(b => b.id === item.id)}
+                size={16} 
+                color={bookmarks.some(b => b.id === item.id) ? Colors.primarySolid : '#FFF'} 
+              />
+            </TouchableOpacity>
             <View style={styles.cardInfo}>
               <Text style={styles.cardTitle} numberOfLines={1}>{item.title}</Text>
               <Text style={styles.cardSub} numberOfLines={2}>{item.sub}</Text>
@@ -124,7 +204,7 @@ const styles = StyleSheet.create({
 
   /* Header */
   header: {
-    paddingHorizontal: Spacing.lg,
+    paddingHorizontal: Spacing.xl,
     paddingTop: Spacing.md,
     paddingBottom: Spacing.xs,
   },
@@ -132,74 +212,66 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: Spacing.md,
+    marginBottom: Spacing.lg,
   },
   headerLogo: {
-    fontSize: 26,
+    fontSize: 28,
     fontWeight: '800',
-    color: Colors.text,
+    color: '#1E1E28',
     letterSpacing: -0.5,
-  },
-  headerRight: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  headerIconBtn: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   searchBar: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Colors.glass.bg,
-    borderRadius: 12,
-    paddingHorizontal: 14,
-    height: 42,
+    backgroundColor: '#FFF',
+    borderRadius: 24,
+    paddingHorizontal: 16,
+    height: 48,
     borderWidth: 1,
-    borderColor: Colors.border,
+    borderColor: '#EAEAEA',
   },
   searchInput: {
     flex: 1,
-    marginLeft: 10,
-    color: Colors.text,
+    color: '#1E1E28',
     fontSize: 15,
   },
 
   /* Pills */
+  pillsWrapper: {
+    height: 52,
+    marginBottom: Spacing.sm,
+  },
   pillsContainer: {
-    paddingHorizontal: Spacing.lg,
-    paddingVertical: Spacing.sm,
-    gap: 8,
+    paddingHorizontal: Spacing.xl,
+    paddingVertical: 4,
   },
   pill: {
-    paddingHorizontal: 16,
+    paddingHorizontal: 18,
     paddingVertical: 8,
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: Colors.border,
+    borderColor: '#EAEAEA',
+    backgroundColor: '#FFF',
   },
   pillActive: {
-    backgroundColor: Colors.text,
-    borderColor: Colors.text,
+    backgroundColor: '#1E1E28',
+    borderColor: '#1E1E28',
   },
   pillText: {
     fontSize: 13,
-    color: Colors.textMuted,
+    color: '#8E8E9F',
     fontWeight: '600',
   },
   pillTextActive: {
-    color: Colors.bg,
+    color: '#FFF',
     fontWeight: 'bold',
   },
 
   /* Grid */
   listContent: {
-    paddingHorizontal: Spacing.lg,
+    paddingHorizontal: Spacing.xl,
     paddingBottom: 100,
-    paddingTop: 4,
+    paddingTop: 8,
   },
   columnWrapper: {
     justifyContent: 'space-between',
@@ -207,29 +279,68 @@ const styles = StyleSheet.create({
   card: {
     width: CARD_WIDTH,
     marginBottom: Spacing.lg,
-    borderRadius: Radii.lg,
-    backgroundColor: Colors.glass.bg,
-    borderWidth: 1,
-    borderColor: Colors.border,
+    borderRadius: 20,
+    backgroundColor: '#FFF',
+    ...Platform.select({
+      ios: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.04,
+        shadowRadius: 12,
+      },
+      android: {
+        elevation: 2,
+      },
+    }),
     overflow: 'hidden',
   },
   cardImage: {
     width: '100%',
-    height: 160,
+    height: 180,
+    backgroundColor: Colors.surfaceElevated,
+    position: 'relative',
+  },
+  bookmarkBtn: {
+    position: 'absolute',
+    top: 8,
+    right: 8,
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.2)',
+  },
+  bookmarkBtnActive: {
+    backgroundColor: '#FFF',
+    borderColor: '#FFF',
+    ...Platform.select({
+      ios: {
+        shadowColor: Colors.primarySolid,
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.3,
+        shadowRadius: 4,
+      },
+      android: {
+        elevation: 4,
+      },
+    }),
   },
   cardInfo: {
-    padding: 10,
+    padding: 12,
   },
   cardTitle: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    color: Colors.text,
-    marginBottom: 3,
+    fontSize: 15,
+    fontWeight: '800',
+    color: '#1E1E28',
+    marginBottom: 4,
   },
   cardSub: {
     fontSize: 12,
-    color: Colors.textMuted,
-    marginBottom: 8,
+    color: '#8E8E9F',
+    marginBottom: 12,
     lineHeight: 16,
   },
   cardFooter: {
@@ -240,16 +351,17 @@ const styles = StyleSheet.create({
   interactionRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 3,
+    gap: 4,
   },
   cardInteractions: {
     fontSize: 11,
-    color: Colors.textMuted,
+    color: '#A1A1AA',
+    fontWeight: '500',
   },
   cardAuthor: {
     fontSize: 11,
-    color: Colors.primarySolid,
-    fontWeight: '600',
+    color: Colors.primarySolid, // purple
+    fontWeight: '700',
   },
 
   /* Empty */

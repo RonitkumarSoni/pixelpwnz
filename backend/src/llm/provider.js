@@ -126,20 +126,20 @@ function fallbackReply() {
 export async function generateReply(systemPrompt, userPrompt, temperature = 0.7) {
   const errors = [];
 
-  // 1. Try Ollama (local, free, fastest)
-  try {
-    return { ...(await generateOllama(systemPrompt, userPrompt, temperature)), fallback: false };
-  } catch (err) {
-    errors.push(`Ollama: ${err.message}`);
-  }
-
-  // 2. Try Groq (cloud, free tier, ultra-fast)
+  // 1. Try Groq (cloud, powerful 70B model, fast)
   if (config.groq?.apiKey) {
     try {
       return { ...(await generateGroq(systemPrompt, userPrompt, temperature)), fallback: false };
     } catch (err) {
       errors.push(`Groq: ${err.message}`);
     }
+  }
+
+  // 2. Try Ollama (local, small model fallback)
+  try {
+    return { ...(await generateOllama(systemPrompt, userPrompt, temperature)), fallback: false };
+  } catch (err) {
+    errors.push(`Ollama: ${err.message}`);
   }
 
   // 3. Complete failure - use Rule-based Fallback

@@ -3,7 +3,7 @@ import MessageBubble from './MessageBubble';
 import useChatStore from '../store/chatStore';
 
 export default function MessageList() {
-  const { messages, isLoading } = useChatStore();
+  const { messages, isLoading, contactName, userName } = useChatStore();
   const bottomRef = useRef(null);
 
   useEffect(() => {
@@ -26,7 +26,9 @@ export default function MessageList() {
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             boxShadow: '0 8px 24px rgba(108, 92, 231, 0.08)'
           }}>
-            <span style={{ fontSize: 24, fontWeight: 800, color: 'var(--color-primary)' }}>S</span>
+            <span style={{ fontSize: 24, fontWeight: 800, color: 'var(--color-primary)' }}>
+              {userName ? userName.charAt(0).toUpperCase() : 'S'}
+            </span>
           </div>
           <p style={{ fontSize: '0.9375rem', fontWeight: 600, color: 'var(--color-text)' }}>
             Start a conversation

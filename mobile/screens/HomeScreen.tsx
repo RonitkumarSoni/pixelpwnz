@@ -7,24 +7,30 @@ import { Colors, Typography, Spacing, Radii, Gradients } from '../constants/them
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/AppNavigator';
-import { useAppSelector } from '../store/hooks';
+import { useAppSelector, useAppDispatch } from '../store/hooks';
+import { addBookmark, removeBookmark } from '../store/bookmarksSlice';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
-/* ── Mock data ── */
-const MY_PERSONAS = [
-  { id: 'p1', name: 'My AI Clone', desc: 'Chats based on your personality', metaType: 'badge', metaText: 'Most used', avatar: 'https://i.pravatar.cc/150?img=11' },
-  { id: 'p2', name: 'Best Friend', desc: 'Fun • Sarcastic • Always there', metaType: 'text', metaText: 'Last chat 2h ago', avatar: 'https://i.pravatar.cc/150?img=5' },
-  { id: 'p3', name: 'College Buddy', desc: 'Study • Memes • Late night talks', metaType: 'text', metaText: 'Last chat yesterday', avatar: 'https://i.pravatar.cc/150?img=12' },
-];
+type PersonaItem = {
+  id: string;
+  name: string;
+  desc: string;
+  avatar: string;
+};
 
 export default function HomeScreen() {
   const { userName } = useAppSelector((s) => s.session);
+  const bookmarks = useAppSelector((s) => s.bookmarks.bookmarks);
+  const dispatch = useAppDispatch();
   const navigation = useNavigation<NavigationProp>();
 
   const displayName = userName || 'Daksh';
 
-  const renderPersonaCard = ({ item }: { item: typeof MY_PERSONAS[0] }) => (
+  // User-created personas — currently empty, will be fetched from backend when available
+  const myPersonas: PersonaItem[] = [];
+
+  const renderPersonaCard = ({ item }: { item: PersonaItem }) => (
     <TouchableOpacity
       style={styles.personaCard}
       onPress={() => navigation.navigate('Chat')}
@@ -37,16 +43,35 @@ export default function HomeScreen() {
       <View style={styles.cardMid}>
         <Text style={styles.cardName}>{item.name}</Text>
         <Text style={styles.cardDesc} numberOfLines={1}>{item.desc}</Text>
-        {item.metaType === 'badge' ? (
-          <View style={styles.cardBadge}>
-            <Feather name="bar-chart-2" size={10} color={Colors.primarySolid} style={{ marginRight: 4 }} />
-            <Text style={styles.cardBadgeText}>{item.metaText}</Text>
-          </View>
-        ) : (
-          <Text style={styles.cardMetaText}>{item.metaText}</Text>
-        )}
       </View>
-      <Feather name="chevron-right" size={20} color={Colors.textMuted} />
+      <TouchableOpacity
+        onPress={(e) => {
+          e.stopPropagation();
+          const isBookmarked = bookmarks.some(b => b.id === item.id);
+          if (isBookmarked) {
+            dispatch(removeBookmark(item.id));
+          } else {
+            dispatch(addBookmark({
+              id: item.id,
+              title: item.name,
+              sub: item.desc,
+              image: item.avatar,
+              type: 'personal'
+            }));
+          }
+        }}
+        style={[{ padding: Spacing.sm }, bookmarks.some(b => b.id === item.id) && {
+          backgroundColor: Colors.primarySolid,
+          borderRadius: 12,
+        }]}
+      >
+        <FontAwesome5 
+          name="bookmark" 
+          solid={bookmarks.some(b => b.id === item.id)}
+          size={18} 
+          color={bookmarks.some(b => b.id === item.id) ? '#FFF' : Colors.textMuted} 
+        />
+      </TouchableOpacity>
     </TouchableOpacity>
   );
 
@@ -57,7 +82,7 @@ export default function HomeScreen() {
         {/* TOP HEADER */}
         <View style={styles.header}>
           <View style={styles.headerLeft}>
-            <FontAwesome5 name="sparkles" size={20} color={Colors.primarySolid} style={{ marginRight: 8 }} />
+            <FontAwesome5 name="shield-alt" size={20} color={Colors.primarySolid} style={{ marginRight: 8 }} />
             <Text style={styles.headerTitle}>Signet</Text>
           </View>
           <TouchableOpacity style={styles.searchBtn}>
@@ -83,18 +108,15 @@ export default function HomeScreen() {
           <View style={styles.sectionHeaderLeft}>
             <Text style={styles.sectionTitle}>Your Personas</Text>
             <View style={styles.countBadge}>
-              <Text style={styles.countBadgeText}>{MY_PERSONAS.length}</Text>
+              <Text style={styles.countBadgeText}>{myPersonas.length}</Text>
             </View>
           </View>
-          <TouchableOpacity>
-            <Text style={styles.viewAllText}>View all <Feather name="chevron-right" size={14} /></Text>
-          </TouchableOpacity>
         </View>
 
         {/* PERSONAS LIST */}
         <View style={styles.personasContainer}>
-          {MY_PERSONAS.length > 0 ? (
-            MY_PERSONAS.map((item) => (
+          {myPersonas.length > 0 ? (
+            myPersonas.map((item) => (
               <View key={item.id}>{renderPersonaCard({ item })}</View>
             ))
           ) : (
@@ -104,7 +126,7 @@ export default function HomeScreen() {
               </View>
               <Text style={styles.emptyTitle}>No Personas Yet</Text>
               <Text style={styles.emptySub}>
-                You haven't created any personas. Tap the '+' button below to train your first AI clone!
+                Create your first persona to let your AI clone chat on your behalf! Tap the '+' button below to get started.
               </Text>
             </View>
           )}
@@ -115,19 +137,16 @@ export default function HomeScreen() {
           colors={['#F5F3FF', '#EEECFC']}
           style={styles.waBanner}
         >
-          <View style={styles.waIconContainer}>
-            <View style={styles.waIconBg}>
-              <FontAwesome5 name="whatsapp" size={26} color="#FFF" />
-            </View>
-            <FontAwesome5 name="sparkles" size={12} color="#A78BFA" style={{position: 'absolute', top: -5, left: -5}} />
+          <View style={styles.waIconBg}>
+            <FontAwesome5 name="whatsapp" size={24} color="#FFF" />
           </View>
           <View style={styles.waTextContainer}>
-            <Text style={styles.waTitle}>Talk with your persona on WhatsApp</Text>
-            <Text style={styles.waDesc}>Integrate your AI clone and chat seamlessly on WhatsApp.</Text>
+            <Text style={styles.waTitle}>Auto-reply on WhatsApp</Text>
+            <Text style={styles.waDesc}>Let your persona reply for you.</Text>
           </View>
           <TouchableOpacity style={styles.waBtn}>
-            <Text style={styles.waBtnText}>Integrate Now</Text>
-            <Feather name="chevron-right" size={14} color="#FFF" />
+            <Text style={styles.waBtnText}>Connect</Text>
+            <Feather name="arrow-right" size={14} color="#FFF" />
           </TouchableOpacity>
         </LinearGradient>
 
@@ -367,21 +386,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
-  waIconContainer: {
-    marginRight: 16,
-    position: 'relative',
-  },
   waIconBg: {
-    width: 52,
-    height: 52,
-    borderRadius: 26,
+    width: 48,
+    height: 48,
+    borderRadius: 24,
     backgroundColor: '#25D366',
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: '#25D366',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
+    marginRight: 16,
   },
   waTextContainer: {
     flex: 1,

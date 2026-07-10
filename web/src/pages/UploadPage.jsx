@@ -80,7 +80,7 @@ export default function UploadPage() {
       setTimeout(() => navigate('/chat'), 1500);
     } catch (error) {
       setUploadState('error');
-      const msg = error.response?.data?.message || error.response?.data?.error || 'Upload failed. Check the file and try again.';
+      const msg = error.response?.data?.message || error.response?.data?.error || error.message || 'Upload failed. Check the file and try again.';
       setErrorMsg(msg);
       toast.error(msg);
     }
@@ -119,7 +119,7 @@ export default function UploadPage() {
                   Upload <span className="gradient-text">Your Chat</span>
                 </h1>
                 <p style={{ fontSize: '1rem', color: 'var(--color-text-secondary)', lineHeight: 1.6 }}>
-                  Upload your exported chat file to create your personalized AI clone. We support multiple file formats.
+                  Upload your exported WhatsApp chat file to create your personalized AI clone.
                 </p>
               </div>
 
@@ -199,7 +199,7 @@ export default function UploadPage() {
                     Choose File
                   </button>
                   <div style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)', display: 'flex', flexDirection: 'column', gap: 6 }}>
-                    <span>Supports JSON, TXT, CSV export files</span>
+                    <span>Supports WhatsApp .txt export files</span>
                     <span>Max file size: 50MB</span>
                   </div>
                 </>
@@ -261,43 +261,6 @@ export default function UploadPage() {
                   <li>Choose <strong>Without Media</strong></li>
                   <li>Save the .txt file and upload</li>
                 </ol>
-              </div>
-
-              {/* Telegram */}
-              <div className="glass-card" style={{ padding: 24, flexDirection: 'column', alignItems: 'stretch' }}>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 12, fontWeight: 700, color: 'var(--color-text)' }}>
-                    <div style={{ width: 32, height: 32, borderRadius: '50%', background: '#0088cc', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      <Send size={16} style={{ marginLeft: -2 }} />
-                    </div>
-                    Telegram Export
-                  </div>
-                  <span style={{ fontSize: '0.75rem', background: 'var(--glass-border)', padding: '4px 8px', borderRadius: 4, color: 'var(--color-text-secondary)' }}>.json</span>
-                </div>
-                <ol style={{ paddingLeft: 16, margin: 0, color: 'var(--color-text-secondary)', fontSize: '0.9rem', display: 'flex', flexDirection: 'column', gap: 12, lineHeight: 1.5 }}>
-                  <li>Open Telegram chat</li>
-                  <li>Tap <strong>More options (⋮)</strong></li>
-                  <li>Select <strong>Export Chat History</strong></li>
-                  <li>Choose <strong>JSON format</strong></li>
-                  <li>Save the file and upload</li>
-                </ol>
-              </div>
-
-              {/* Other Platforms */}
-              <div className="glass-card" style={{ padding: 24, flexDirection: 'column', alignItems: 'stretch' }}>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 12, fontWeight: 700, color: 'var(--color-text)' }}>
-                    <div style={{ width: 32, height: 32, borderRadius: '50%', background: 'white', border: '1px solid var(--glass-border)', color: 'var(--color-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      <MessageSquare size={16} />
-                    </div>
-                    Other Platforms
-                  </div>
-                  <span style={{ fontSize: '0.75rem', background: 'var(--glass-border)', padding: '4px 8px', borderRadius: 4, color: 'var(--color-text-secondary)' }}>.csv / .txt / .json</span>
-                </div>
-                <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.9rem', lineHeight: 1.6, margin: 0 }}>
-                  Support for other platforms like Messenger, iMessage, Signal, Line, and more.<br/><br/>
-                  Export and upload the file here.
-                </p>
               </div>
             </div>
           </div>

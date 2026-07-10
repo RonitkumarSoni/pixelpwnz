@@ -16,6 +16,7 @@ import configRoutes from './routes/config.js';
 import authRoutes from './routes/auth.js';
 import { startCleanup } from './store/sessionStore.js';
 import { cleanupOrphanedCollections } from './brain/chromaClient.js';
+import { initPersonas } from './brain/personas.js';
 import { connectDB } from './db.js';
 
 const app = express();
@@ -35,11 +36,19 @@ const chatLimiter = rateLimit({
   message: { success: false, error: 'Too many requests. Try again shortly.' },
 });
 
+const uploadLimiter = rateLimit({
+  windowMs: 60 * 1000 * 5, // 5 minutes
+  max: 5,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { success: false, error: 'Too many uploads. Try again later.' },
+});
+
 // Auth routes (no rate limit)
 app.use('/api/auth', authRoutes);
 
 // API routes
-app.use('/api/upload', uploadRoutes);
+app.use('/api/upload', uploadLimiter, uploadRoutes);
 app.use('/api/chat', chatLimiter, chatRoutes);
 app.use('/api/stats', statsRoutes);
 app.use('/api/session', sessionRoutes);
@@ -65,6 +74,7 @@ if (isMainModule) {
   const server = app.listen(config.port, async () => {
     console.log(`[Signet] Server running on port ${config.port}`);
     await connectDB().catch((err) => console.warn('[MongoDB] Connection warning:', err.message));
+    await initPersonas();
     await cleanupOrphanedCollections();
   });
 

@@ -18,22 +18,6 @@ export default function CreateNewPage() {
       link: '/upload',
       color: '#25D366',
       badge: 'Recommended'
-    },
-    {
-      id: 'telegram',
-      title: 'Telegram Export',
-      description: 'Upload your Telegram chat history JSON file.',
-      icon: <Smartphone size={28} color="#0088cc" />,
-      link: '/upload',
-      color: '#0088cc'
-    },
-    {
-      id: 'custom',
-      title: 'Custom Text File',
-      description: 'Upload any raw text file containing conversation transcripts.',
-      icon: <FileText size={28} color="var(--color-primary)" />,
-      link: '/upload',
-      color: 'var(--color-primary)'
     }
   ];
 
