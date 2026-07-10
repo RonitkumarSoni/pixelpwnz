@@ -59,7 +59,7 @@ export default function LoginPage() {
         position: 'relative',
         width: '100%',
         maxWidth: 900,
-        height: 680,
+        height: isLogin ? 660 : 740,
         background: '#f9fafb',
         borderRadius: 24,
         border: '1px solid rgba(0,0,0,0.08)',
@@ -197,7 +197,7 @@ export default function LoginPage() {
 
             <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
               {error && (
-                <div style={{ color: '#ef4444', fontSize: '0.85rem', background: '#fef2f2', padding: '8px 12px', borderRadius: 8, border: '1px solid #fecaca' }}>
+                <div style={{ color: '#ef4444', fontSize: '0.85rem', background: '#fef2f2', padding: '10px 12px', borderRadius: 8, border: '1px solid #fecaca', marginBottom: 4 }}>
                   {error}
                 </div>
               )}
