@@ -12,14 +12,14 @@ type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 const CATEGORIES = ['Explore', 'Trending', 'Celebrities', 'Anime', 'Historical', 'Sports', 'Fictional'];
 
 const MOCK_PERSONAS = [
-  { id: '1', title: 'Elon Musk', sub: 'CEO of Tesla & SpaceX. Let\'s talk Mars.', author: '@signet', interactions: '4.2m', image: 'https://i.pravatar.cc/400?img=68' },
-  { id: '2', title: 'Naruto Uzumaki', sub: 'Believe it! Future Hokage of the Leaf.', author: '@signet', interactions: '8.5m', image: 'https://i.pravatar.cc/400?img=33' },
-  { id: '3', title: 'Iron Man', sub: 'Genius, billionaire, philanthropist.', author: '@signet', interactions: '6.1m', image: 'https://i.pravatar.cc/400?img=51' },
-  { id: '4', title: 'Cristiano Ronaldo', sub: 'SIUUUU! Legend of football.', author: '@signet', interactions: '12.6m', image: 'https://i.pravatar.cc/400?img=59' },
-  { id: '5', title: 'Albert Einstein', sub: 'Let me explain relativity simply.', author: '@signet', interactions: '3.8m', image: 'https://i.pravatar.cc/400?img=60' },
-  { id: '6', title: 'Sherlock Holmes', sub: 'The game is afoot, Watson.', author: '@signet', interactions: '5.2m', image: 'https://i.pravatar.cc/400?img=14' },
-  { id: '7', title: 'Cleopatra', sub: 'Queen of Egypt. Ruler of Nile.', author: '@signet', interactions: '2.1m', image: 'https://i.pravatar.cc/400?img=47' },
-  { id: '8', title: 'Goku', sub: 'Always ready for a fight!', author: '@signet', interactions: '9.7m', image: 'https://i.pravatar.cc/400?img=52' },
+  { id: '1', title: 'Elon Musk', sub: 'CEO of Tesla & SpaceX. Let\'s talk Mars.', author: '@signet', interactions: '4.2m', image: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400&q=80' },
+  { id: '2', title: 'Naruto Uzumaki', sub: 'Believe it! Future Hokage of the Leaf.', author: '@signet', interactions: '8.5m', image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&q=80' },
+  { id: '3', title: 'Iron Man', sub: 'Genius, billionaire, philanthropist.', author: '@signet', interactions: '6.1m', image: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=400&q=80' },
+  { id: '4', title: 'Cristiano Ronaldo', sub: 'SIUUUU! Legend of football.', author: '@signet', interactions: '12.6m', image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&q=80' },
+  { id: '5', title: 'Albert Einstein', sub: 'Let me explain relativity simply.', author: '@signet', interactions: '3.8m', image: 'https://images.unsplash.com/photo-1531427186611-ecfd6d936c79?w=400&q=80' },
+  { id: '6', title: 'Sherlock Holmes', sub: 'The game is afoot, Watson.', author: '@signet', interactions: '5.2m', image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&q=80' },
+  { id: '7', title: 'Cleopatra', sub: 'Queen of Egypt. Ruler of Nile.', author: '@signet', interactions: '2.1m', image: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&q=80' },
+  { id: '8', title: 'Goku', sub: 'Always ready for a fight!', author: '@signet', interactions: '9.7m', image: 'https://images.unsplash.com/photo-1504257432389-523431e15ce3?w=400&q=80' },
 ];
 
 const { width } = Dimensions.get('window');
@@ -40,16 +40,11 @@ export default function DiscoverScreen() {
       <View style={styles.header}>
         <View style={styles.headerTop}>
           <Text style={styles.headerLogo}>Explore</Text>
-          <View style={styles.headerRight}>
-            <TouchableOpacity style={styles.headerIconBtn}>
-              <Feather name="bell" size={22} color={Colors.text} />
-            </TouchableOpacity>
-          </View>
         </View>
 
         {/* Search */}
         <View style={styles.searchBar}>
-          <Feather name="search" size={18} color={Colors.textMuted} />
+          <Feather name="search" size={20} color={Colors.textMuted} style={{ marginRight: 8 }} />
           <TextInput
             style={styles.searchInput}
             placeholder="Search public personas..."
@@ -124,7 +119,7 @@ const styles = StyleSheet.create({
 
   /* Header */
   header: {
-    paddingHorizontal: Spacing.lg,
+    paddingHorizontal: Spacing.xl,
     paddingTop: Spacing.md,
     paddingBottom: Spacing.xs,
   },
@@ -132,74 +127,63 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: Spacing.md,
+    marginBottom: Spacing.lg,
   },
   headerLogo: {
-    fontSize: 26,
+    fontSize: 28,
     fontWeight: '800',
-    color: Colors.text,
+    color: '#1E1E28',
     letterSpacing: -0.5,
-  },
-  headerRight: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  headerIconBtn: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   searchBar: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Colors.glass.bg,
-    borderRadius: 12,
-    paddingHorizontal: 14,
-    height: 42,
+    backgroundColor: '#FFF',
+    borderRadius: 24,
+    paddingHorizontal: 16,
+    height: 48,
     borderWidth: 1,
-    borderColor: Colors.border,
+    borderColor: '#EAEAEA',
   },
   searchInput: {
     flex: 1,
-    marginLeft: 10,
-    color: Colors.text,
+    color: '#1E1E28',
     fontSize: 15,
   },
 
   /* Pills */
   pillsContainer: {
-    paddingHorizontal: Spacing.lg,
-    paddingVertical: Spacing.sm,
+    paddingHorizontal: Spacing.xl,
+    paddingVertical: Spacing.md,
     gap: 8,
   },
   pill: {
-    paddingHorizontal: 16,
+    paddingHorizontal: 18,
     paddingVertical: 8,
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: Colors.border,
+    borderColor: '#EAEAEA',
+    backgroundColor: '#FFF',
   },
   pillActive: {
-    backgroundColor: Colors.text,
-    borderColor: Colors.text,
+    backgroundColor: '#1E1E28',
+    borderColor: '#1E1E28',
   },
   pillText: {
     fontSize: 13,
-    color: Colors.textMuted,
+    color: '#8E8E9F',
     fontWeight: '600',
   },
   pillTextActive: {
-    color: Colors.bg,
+    color: '#FFF',
     fontWeight: 'bold',
   },
 
   /* Grid */
   listContent: {
-    paddingHorizontal: Spacing.lg,
+    paddingHorizontal: Spacing.xl,
     paddingBottom: 100,
-    paddingTop: 4,
+    paddingTop: 8,
   },
   columnWrapper: {
     justifyContent: 'space-between',
@@ -207,29 +191,38 @@ const styles = StyleSheet.create({
   card: {
     width: CARD_WIDTH,
     marginBottom: Spacing.lg,
-    borderRadius: Radii.lg,
-    backgroundColor: Colors.glass.bg,
-    borderWidth: 1,
-    borderColor: Colors.border,
+    borderRadius: 20,
+    backgroundColor: '#FFF',
+    ...Platform.select({
+      ios: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.04,
+        shadowRadius: 12,
+      },
+      android: {
+        elevation: 2,
+      },
+    }),
     overflow: 'hidden',
   },
   cardImage: {
     width: '100%',
-    height: 160,
+    height: 180,
   },
   cardInfo: {
-    padding: 10,
+    padding: 12,
   },
   cardTitle: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    color: Colors.text,
-    marginBottom: 3,
+    fontSize: 15,
+    fontWeight: '800',
+    color: '#1E1E28',
+    marginBottom: 4,
   },
   cardSub: {
     fontSize: 12,
-    color: Colors.textMuted,
-    marginBottom: 8,
+    color: '#8E8E9F',
+    marginBottom: 12,
     lineHeight: 16,
   },
   cardFooter: {
@@ -240,16 +233,17 @@ const styles = StyleSheet.create({
   interactionRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 3,
+    gap: 4,
   },
   cardInteractions: {
     fontSize: 11,
-    color: Colors.textMuted,
+    color: '#A1A1AA',
+    fontWeight: '500',
   },
   cardAuthor: {
     fontSize: 11,
-    color: Colors.primarySolid,
-    fontWeight: '600',
+    color: Colors.primarySolid, // purple
+    fontWeight: '700',
   },
 
   /* Empty */
