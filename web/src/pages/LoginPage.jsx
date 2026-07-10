@@ -24,9 +24,13 @@ export default function LoginPage() {
     }}>
 
       {/* Absolute Logo (Like Front Page) */}
-      <Link to="/" className="desktop-logo-outside" style={{ position: 'absolute', top: 32, left: 40, textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 10, zIndex: 10 }}>
-        <div style={{ width: 32, height: 32, borderRadius: 8, background: 'linear-gradient(135deg, #A89FF5, #6C5CE7)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900, fontSize: 18 }}>S</div>
-        <span style={{ fontSize: '1.4rem', fontWeight: 800, color: '#111827' }}>Signet</span>
+      <Link to="/" className="desktop-logo-outside" style={{ position: 'absolute', top: 32, left: 40, textDecoration: 'none', zIndex: 10 }}>
+        <div className="nav-logo">
+          <div className="nav-logo-icon">
+            <img src="/logo.png" alt="Signet Logo" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+          </div>
+          <span>Signet</span>
+        </div>
       </Link>
 
       <div style={{
@@ -34,7 +38,7 @@ export default function LoginPage() {
         width: '100%',
         maxWidth: 900,
         height: 680,
-        background: '#fff',
+        background: '#f9fafb',
         borderRadius: 24,
         border: '1px solid rgba(0,0,0,0.08)',
         boxShadow: '0 30px 60px rgba(108, 92, 231, 0.08)',
@@ -48,14 +52,12 @@ export default function LoginPage() {
         left: isLogin ? '0%' : '55%',
         width: '45%',
         height: '100%',
-        background: '#f9fafb',
+        background: 'transparent',
         padding: '40px',
         display: 'flex',
         flexDirection: 'column',
-        borderRight: isLogin ? '1px solid var(--glass-border)' : 'none',
-        borderLeft: !isLogin ? '1px solid var(--glass-border)' : 'none',
         transition: 'left 0.6s cubic-bezier(0.4, 0, 0.2, 1)',
-        zIndex: 2
+        zIndex: 1
       }}>
 
         <div style={{ zIndex: 10, position: 'relative', flexGrow: 1, marginTop: 40 }}>
@@ -109,19 +111,27 @@ export default function LoginPage() {
         justifyContent: 'center',
         padding: '32px 24px',
         background: '#fff',
-        transition: 'left 0.6s cubic-bezier(0.4, 0, 0.2, 1)',
-        zIndex: 1
+        borderRadius: 24,
+        boxShadow: isLogin ? '-10px 0 40px rgba(0,0,0,0.04)' : '10px 0 40px rgba(0,0,0,0.04)',
+        transition: 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)',
+        zIndex: 2
       }}>
 
         {/* Mobile Logo */}
-        <Link to="/" className="login-mobile-logo" style={{ position: 'absolute', top: 32, left: 24, textDecoration: 'none', display: 'none', alignItems: 'center', gap: 10 }}>
-          <div style={{ width: 28, height: 28, borderRadius: 8, background: 'linear-gradient(135deg, #A89FF5, #6C5CE7)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900, fontSize: 16 }}>S</div>
-          <span style={{ fontSize: '1.2rem', fontWeight: 800, color: '#111827' }}>Signet</span>
+        <Link to="/" className="login-mobile-logo" style={{ position: 'absolute', top: 32, left: 24, textDecoration: 'none', display: 'none', zIndex: 10 }}>
+          <div className="nav-logo" style={{ fontSize: '1.2rem' }}>
+            <div className="nav-logo-icon" style={{ width: 28, height: 28, borderRadius: 8 }}>
+              <img src="/logo.png" alt="Signet Logo" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+            </div>
+            <span>Signet</span>
+          </div>
         </Link>
 
         <div style={{ width: '100%', maxWidth: 380, display: 'flex', flexDirection: 'column', minHeight: 'auto', justifyContent: 'center' }}>
 
           <div style={{ flexGrow: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+            
+
             <div style={{ textAlign: 'center', marginBottom: 24 }}>
               <h2 style={{ fontSize: '1.75rem', fontWeight: 800, color: '#111827', marginBottom: 8, letterSpacing: '-0.02em' }}>
                 {isLogin ? "Welcome back 👋" : "Create an account "}

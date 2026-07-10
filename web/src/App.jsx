@@ -11,6 +11,10 @@ import useUiStore from './store/uiStore';
 import DemoPage from './pages/DemoPage';
 import SecurityPage from './pages/SecurityPage';
 import LoginPage from './pages/LoginPage';
+import ProfilePage from './pages/ProfilePage';
+import ExplorePage from './pages/ExplorePage';
+import DashboardPage from './pages/DashboardPage';
+import CreateNewPage from './pages/CreateNewPage';
 
 function ScrollHandler() {
   const { pathname, hash } = useLocation();
@@ -57,6 +61,10 @@ export default function App() {
           <Route path="/demo" element={<DemoPage />} />
           <Route path="/security" element={<SecurityPage />} />
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/explore" element={<ExplorePage />} />
+          <Route path="/dashboard" element={<DashboardPage />} />
+          <Route path="/create" element={<CreateNewPage />} />
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </div>
