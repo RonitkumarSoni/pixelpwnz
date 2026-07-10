@@ -155,6 +155,9 @@ export default function LandingScreen({ navigation }: Props) {
           <View style={styles.robotTouchArea}>
             <View style={styles.robotWrapper}>
               <WebView
+                originWhitelist={['*']}
+                javaScriptEnabled={true}
+                domStorageEnabled={true}
                 source={{
                   html: `
                     <!DOCTYPE html>
@@ -182,7 +185,8 @@ export default function LandingScreen({ navigation }: Props) {
                         <spline-viewer loading-anim-type="spinner-small-light" url="https://prod.spline.design/twLIj7hBhI8aQwjq/scene.splinecode"></spline-viewer>
                       </body>
                     </html>
-                  `
+                  `,
+                  baseUrl: 'https://prod.spline.design'
                 }}
                 style={{ backgroundColor: 'transparent', width: '100%', height: '100%' }}
                 scrollEnabled={false}
