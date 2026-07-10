@@ -1,11 +1,13 @@
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import useUiStore from '../store/uiStore';
 
 export default function Navbar() {
   const [show, setShow] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
   const [isScrolled, setIsScrolled] = useState(false);
+  const { user } = useUiStore();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -57,11 +59,33 @@ export default function Navbar() {
           <li><Link to="/#about">About</Link></li>
           <li><Link to="/docs">Docs</Link></li>
         </ul>
-        <Link to="/login">
-          <button className="btn btn-nav-cta" style={{ padding: '12px 28px' }}>
-            Get Started <ArrowRight size={16} />
-          </button>
-        </Link>
+        {user ? (
+          <Link to="/profile" style={{ textDecoration: 'none' }}>
+            <div style={{
+              width: 44,
+              height: 44,
+              borderRadius: '50%',
+              background: 'var(--color-primary)',
+              color: 'white',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontWeight: 'bold',
+              fontSize: '1.2rem',
+              textTransform: 'uppercase',
+              boxShadow: '0 4px 12px rgba(108, 92, 231, 0.3)',
+              cursor: 'pointer'
+            }}>
+              {user.name ? user.name.charAt(0) : 'U'}
+            </div>
+          </Link>
+        ) : (
+          <Link to="/login">
+            <button className="btn btn-nav-cta" style={{ padding: '12px 28px' }}>
+              Get Started <ArrowRight size={16} />
+            </button>
+          </Link>
+        )}
       </nav>
     </div>
   );

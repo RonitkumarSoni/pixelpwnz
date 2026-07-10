@@ -42,14 +42,6 @@ export default function HeroSection() {
 
       {/* Right: Signet Bot + Glassmorphism Cards */}
       <div style={{ position: 'relative', height: 520, display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'visible' }}>
-        <div className="connector-ring" />
-        <div className="connector-ring-outer" />
-        
-        <div className="connector-dot" style={{ top: '6%', left: '38%' }} />
-        <div className="connector-dot" style={{ top: '22%', right: '8%' }} />
-        <div className="connector-dot" style={{ bottom: '32%', left: '12%' }} />
-        <div className="connector-dot" style={{ bottom: '10%', right: '32%' }} />
-
         {/* The Robot */}
         <div className="signet-bot">
           <div className="signet-bot-head">
@@ -76,6 +68,14 @@ export default function HeroSection() {
           </div>
           <div className="signet-bot-shadow" />
         </div>
+
+        <div className="connector-ring" />
+        <div className="connector-ring-outer" />
+        
+        <div className="connector-dot" style={{ top: '6%', left: '38%' }} />
+        <div className="connector-dot" style={{ top: '22%', right: '8%' }} />
+        <div className="connector-dot" style={{ bottom: '32%', left: '12%' }} />
+        <div className="connector-dot" style={{ bottom: '10%', right: '32%' }} />
 
         {/* Floating Cards */}
         <div className="glass-card" style={{ position: 'absolute', top: '2%', left: '8%' }}>

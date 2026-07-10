@@ -382,7 +382,7 @@ p {
 
 /* Floating feature cards around orb */
 .glass-card {
-  background: var(--glass-bg);
+  background: var(--color-surface);
   backdrop-filter: var(--glass-blur);
   -webkit-backdrop-filter: var(--glass-blur);
   border: 1px solid var(--glass-border);
@@ -1033,8 +1033,8 @@ p {
 }
 
 .privacy-graphic-container:hover .orbital-ring {
-  border-color: rgba(108, 92, 231, 0.4) !important;
-  box-shadow: 0 0 15px rgba(108, 92, 231, 0.15), inset 0 0 15px rgba(108, 92, 231, 0.15);
+  border-color: rgba(108, 92, 231, 0.25) !important;
+  box-shadow: 0 0 10px rgba(108, 92, 231, 0.08), inset 0 0 10px rgba(108, 92, 231, 0.08);
 }
 
 .privacy-graphic-container .orbital-ring-2 {
@@ -1042,8 +1042,8 @@ p {
 }
 
 .privacy-graphic-container:hover .orbital-ring-2 {
-  border-color: rgba(108, 92, 231, 0.4) !important;
-  box-shadow: 0 0 15px rgba(108, 92, 231, 0.15), inset 0 0 15px rgba(108, 92, 231, 0.15);
+  border-color: rgba(108, 92, 231, 0.25) !important;
+  box-shadow: 0 0 10px rgba(108, 92, 231, 0.08), inset 0 0 10px rgba(108, 92, 231, 0.08);
 }
 
 .privacy-graphic-container .shield-main {
@@ -1070,7 +1070,7 @@ p {
 
 .privacy-graphic-container:hover .shield-main {
   box-shadow: inset 0 0 40px rgba(255,255,255,0.4), 0 0 20px rgba(108, 92, 231, 0.3) !important;
-  transform: translateY(-4px);
+  transform: none !important;
 }
 
 .privacy-graphic-container .shield-glow {
@@ -1078,7 +1078,7 @@ p {
 }
 
 .privacy-graphic-container:hover .shield-glow {
-  opacity: 0.4 !important;
+  opacity: 0.15 !important;
   filter: blur(85px) !important;
 }
 
@@ -1088,8 +1088,12 @@ p {
 
 .privacy-graphic-container:hover .floating-badge {
   box-shadow: 0 8px 16px rgba(108, 92, 231, 0.15), inset 0 0 8px rgba(108, 92, 231, 0.1) !important;
-  transform: translateY(-2px);
   border-color: rgba(108, 92, 231, 0.3) !important;
+  transform: none !important;
+}
+
+.floating-badge:hover {
+  transform: none !important;
 }
 
 /* ── Thinking Dots ── */

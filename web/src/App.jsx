@@ -12,9 +12,13 @@ import DemoPage from './pages/DemoPage';
 import SecurityPage from './pages/SecurityPage';
 import LoginPage from './pages/LoginPage';
 import ProfilePage from './pages/ProfilePage';
+import NewProfilePage from './pages/app-dashboard/NewProfilePage';
+import BookmarksPage from './pages/app-dashboard/BookmarksPage';
 import ExplorePage from './pages/ExplorePage';
 import DashboardPage from './pages/DashboardPage';
 import CreateNewPage from './pages/CreateNewPage';
+import NewDashboardPage from './pages/app-dashboard/NewDashboardPage';
+import ProtectedRoute from './components/ProtectedRoute';
 
 import InteractiveDotGrid from './components/InteractiveDotGrid';
 import { useAuthStore } from './store/authStore';
@@ -86,10 +90,11 @@ export default function App() {
           {/* Protected Routes */}
           <Route path="/upload" element={<ProtectedRoute><UploadPage /></ProtectedRoute>} />
           <Route path="/chat" element={<ProtectedRoute><ChatPage /></ProtectedRoute>} />
-          <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
+          <Route path="/profile" element={<ProtectedRoute><NewProfilePage /></ProtectedRoute>} />
+          <Route path="/bookmarks" element={<ProtectedRoute><BookmarksPage /></ProtectedRoute>} />
           <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
+          <Route path="/app-dashboard" element={<ProtectedRoute><NewDashboardPage /></ProtectedRoute>} />
           <Route path="/create" element={<ProtectedRoute><CreateNewPage /></ProtectedRoute>} />
-          
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </div>
