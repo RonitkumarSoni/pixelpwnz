@@ -2,39 +2,40 @@
 // DO NOT use hardcoded hex values in components. Always use these tokens.
 
 export const Colors = {
-  // Dark Theme (Default)
-  bg: '#0A0A0A',
-  surface: '#151515',
-  surfaceElevated: '#1F1F1F',
-  border: '#2C2C2C',
-  primarySolid: '#8B5CF6',
-  primaryLight: '#38BDF8',
-  text: '#FFFFFF',
-  textSecondary: '#A1A1AA',
-  textMuted: '#52525B',
-  success: '#34D399',
-  error: '#F87171',
+  // We're adopting the Web Glassmorphism Light theme as default for mobile
+  bg: '#F5F4FA',
+  bgLavender: '#ECEAF8',
+  surface: '#FFFFFF',
+  surfaceElevated: '#FAFAFA',
+  border: '#EDEDF5',
+  
+  primarySolid: '#6C5CE7',
+  primaryLight: '#8B7CF7',
+  primaryGlow: 'rgba(108, 92, 231, 0.06)',
+  
+  text: '#12121A',
+  textSecondary: '#6B6F8A',
+  textMuted: '#9B9FB5',
+  
+  success: '#10B981',
+  error: '#EF4444',
 
-  // Light Theme (Alternative)
-  light: {
-    bg: '#FAFAFA',
-    surface: '#FFFFFF',
-    surfaceElevated: '#F4F4F5',
-    border: '#E4E4E7',
-    text: '#18181B',
-    textSecondary: '#71717A',
-  },
+  glass: {
+    bg: 'rgba(255, 255, 255, 0.55)',
+    border: 'rgba(255, 255, 255, 0.7)',
+    tint: 'light' as const, // For expo-blur
+    intensity: 20, // For expo-blur
+  }
 } as const;
 
-// Primary Gradient: #8B5CF6 → #38BDF8
+// Primary Gradient: #5F5AFF → #9155FF
 export const Gradients = {
-  primary: ['#8B5CF6', '#38BDF8'] as const,
+  primary: ['#5F5AFF', '#9155FF'] as const,
   primaryStart: { x: 0, y: 0 },
   primaryEnd: { x: 1, y: 1 },
 } as const;
 
 // Spacing based on 8px grid
-// Sequence: 4, 8, 12, 16, 20, 24, 32, 40, 48, 64
 export const Spacing = {
   xs: 4,
   sm: 8,
@@ -50,22 +51,23 @@ export const Spacing = {
 
 // Typography - Uses system fonts (SF Pro on iOS, Roboto on Android)
 export const Typography = {
-  h1: { fontSize: 40, lineHeight: 48, fontWeight: '700' as const },
-  h2: { fontSize: 24, lineHeight: 31, fontWeight: '600' as const },
-  h3: { fontSize: 18, lineHeight: 25, fontWeight: '600' as const },
-  bodyLarge: { fontSize: 16, lineHeight: 26, fontWeight: '400' as const },
-  body: { fontSize: 14, lineHeight: 22, fontWeight: '400' as const },
-  small: { fontSize: 12, lineHeight: 18, fontWeight: '500' as const },
+  h1: { fontSize: 42, lineHeight: 48, fontWeight: '800' as const, letterSpacing: -1 },
+  h2: { fontSize: 24, lineHeight: 31, fontWeight: '700' as const },
+  h3: { fontSize: 18, lineHeight: 25, fontWeight: '700' as const },
+  bodyLarge: { fontSize: 17, lineHeight: 26, fontWeight: '400' as const },
+  body: { fontSize: 15, lineHeight: 23, fontWeight: '400' as const },
+  small: { fontSize: 13, lineHeight: 18, fontWeight: '500' as const },
 } as const;
 
 // Border Radii
 export const Radii = {
-  card: 16,
+  card: 18,
   button: 9999, // Fully pill
-  bubble: 20,
-  input: 32, // Pill input
+  bubble: 18,
+  input: 12,
   sm: 8,
   md: 12,
+  lg: 20,
 } as const;
 
 // Touch target minimum (Apple HIG)
