@@ -73,4 +73,9 @@ export const getPersonas = async () => {
   return response.data;
 };
 
+export const createPersonaSession = async (personaId: string) => {
+  const response = await apiClient.post(`/persona/${personaId}`);
+  return response.data;
+};
+
 export default apiClient;

@@ -6,6 +6,9 @@ import { Colors, Typography, Spacing, Radii } from '../constants/theme';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/AppNavigator';
+import { useAppDispatch } from '../store/hooks';
+import { setSession } from '../store/sessionSlice';
+import { clearMessages } from '../store/chatSlice';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
@@ -19,7 +22,9 @@ export default function DiscoverScreen() {
   const [searchQuery, setSearchQuery] = useState('');
   const [personas, setPersonas] = React.useState<any[]>([]);
   const [loading, setLoading] = React.useState(true);
+  const [startingSessionId, setStartingSessionId] = React.useState<string | null>(null);
   const navigation = useNavigation<NavigationProp>();
+  const dispatch = useAppDispatch();
 
   React.useEffect(() => {
     const fetchPersonas = async () => {
@@ -127,9 +132,32 @@ export default function DiscoverScreen() {
         )}
         renderItem={({ item }) => (
           <TouchableOpacity
-            style={styles.card}
-            onPress={() => navigation.navigate('Chat')}
+            style={[styles.card, startingSessionId === item.id && { opacity: 0.5 }]}
+            onPress={async () => {
+              try {
+                if (startingSessionId) return;
+                setStartingSessionId(item.id);
+                const { createPersonaSession } = require('../api/client');
+                const res = await createPersonaSession(item.id);
+                if (res.success && res.session_id) {
+                  dispatch(clearMessages());
+                  dispatch(setSession({
+                    sessionId: res.session_id,
+                    userName: item.title,
+                    pairCount: res.total_pairs_extracted || 0,
+                    avatarUrl: item.image,
+                  }));
+                  navigation.navigate('Chat');
+                }
+              } catch (err) {
+                console.error('Failed to start persona session', err);
+                alert('Could not start chat session. Please check your connection.');
+              } finally {
+                setStartingSessionId(null);
+              }
+            }}
             activeOpacity={0.8}
+            disabled={startingSessionId !== null}
           >
             <Image source={{ uri: item.image }} style={styles.cardImage} />
             <View style={styles.cardInfo}>

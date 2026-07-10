@@ -31,7 +31,7 @@ type ChatNavProp = NativeStackNavigationProp<RootStackParamList, 'Chat'>;
 export default function ChatScreen() {
   const dispatch = useAppDispatch();
   const navigation = useNavigation<ChatNavProp>();
-  const { sessionId, userName, pairCount } = useAppSelector((s) => s.session);
+  const { sessionId, userName, pairCount, avatarUrl } = useAppSelector((s) => s.session);
   const { messages, isThinking } = useAppSelector((s) => s.chat);
   const [inputText, setInputText] = useState('');
   const [refreshing, setRefreshing] = useState(false);
@@ -93,12 +93,15 @@ export default function ChatScreen() {
           onPress: async () => {
             Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
             try {
-              await apiClient.delete(`/session/${sessionId}`);
+              if (sessionId) {
+                await apiClient.delete(`/session/${sessionId}`);
+              }
             } catch (e) {
               // Server might already have cleared it
             }
             dispatch(clearMessages());
             dispatch(clearSession());
+            navigation.goBack();
           },
         },
       ]
@@ -169,7 +172,7 @@ export default function ChatScreen() {
       <SafeAreaView style={styles.safeArea} edges={['top']}>
         {/* Top Bar */}
         <View style={styles.topBar}>
-          <StatsHeader userName={userName || 'User'} pairCount={pairCount} />
+          <StatsHeader userName={userName || 'User'} pairCount={pairCount} avatarUrl={avatarUrl} />
           <TouchableOpacity
             onPress={handleClearSession}
             style={styles.trashButton}
