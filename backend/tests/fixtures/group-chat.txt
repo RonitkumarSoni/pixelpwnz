@@ -1,0 +1,13 @@
+[10/07/26, 09:00:00 AM] Daksh: Morning everyone
+[10/07/26, 09:01:00 AM] Vineet: Hey! Ready for the sprint?
+[10/07/26, 09:02:00 AM] Ronit: Let's do this 🔥
+[10/07/26, 09:03:00 AM] Daksh: I pushed the UI changes last night
+[10/07/26, 09:04:15 AM] Vineet: Looks good, just a few tweaks needed
+[10/07/26, 09:05:30 AM] Ronit: Can you check the navbar component?
+[10/07/26, 09:06:00 AM] Vineet: Will do. Let me finish this parser first
+[10/07/26, 09:07:00 AM] Daksh: No rush, take your time
+[10/07/26, 09:08:30 AM] Vineet: Actually I found a bug in the auth flow
+[10/07/26, 09:09:00 AM] Ronit: What kind of bug?
+[10/07/26, 09:10:45 AM] Vineet: The token isn't refreshing properly after expiry
+[10/07/26, 09:11:30 AM] Daksh: Ugh, I thought we fixed that last week
+[10/07/26, 09:12:00 AM] Vineet: Nope, still there. I'll open a PR
