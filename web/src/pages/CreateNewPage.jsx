@@ -1,10 +1,17 @@
 import React from 'react';
 import { UploadCloud, MessageCircle, FileText, ArrowRight, Smartphone } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import Navbar from '../components/Navbar';
-import Footer from '../components/Footer';
+import DashboardLayout from '../components/DashboardLayout';
 
 export default function CreateNewPage() {
+  return (
+    <DashboardLayout activeTab="Create">
+      <CreateNewContent />
+    </DashboardLayout>
+  );
+}
+
+function CreateNewContent({ c, isDark }) {
   React.useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
@@ -21,19 +28,23 @@ export default function CreateNewPage() {
     }
   ];
 
+  if (!c) return null;
+
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: 'var(--color-bg)' }}>
-      <Navbar />
-      
-      <main style={{ flexGrow: 1, paddingTop: 120, paddingBottom: 80, paddingLeft: 24, paddingRight: 24 }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+      <div style={{ 
+        background: c.cardBg, backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)',
+        borderRadius: '24px', boxShadow: `4px 4px 15px ${c.shadowOuter}, inset 2px 2px 4px ${c.shadowInner}`,
+        padding: '32px', border: `1px solid ${c.borderMain}`, transition: 'all 0.3s ease'
+      }}>
         <div style={{ maxWidth: 900, margin: '0 auto' }}>
           
-          <div style={{ textAlign: 'center', marginBottom: 56 }}>
-            <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 64, height: 64, borderRadius: 20, background: 'rgba(108, 92, 231, 0.1)', color: 'var(--color-primary)', marginBottom: 24 }}>
+          <div style={{ textAlign: 'center', marginBottom: 48 }}>
+            <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 64, height: 64, borderRadius: 20, background: isDark ? 'rgba(108, 92, 231, 0.1)' : '#f3efff', color: '#6c5ce7', marginBottom: 24 }}>
               <UploadCloud size={32} />
             </div>
-            <h1 style={{ fontSize: '3rem', fontWeight: 900, color: 'var(--color-text)', letterSpacing: '-0.02em', marginBottom: 16 }}>Create New <span className="text-gradient">Clone</span></h1>
-            <p style={{ color: 'var(--color-text-muted)', fontSize: '1.15rem', maxWidth: 600, margin: '0 auto' }}>
+            <h1 style={{ fontSize: '2rem', fontWeight: 800, color: c.textMain, marginBottom: 16 }}>Create New <span style={{ color: '#6c5ce7' }}>Clone</span></h1>
+            <p style={{ color: c.textMuted, fontSize: '1rem', maxWidth: 600, margin: '0 auto', lineHeight: 1.6 }}>
               Choose the source of your conversation data. We will analyze the text to replicate the unique tone and personality.
             </p>
           </div>
@@ -42,7 +53,6 @@ export default function CreateNewPage() {
             {SOURCE_OPTIONS.map(option => (
               <Link key={option.id} to={option.link} style={{ textDecoration: 'none' }}>
                 <div 
-                  className="glass-card option-card" 
                   style={{ 
                     padding: 32, 
                     borderRadius: 24, 
@@ -50,13 +60,15 @@ export default function CreateNewPage() {
                     flexDirection: 'column', 
                     height: '100%',
                     position: 'relative',
-                    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                    transition: 'all 0.3s ease',
                     cursor: 'pointer',
-                    border: '2px solid transparent'
+                    background: c.cardBgSolid,
+                    border: `1px solid ${c.borderSubtle}`,
+                    boxShadow: `4px 4px 10px ${c.shadowSmall}`
                   }}
                 >
                   {option.badge && (
-                    <div style={{ position: 'absolute', top: -12, right: 24, background: 'linear-gradient(135deg, var(--color-primary), #A89FF5)', color: 'white', fontSize: '0.75rem', fontWeight: 700, padding: '4px 12px', borderRadius: 99, boxShadow: '0 4px 12px rgba(108, 92, 231, 0.3)' }}>
+                    <div style={{ position: 'absolute', top: -12, right: 24, background: 'linear-gradient(135deg, #8c7ae6, #6c5ce7)', color: 'white', fontSize: '0.75rem', fontWeight: 700, padding: '4px 12px', borderRadius: 99, boxShadow: '0 4px 12px rgba(108, 92, 231, 0.3)' }}>
                       {option.badge}
                     </div>
                   )}
@@ -65,8 +77,8 @@ export default function CreateNewPage() {
                     {option.icon}
                   </div>
                   
-                  <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--color-text)', marginBottom: 12 }}>{option.title}</h3>
-                  <p style={{ color: 'var(--color-text-muted)', fontSize: '0.95rem', lineHeight: 1.5, marginBottom: 24, flexGrow: 1 }}>
+                  <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: c.textDark, marginBottom: 12 }}>{option.title}</h3>
+                  <p style={{ color: c.textMuted, fontSize: '0.95rem', lineHeight: 1.5, marginBottom: 24, flexGrow: 1 }}>
                     {option.description}
                   </p>
                   
@@ -78,18 +90,22 @@ export default function CreateNewPage() {
             ))}
           </div>
 
-          <div style={{ marginTop: 64, padding: 32, borderRadius: 24, background: 'var(--color-surface)', border: '1px solid var(--color-border)', textAlign: 'center' }}>
-            <h3 style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--color-text)', marginBottom: 8 }}>Need help exporting your data?</h3>
-            <p style={{ color: 'var(--color-text-muted)', marginBottom: 24 }}>Check out our step-by-step guides on how to safely export your chat histories without compromising privacy.</p>
-            <Link to="/docs">
-              <button className="btn btn-outline" style={{ padding: '10px 24px' }}>Read Documentation</button>
+          <div style={{ marginTop: 40, padding: 32, borderRadius: 24, background: c.cardBgHighlight, border: `1px solid ${c.borderSubtle}`, textAlign: 'center', boxShadow: `2px 2px 8px ${c.shadowSmall}` }}>
+            <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: c.textDark, marginBottom: 8 }}>Need help exporting your data?</h3>
+            <p style={{ color: c.textMuted, marginBottom: 24, fontSize: '0.9rem' }}>Check out our step-by-step guides on how to safely export your chat histories without compromising privacy.</p>
+            <Link to="/docs" style={{ textDecoration: 'none' }}>
+              <button style={{
+                background: 'transparent', color: c.textMain, border: `1px solid ${c.borderSubtle}`,
+                padding: '10px 24px', borderRadius: '20px', fontSize: '13px', fontWeight: 600, cursor: 'pointer',
+                boxShadow: `2px 2px 8px ${c.shadowSmall}`, display: 'inline-flex', alignItems: 'center'
+              }}>
+                Read Documentation
+              </button>
             </Link>
           </div>
           
         </div>
-      </main>
-
-      <Footer />
+      </div>
     </div>
   );
 }

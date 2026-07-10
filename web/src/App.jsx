@@ -18,6 +18,7 @@ import ExplorePage from './pages/ExplorePage';
 import DashboardPage from './pages/DashboardPage';
 import CreateNewPage from './pages/CreateNewPage';
 import NewDashboardPage from './pages/app-dashboard/NewDashboardPage';
+import NotificationsPage from './pages/app-dashboard/NotificationsPage';
 // import ProtectedRoute from './components/ProtectedRoute';
 
 import InteractiveDotGrid from './components/InteractiveDotGrid';
@@ -92,9 +93,9 @@ export default function App() {
           <Route path="/chat" element={<ProtectedRoute><ChatPage /></ProtectedRoute>} />
           <Route path="/profile" element={<ProtectedRoute><NewProfilePage /></ProtectedRoute>} />
           <Route path="/bookmarks" element={<ProtectedRoute><BookmarksPage /></ProtectedRoute>} />
-          <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
-          <Route path="/app-dashboard" element={<ProtectedRoute><NewDashboardPage /></ProtectedRoute>} />
+          <Route path="/dashboard" element={<ProtectedRoute><NewDashboardPage /></ProtectedRoute>} />
           <Route path="/create" element={<ProtectedRoute><CreateNewPage /></ProtectedRoute>} />
+          <Route path="/notifications" element={<ProtectedRoute><NotificationsPage /></ProtectedRoute>} />
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </div>

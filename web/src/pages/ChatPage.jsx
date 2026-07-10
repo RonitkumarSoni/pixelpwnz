@@ -1,24 +1,59 @@
-import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate, Link, useSearchParams } from 'react-router-dom';
 import { Trash2, Send, ArrowLeft, ChevronDown } from 'lucide-react';
 import toast from 'react-hot-toast';
 import useChatStore from '../store/chatStore';
-import { sendMessage, clearSession as clearSessionApi } from '../api/client';
+import { sendMessage, clearSession as clearSessionApi, getSessionDetails } from '../api/client';
 import MessageList from '../components/MessageList';
 import InsightsModal from '../components/InsightsModal';
 import DeleteModal from '../components/DeleteModal';
 
 export default function ChatPage() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const sessionIdParam = searchParams.get('session_id');
+
   const {
     sessionId, userName, contactName, totalPairs,
     addMessage, setLoading, isLoading, clearSession,
-    temperature, setTemperature
+    temperature, setTemperature, incrementTotalPairs,
+    setSession, setMessages
   } = useChatStore();
 
   const [inputText, setInputText] = useState('');
   const [isInsightsOpen, setIsInsightsOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isInitializing, setIsInitializing] = useState(true);
+
+  useEffect(() => {
+    async function init() {
+      if (!sessionId && sessionIdParam) {
+        try {
+          const data = await getSessionDetails(sessionIdParam);
+          setSession(
+            data.session.session_id, 
+            data.session.userName, 
+            data.session.contact_name, 
+            data.session.pair_count
+          );
+          setMessages(data.messages || []);
+        } catch (err) {
+          toast.error('Could not load session.');
+          navigate('/upload');
+        }
+      }
+      setIsInitializing(false);
+    }
+    init();
+  }, [sessionId, sessionIdParam, setSession, setMessages, navigate]);
+
+  if (isInitializing) {
+    return (
+      <div className="page-enter" style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div className="loader"></div>
+      </div>
+    );
+  }
 
   // No session → redirect prompt
   if (!sessionId) {
@@ -55,6 +90,7 @@ export default function ChatPage() {
     try {
       const result = await sendMessage(sessionId, msg, temperature);
       addMessage({ type: 'clone', text: result.reply });
+      incrementTotalPairs();
     } catch (error) {
       const status = error.response?.status;
       if (status === 404) {

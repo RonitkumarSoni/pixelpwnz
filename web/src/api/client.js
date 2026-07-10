@@ -103,6 +103,15 @@ export const getStats = async (sessionId) => {
 };
 
 /**
+ * Get session details and chat history
+ * @param {string} sessionId
+ */
+export const getSessionDetails = async (sessionId) => {
+  const response = await apiClient.get(`/session/${sessionId}`);
+  return response.data;
+};
+
+/**
  * Delete/clear a session
  * @param {string} sessionId
  */
@@ -144,6 +153,22 @@ export const getProfile = async () => {
  */
 export const getSessions = async () => {
   const response = await apiClient.get('/sessions');
+  return response.data;
+};
+
+/**
+ * Get bookmarked personas for the current user
+ */
+export const getBookmarkedPersonas = async () => {
+  const response = await apiClient.get('/persona/bookmarks');
+  return response.data;
+};
+
+/**
+ * Toggle bookmark for a persona
+ */
+export const toggleBookmark = async (id) => {
+  const response = await apiClient.post(`/persona/${id}/bookmark`);
   return response.data;
 };
 

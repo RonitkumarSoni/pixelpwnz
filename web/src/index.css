@@ -1264,3 +1264,403 @@ p {
     grid-template-columns: 1fr;
   }
 }
+
+/* ============================================
+   NEUMORPHIC UPGRADE BUTTON
+   ============================================ */
+.upgrade-btn-neumorphic {
+  transition: all 0.2s ease;
+  background: transparent;
+  border: 0;
+  font-weight: bold;
+  display: block;
+  border-radius: 16px;
+  position: relative;
+  outline: none;
+  padding: 3px;
+  cursor: pointer;
+  width: 100%;
+  animation-name: btn-neu-anim;
+  animation-duration: 0.75s;
+  animation-delay: 0s;
+  animation-fill-mode: forwards;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.upgrade-btn-neumorphic .btn-text {
+  color: #6c5ce7;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  opacity: 1;
+  animation-name: btn-neu-text-anim;
+  animation-duration: 0.75s;
+  animation-delay: 0.3s;
+  animation-fill-mode: backwards;
+}
+
+.upgrade-btn-neumorphic:before,
+.upgrade-btn-neumorphic:after,
+.upgrade-btn-neumorphic .btn-inner:before,
+.upgrade-btn-neumorphic .btn-inner:after {
+  content: '';
+  display: block;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  border-radius: 16px;
+  pointer-events: none;
+}
+
+.upgrade-btn-neumorphic:before {
+  animation-name: btn-neu-before-anim;
+  animation-duration: 0.75s;
+  animation-delay: 0s;
+  animation-fill-mode: forwards;
+}
+
+.upgrade-btn-neumorphic:after {
+  animation-name: btn-neu-after-anim;
+  animation-duration: 0.75s;
+  animation-delay: 0s;
+  animation-fill-mode: forwards;
+}
+
+.upgrade-btn-neumorphic .btn-inner {
+  width: 100%;
+  position: relative;
+  background: transparent;
+  padding: 12px;
+  display: block;
+  border-radius: 16px;
+  animation-name: btn-neu-inner-anim;
+  animation-duration: 0.75s;
+  animation-delay: 0s;
+  animation-fill-mode: forwards;
+  z-index: 1;
+}
+
+.upgrade-btn-neumorphic.active .btn-text {
+  font-size: 12.5px;
+}
+
+html[data-theme="light"] .upgrade-btn-neumorphic.active .btn-inner:before {
+  box-shadow: 4px 4px 10px inset rgba(108, 92, 231, 0.15);
+}
+html[data-theme="light"] .upgrade-btn-neumorphic.active .btn-inner:after {
+  box-shadow: -4px -4px 10px inset rgba(255, 255, 255, 0.9);
+}
+
+html[data-theme="dark"] .upgrade-btn-neumorphic.active .btn-inner:before {
+  box-shadow: 4px 4px 10px inset rgba(0, 0, 0, 0.4);
+}
+html[data-theme="dark"] .upgrade-btn-neumorphic.active .btn-inner:after {
+  box-shadow: -4px -4px 10px inset rgba(255, 255, 255, 0.05);
+}
+
+@keyframes btn-neu-before-anim {
+  from {box-shadow: 0 0 0 transparent;}
+  to {box-shadow: -4px -4px 10px rgba(255, 255, 255, 0.8);}
+}
+@keyframes btn-neu-after-anim {
+  from {box-shadow: 0 0 0 transparent;}
+  to {box-shadow: 4px 4px 10px rgba(108, 92, 231, 0.15);}
+}
+
+html[data-theme="dark"] .upgrade-btn-neumorphic:before {
+  animation-name: btn-neu-before-anim-dark;
+}
+html[data-theme="dark"] .upgrade-btn-neumorphic:after {
+  animation-name: btn-neu-after-anim-dark;
+}
+@keyframes btn-neu-before-anim-dark {
+  from {box-shadow: 0 0 0 transparent;}
+  to {box-shadow: -4px -4px 10px rgba(255, 255, 255, 0.03);}
+}
+@keyframes btn-neu-after-anim-dark {
+  from {box-shadow: 0 0 0 transparent;}
+  to {box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.3);}
+}
+
+@keyframes btn-neu-inner-anim {
+  from {background: transparent;}
+  to {background: linear-gradient(145deg, rgba(255,255,255,0.9), rgba(243,239,255,0.6));}
+}
+html[data-theme="dark"] .upgrade-btn-neumorphic .btn-inner {
+  animation-name: btn-neu-inner-anim-dark;
+}
+@keyframes btn-neu-inner-anim-dark {
+  from {background: transparent;}
+  to {background: linear-gradient(145deg, rgba(42,39,63,0.6), rgba(30,28,46,0.8));}
+}
+
+@keyframes btn-neu-anim {
+  from {background: transparent;}
+  to {background: transparent;}
+}
+@keyframes btn-neu-text-anim {
+  from {opacity: 0;}
+  to {opacity: 1;}
+}
+
+/* ============================================
+   NEUMORPHIC ICON & SEARCH BAR
+   ============================================ */
+.icon-btn-neumorphic, .search-neumorphic {
+  transition: all 0.2s ease;
+  background: transparent;
+  border: 0;
+  display: block;
+  position: relative;
+  outline: none;
+  cursor: pointer;
+  animation-name: btn-neu-anim;
+  animation-duration: 0.75s;
+  animation-delay: 0s;
+  animation-fill-mode: forwards;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.icon-btn-neumorphic {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  padding: 3px;
+}
+
+.search-neumorphic {
+  width: 280px;
+  height: 44px;
+  border-radius: 99px;
+  padding: 3px;
+  cursor: text;
+}
+
+.icon-btn-neumorphic:before,
+.icon-btn-neumorphic:after,
+.icon-btn-neumorphic .btn-inner:before,
+.icon-btn-neumorphic .btn-inner:after {
+  content: ''; display: block; width: 100%; height: 100%; position: absolute; top: 0; left: 0; border-radius: 50%; pointer-events: none;
+}
+
+.search-neumorphic:before,
+.search-neumorphic:after,
+.search-neumorphic .btn-inner:before,
+.search-neumorphic .btn-inner:after {
+  content: ''; display: block; width: 100%; height: 100%; position: absolute; top: 0; left: 0; border-radius: 99px; pointer-events: none;
+}
+
+.icon-btn-neumorphic:before, .search-neumorphic:before { animation-name: btn-neu-before-anim; animation-duration: 0.75s; animation-fill-mode: forwards; }
+.icon-btn-neumorphic:after, .search-neumorphic:after { animation-name: btn-neu-after-anim; animation-duration: 0.75s; animation-fill-mode: forwards; }
+
+.icon-btn-neumorphic .btn-inner, .search-neumorphic .btn-inner {
+  width: 100%; height: 100%; position: relative; background: transparent; display: flex; align-items: center; justify-content: center;
+  animation-name: btn-neu-inner-anim; animation-duration: 0.75s; animation-fill-mode: forwards; z-index: 1;
+}
+
+.icon-btn-neumorphic .btn-inner { border-radius: 50%; }
+.search-neumorphic .btn-inner { border-radius: 99px; justify-content: flex-start; padding: 0 16px; gap: 8px; }
+
+/* Active States */
+html[data-theme="light"] .icon-btn-neumorphic.active .btn-inner:before,
+html[data-theme="light"] .search-neumorphic.active .btn-inner:before,
+html[data-theme="light"] .search-neumorphic:focus-within .btn-inner:before { box-shadow: 4px 4px 10px inset rgba(108, 92, 231, 0.15); }
+
+html[data-theme="light"] .icon-btn-neumorphic.active .btn-inner:after,
+html[data-theme="light"] .search-neumorphic.active .btn-inner:after,
+html[data-theme="light"] .search-neumorphic:focus-within .btn-inner:after { box-shadow: -4px -4px 10px inset rgba(255, 255, 255, 0.9); }
+
+html[data-theme="dark"] .icon-btn-neumorphic.active .btn-inner:before,
+html[data-theme="dark"] .search-neumorphic.active .btn-inner:before,
+html[data-theme="dark"] .search-neumorphic:focus-within .btn-inner:before { box-shadow: 4px 4px 10px inset rgba(0, 0, 0, 0.4); }
+
+html[data-theme="dark"] .icon-btn-neumorphic.active .btn-inner:after,
+html[data-theme="dark"] .search-neumorphic.active .btn-inner:after,
+html[data-theme="dark"] .search-neumorphic:focus-within .btn-inner:after { box-shadow: -4px -4px 10px inset rgba(255, 255, 255, 0.05); }
+
+/* Dark mode inherited keyframe names */
+html[data-theme="dark"] .icon-btn-neumorphic:before, html[data-theme="dark"] .search-neumorphic:before { animation-name: btn-neu-before-anim-dark; }
+html[data-theme="dark"] .icon-btn-neumorphic:after, html[data-theme="dark"] .search-neumorphic:after { animation-name: btn-neu-after-anim-dark; }
+html[data-theme="dark"] .icon-btn-neumorphic .btn-inner, html[data-theme="dark"] .search-neumorphic .btn-inner { animation-name: btn-neu-inner-anim-dark; }
+
+.search-neumorphic input { flex: 1; border: none; background: transparent; outline: none; font-size: 13px; color: inherit; z-index: 2; position: relative; }
+
+/* ============================================
+   BLOB UPGRADE BUTTON
+   ============================================ */
+.upgrade-btn-blob {
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 700;
+  border-radius: 16px;
+  border: none;
+  padding: 2px;
+  width: 100%;
+  position: relative;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.2s ease;
+}
+
+html[data-theme="light"] .upgrade-btn-blob {
+  background: radial-gradient(circle 80px at 80% -10%, #ffffff, #e2e2eb);
+}
+html[data-theme="dark"] .upgrade-btn-blob {
+  background: radial-gradient(circle 80px at 80% -10%, #4a4563, #181b1b);
+}
+
+.upgrade-btn-blob::after {
+  content: "";
+  position: absolute;
+  width: 65%;
+  height: 60%;
+  border-radius: 120px;
+  top: 0;
+  right: 0;
+  z-index: -1;
+}
+html[data-theme="light"] .upgrade-btn-blob::after { box-shadow: 0 0 20px rgba(255,255,255,0.8); }
+html[data-theme="dark"] .upgrade-btn-blob::after { box-shadow: 0 0 20px rgba(255,255,255,0.15); }
+
+.upgrade-btn-blob .blob1 {
+  position: absolute;
+  width: 70px;
+  height: 100%;
+  border-radius: 16px;
+  bottom: 0;
+  left: 0;
+  background: radial-gradient(
+    circle 60px at 0% 100%,
+    rgba(175, 160, 255, 0.8),
+    rgba(108, 92, 231, 0.3),
+    transparent
+  );
+  box-shadow: -10px 10px 30px rgba(108, 92, 231, 0.15);
+  z-index: 1;
+}
+
+.upgrade-btn-blob .blob2 {
+  position: absolute;
+  width: 50px;
+  height: 100%;
+  border-radius: 16px;
+  top: 0;
+  right: 0;
+  background: radial-gradient(
+    circle 40px at 100% 0%,
+    rgba(255, 255, 255, 0.6),
+    rgba(255, 255, 255, 0.1),
+    transparent
+  );
+  z-index: 1;
+}
+
+html[data-theme="dark"] .upgrade-btn-blob .blob2 {
+  background: radial-gradient(
+    circle 40px at 100% 0%,
+    rgba(255, 255, 255, 0.15),
+    transparent
+  );
+}
+
+.upgrade-btn-blob .inner {
+  padding: 12px;
+  border-radius: 14px;
+  color: #6c5ce7;
+  z-index: 3;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+html[data-theme="light"] .upgrade-btn-blob .inner {
+  background: radial-gradient(circle 80px at 80% -50%, #ffffff, #f4f3fa);
+}
+html[data-theme="dark"] .upgrade-btn-blob .inner {
+  background: radial-gradient(circle 80px at 80% -50%, #302c42, #0f1111);
+  color: #c7bee6;
+}
+
+.upgrade-btn-blob .inner::before {
+  content: "";
+  width: 100%;
+  height: 100%;
+  left: 0;
+  top: 0;
+  border-radius: 14px;
+  background: radial-gradient(
+    circle 60px at 0% 100%,
+    rgba(175, 160, 255, 0.15),
+    rgba(108, 92, 231, 0.05),
+    transparent
+  );
+  position: absolute;
+  z-index: -1;
+}
+
+.upgrade-btn-blob:active {
+  transform: scale(0.96);
+}
+
+/* ============================================
+   GET STARTED BUTTON (Navbar)
+   ============================================ */
+.btn-get-started {
+  background: var(--color-primary, #6c5ce7);
+  color: white;
+  font-family: inherit;
+  padding: 0.35em;
+  padding-left: 1.2em;
+  font-size: 15px;
+  font-weight: 600;
+  border-radius: 0.9em;
+  border: none;
+  letter-spacing: 0.05em;
+  display: flex;
+  align-items: center;
+  box-shadow: inset 0 0 1.6em -0.6em rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+  position: relative;
+  height: 2.8em;
+  padding-right: 3.3em;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  text-decoration: none;
+}
+
+.btn-get-started .icon {
+  background: white;
+  margin-left: 1em;
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 2.2em;
+  width: 2.2em;
+  border-radius: 0.7em;
+  box-shadow: 0.1em 0.1em 0.6em 0.2em rgba(108, 92, 231, 0.4);
+  right: 0.3em;
+  transition: all 0.3s;
+}
+
+.btn-get-started:hover .icon {
+  width: calc(100% - 0.6em);
+}
+
+.btn-get-started .icon svg {
+  width: 1.1em;
+  transition: transform 0.3s;
+  color: var(--color-primary, #6c5ce7);
+}
+
+.btn-get-started:hover .icon svg {
+  transform: translateX(0.1em);
+}
+
+.btn-get-started:active .icon {
+  transform: scale(0.95);
+}

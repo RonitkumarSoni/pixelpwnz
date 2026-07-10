@@ -77,7 +77,7 @@ export default function UploadPage() {
       setUploadState('success');
       setSession(result.session_id, userName.trim(), result.contact_name, result.total_pairs_extracted);
       toast.success(`Parsed ${result.total_pairs_extracted} conversation pairs!`);
-      setTimeout(() => navigate('/chat'), 1500);
+      setTimeout(() => navigate(`/chat?session_id=${result.session_id}`), 1500);
     } catch (error) {
       setUploadState('error');
       const msg = error.response?.data?.message || error.response?.data?.error || error.message || 'Upload failed. Check the file and try again.';
