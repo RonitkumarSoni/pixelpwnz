@@ -7,7 +7,18 @@ const useUiStore = create((set) => ({
   // Privacy
   privacyAccepted: localStorage.getItem('signet-privacy') === 'true',
 
+  // Auth
+  user: JSON.parse(localStorage.getItem('signet-user')) || null,
+
   // Actions
+  setUser: (user) => {
+    if (user) {
+      localStorage.setItem('signet-user', JSON.stringify(user));
+    } else {
+      localStorage.removeItem('signet-user');
+    }
+    set({ user });
+  },
   toggleTheme: () =>
     set((state) => {
       const newTheme = state.theme === 'dark' ? 'light' : 'dark';

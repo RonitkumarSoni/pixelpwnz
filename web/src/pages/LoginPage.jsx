@@ -164,7 +164,10 @@ export default function LoginPage() {
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 16 }}>
-              <button style={{
+              <button 
+                onClick={(e) => { e.preventDefault(); console.log('Social login clicked'); }}
+                style={{
+
                 width: '100%', padding: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12,
                 background: 'white', border: '1px solid #E5E7EB', borderRadius: 8, cursor: 'pointer',
                 fontSize: '0.9rem', fontWeight: 600, color: '#374151', transition: 'all 0.2s', boxShadow: '0 1px 2px rgba(0,0,0,0.02)'
@@ -173,7 +176,10 @@ export default function LoginPage() {
                 Continue with Google
               </button>
 
-              <button style={{
+              <button 
+                onClick={handleSubmit}
+                style={{
+
                 width: '100%', padding: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12,
                 background: 'white', border: '1px solid #E5E7EB', borderRadius: 8, cursor: 'pointer',
                 fontSize: '0.9rem', fontWeight: 600, color: '#374151', transition: 'all 0.2s', boxShadow: '0 1px 2px rgba(0,0,0,0.02)'

@@ -1,0 +1,255 @@
+import React from 'react';
+import { 
+  MessageSquare, Upload, Database, Activity, ChevronRight, CheckCircle, Zap
+} from 'lucide-react';
+import useUiStore from '../../store/uiStore';
+import DashboardLayout from '../../components/DashboardLayout';
+
+export default function NewDashboardPage() {
+  const { user } = useUiStore();
+  const userName = user?.name || 'Ronit';
+
+  // We receive `c` and `isDark` as props from DashboardLayout when passed as children, 
+  // but since we are writing standard React, it's better to just use a render prop or access theme from store.
+  // Actually, DashboardLayout passes props to children using React.cloneElement.
+  // We can just accept them here.
+  return (
+    <DashboardLayout activeTab="Home">
+      <DashboardContent userName={userName} />
+    </DashboardLayout>
+  );
+}
+
+function DashboardContent({ userName, c, isDark }) {
+  // If c is not provided yet (initial render before cloneElement), return null
+  if (!c) return null;
+
+  return (
+    <div style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr', gap: '20px' }}>
+      
+      {/* LEFT COLUMN */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+        
+        {/* Hero Card */}
+        <div style={{ 
+          background: c.cardBg, backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)',
+          borderRadius: '24px', boxShadow: `4px 4px 15px ${c.shadowOuter}, inset 2px 2px 4px ${c.shadowInner}`,
+          padding: '24px', border: `1px solid ${c.borderMain}`, transition: 'all 0.3s ease',
+          position: 'relative', overflow: 'hidden' 
+        }}>
+          <div style={{ position: 'relative', zIndex: 2 }}>
+            <div style={{ fontSize: '14px', fontWeight: 600, color: '#6c5ce7', marginBottom: '8px' }}>Hello {userName}! 👋</div>
+            <h2 style={{ fontSize: '28px', margin: '0 0 12px 0', color: c.textDark, transition: 'color 0.3s' }}>Your AI Clone is Ready</h2>
+            <p style={{ fontSize: '13px', color: c.textMuted, margin: '0 0 24px 0', lineHeight: 1.5 }}>
+              The clone has learned from<br />
+              <strong style={{ color: c.textDark }}>5,263</strong> conversations.
+            </p>
+            <div style={{ display: 'flex', gap: '12px' }}>
+              <button style={{
+                background: 'linear-gradient(135deg, #8c7ae6, #6c5ce7)', color: '#fff', border: 'none',
+                padding: '10px 20px', borderRadius: '20px', fontSize: '13px', fontWeight: 600, cursor: 'pointer',
+                boxShadow: '0 8px 16px rgba(108,92,231,0.2)', display: 'flex', alignItems: 'center', gap: '8px'
+              }}>
+                Chat Now <ChevronRight size={14} />
+              </button>
+              <button style={{
+                background: c.cardBgHighlight, color: c.textMain, border: `1px solid ${c.borderSubtle}`,
+                padding: '10px 20px', borderRadius: '20px', fontSize: '13px', fontWeight: 600, cursor: 'pointer',
+                boxShadow: `2px 2px 8px ${c.shadowSmall}`, display: 'flex', alignItems: 'center', gap: '8px'
+              }}>
+                <Upload size={14} /> Upload New Chat
+              </button>
+            </div>
+          </div>
+          
+          {/* Robot Graphic */}
+          <div style={{ position: 'absolute', right: '40px', top: '50%', transform: 'translateY(-50%)', zIndex: 1, transformOrigin: 'right center' }}>
+            <div className="signet-bot" style={{ transform: 'scale(0.35)' }}>
+              <div className="signet-bot-head">
+                <div className="signet-bot-ear signet-bot-ear-left" />
+                <div className="signet-bot-ear signet-bot-ear-right" />
+                <div className="signet-bot-antenna">
+                  <div className="signet-bot-antenna-ball" />
+                </div>
+                <div className="signet-bot-face">
+                  <div className="signet-bot-eyes">
+                    <div className="signet-bot-eye" />
+                    <div className="signet-bot-eye" />
+                  </div>
+                  <div className="signet-bot-cheek signet-bot-cheek-left" />
+                  <div className="signet-bot-cheek signet-bot-cheek-right" />
+                </div>
+              </div>
+              <div className="signet-bot-body-wrapper">
+                <div className="signet-bot-arm signet-bot-arm-left" />
+                <div className="signet-bot-torso">
+                  <div className="signet-bot-chest-light" />
+                </div>
+                <div className="signet-bot-arm signet-bot-arm-right" />
+              </div>
+              <div className="signet-bot-shadow" />
+            </div>
+          </div>
+        </div>
+
+        {/* Recent Chats */}
+        <div style={{ 
+          background: c.cardBg, backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)',
+          borderRadius: '24px', boxShadow: `4px 4px 15px ${c.shadowOuter}, inset 2px 2px 4px ${c.shadowInner}`,
+          padding: '20px', border: `1px solid ${c.borderMain}`, transition: 'all 0.3s ease',
+          flex: 1 
+        }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+            <h3 style={{ margin: 0, fontSize: '15px', fontWeight: 600 }}>Recent Chats</h3>
+            <span style={{ fontSize: '12px', color: '#6c5ce7', fontWeight: 600, cursor: 'pointer' }}>View All</span>
+          </div>
+          
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            {[
+              { name: 'WhatsApp Export', time: 'Today', msgs: '532 Messages', iconUrl: 'https://img.icons8.com/color/48/whatsapp--v1.png', bg: isDark ? 'rgba(240, 253, 244, 0.1)' : '#f0fdf4' },
+              { name: 'Instagram Chat', time: 'Yesterday', msgs: '421 Messages', iconUrl: 'https://img.icons8.com/fluency/48/instagram-new.png', bg: isDark ? 'rgba(253, 242, 248, 0.1)' : '#fdf2f8' },
+              { name: 'Telegram Chat', time: '2 Days Ago', msgs: '891 Messages', iconUrl: 'https://img.icons8.com/color/48/telegram-app--v1.png', bg: isDark ? 'rgba(240, 249, 255, 0.1)' : '#f0f9ff' },
+              { name: 'Messenger Chat', time: 'Last Week', msgs: '318 Messages', iconUrl: 'https://img.icons8.com/fluency/48/facebook-messenger--v2.png', bg: isDark ? 'rgba(239, 246, 255, 0.1)' : '#eff6ff' }
+            ].map((chat, i) => (
+              <div key={i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 12px', borderRadius: '16px', background: c.cardBgHighlight, boxShadow: `2px 2px 8px ${c.shadowSmall}` }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  <div style={{ width: '36px', height: '36px', borderRadius: '12px', background: chat.bg, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <img src={chat.iconUrl} alt={chat.name} style={{ width: '22px', height: '22px' }} />
+                  </div>
+                  <div>
+                    <div style={{ fontSize: '13px', fontWeight: 600, color: c.textMain }}>{chat.name}</div>
+                    <div style={{ fontSize: '11px', color: c.textLight }}>{chat.time}</div>
+                  </div>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                  <span style={{ fontSize: '12px', color: c.textMuted, fontWeight: 500 }}>{chat.msgs}</span>
+                  <span style={{ color: '#c7bee6', letterSpacing: '2px' }}>•••</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+      </div>
+
+      {/* RIGHT COLUMN */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+        
+        {/* AI Clone Status */}
+        <div style={{ 
+          background: c.cardBg, backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)',
+          borderRadius: '24px', boxShadow: `4px 4px 15px ${c.shadowOuter}, inset 2px 2px 4px ${c.shadowInner}`,
+          padding: '20px', border: `1px solid ${c.borderMain}`, transition: 'all 0.3s ease'
+        }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+            <h3 style={{ margin: 0, fontSize: '15px', fontWeight: 600 }}>AI Clone Status</h3>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '11px', color: '#2ed573', fontWeight: 600 }}>
+              <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#2ed573' }} /> Active
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', gap: '16px' }}>
+            <div style={{
+              width: '60px', height: '80px', borderRadius: '16px', background: isDark ? 'linear-gradient(180deg, rgba(243,239,255,0.1) 0%, rgba(226,220,242,0.05) 100%)' : 'linear-gradient(180deg, #f3efff 0%, #e2dcf2 100%)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', border: `1px solid ${c.borderMain}`,
+              boxShadow: `inset 2px 2px 5px ${c.shadowInner}, 2px 2px 8px ${c.shadowSmall}`
+            }}>
+              <Database size={24} color="#6c5ce7" />
+            </div>
+            
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+              <div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', fontWeight: 600, color: c.textMuted, marginBottom: '6px' }}>
+                  <span>Knowledge Base</span>
+                  <span style={{ color: c.textDark }}>96%</span>
+                </div>
+                <div style={{ width: '100%', height: '4px', background: isDark ? 'rgba(255,255,255,0.1)' : '#e2dcf2', borderRadius: '2px' }}>
+                  <div style={{ width: '96%', height: '100%', background: 'linear-gradient(90deg, #8c7ae6, #6c5ce7)', borderRadius: '2px' }} />
+                </div>
+              </div>
+              
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: `1px dashed ${c.borderSubtle}`, paddingTop: '12px' }}>
+                <span style={{ fontSize: '11px', color: c.textMuted, fontWeight: 500 }}>Response Style</span>
+                <span style={{ fontSize: '11px', color: c.textDark, fontWeight: 600 }}>Human-like</span>
+              </div>
+              
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: `1px dashed ${c.borderSubtle}`, paddingTop: '12px' }}>
+                <span style={{ fontSize: '11px', color: c.textMuted, fontWeight: 500 }}>Emotion Detection</span>
+                <span style={{ fontSize: '11px', color: '#2ed573', fontWeight: 600 }}>Enabled</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Analytics Overview Grid */}
+        <div style={{ 
+          background: c.cardBg, backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)',
+          borderRadius: '24px', boxShadow: `4px 4px 15px ${c.shadowOuter}, inset 2px 2px 4px ${c.shadowInner}`,
+          padding: '20px', border: `1px solid ${c.borderMain}`, transition: 'all 0.3s ease',
+          flex: 1 
+        }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+            <h3 style={{ margin: 0, fontSize: '15px', fontWeight: 600 }}>Analytics Overview</h3>
+            <span style={{ fontSize: '11px', color: c.textLight, display: 'flex', alignItems: 'center' }}>This Week <ChevronRight size={12} /></span>
+          </div>
+          
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+            {/* Stat 1 */}
+            <div style={{ background: c.cardBgSolid, padding: '12px', borderRadius: '16px', boxShadow: `2px 2px 8px ${c.shadowSmall}` }}>
+              <div style={{ fontSize: '11px', color: c.textMuted, marginBottom: '8px' }}>Messages Learned</div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+                <div>
+                  <div style={{ fontSize: '22px', fontWeight: 700, color: c.textDark, marginBottom: '4px' }}>5.2K</div>
+                  <div style={{ fontSize: '10px', color: '#2ed573', fontWeight: 600 }}>+12.5% ↑</div>
+                </div>
+                <div style={{ width: '32px', height: '32px', borderRadius: '10px', background: isDark ? 'rgba(108,92,231,0.1)' : '#f3efff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <MessageSquare size={16} color="#6c5ce7" />
+                </div>
+              </div>
+            </div>
+            {/* Stat 2 */}
+            <div style={{ background: c.cardBgSolid, padding: '12px', borderRadius: '16px', boxShadow: `2px 2px 8px ${c.shadowSmall}` }}>
+              <div style={{ fontSize: '11px', color: c.textMuted, marginBottom: '8px' }}>Reply Accuracy</div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+                <div>
+                  <div style={{ fontSize: '22px', fontWeight: 700, color: c.textDark, marginBottom: '4px' }}>97%</div>
+                  <div style={{ fontSize: '10px', color: '#2ed573', fontWeight: 600 }}>+5.3% ↑</div>
+                </div>
+                <div style={{ width: '32px', height: '32px', borderRadius: '10px', background: isDark ? 'rgba(46, 213, 115, 0.1)' : '#e0faea', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <CheckCircle size={16} color="#2ed573" />
+                </div>
+              </div>
+            </div>
+            {/* Stat 3 */}
+            <div style={{ background: c.cardBgSolid, padding: '12px', borderRadius: '16px', boxShadow: `2px 2px 8px ${c.shadowSmall}` }}>
+              <div style={{ fontSize: '11px', color: c.textMuted, marginBottom: '8px' }}>Response Speed</div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+                <div>
+                  <div style={{ fontSize: '22px', fontWeight: 700, color: c.textDark, marginBottom: '4px' }}>1.2 <span style={{fontSize: '12px', fontWeight: 500}}>sec</span></div>
+                  <div style={{ fontSize: '10px', color: '#2ed573', fontWeight: 600 }}>-0.3 sec ↓</div>
+                </div>
+                <div style={{ width: '32px', height: '32px', borderRadius: '10px', background: isDark ? 'rgba(56, 189, 248, 0.1)' : '#e0f2fe', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <Zap size={16} color="#38bdf8" />
+                </div>
+              </div>
+            </div>
+            {/* Stat 4 */}
+            <div style={{ background: c.cardBgSolid, padding: '12px', borderRadius: '16px', boxShadow: `2px 2px 8px ${c.shadowSmall}` }}>
+              <div style={{ fontSize: '11px', color: c.textMuted, marginBottom: '8px' }}>Average Reply</div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+                <div>
+                  <div style={{ fontSize: '22px', fontWeight: 700, color: c.textDark, marginBottom: '4px' }}>18 <span style={{fontSize: '12px', fontWeight: 500}}>words</span></div>
+                  <div style={{ fontSize: '10px', color: '#2ed573', fontWeight: 600 }}>+2 words ↑</div>
+                </div>
+                <div style={{ width: '32px', height: '32px', borderRadius: '10px', background: isDark ? 'rgba(245, 158, 11, 0.1)' : '#fef3c7', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <Activity size={16} color="#f59e0b" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  );
+}
