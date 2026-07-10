@@ -18,7 +18,7 @@ import ExplorePage from './pages/ExplorePage';
 import DashboardPage from './pages/DashboardPage';
 import CreateNewPage from './pages/CreateNewPage';
 import NewDashboardPage from './pages/app-dashboard/NewDashboardPage';
-import ProtectedRoute from './components/ProtectedRoute';
+// import ProtectedRoute from './components/ProtectedRoute';
 
 import InteractiveDotGrid from './components/InteractiveDotGrid';
 import { useAuthStore } from './store/authStore';
