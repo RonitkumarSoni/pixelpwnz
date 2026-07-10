@@ -41,7 +41,7 @@ router.post('/', async (req, res, next) => {
       session.pairs
     );
 
-    const { reply, usage } = await generateReply(
+    const { reply, usage, fallback } = await generateReply(
       systemPrompt,
       userPrompt,
       temperature ?? 0.7
@@ -55,6 +55,7 @@ router.post('/', async (req, res, next) => {
       used_examples: examples.length,
       latency_ms: latencyMs,
       token_usage: usage,
+      ...(fallback ? { fallback: true } : {}),
     });
   } catch (err) {
     next(err);
