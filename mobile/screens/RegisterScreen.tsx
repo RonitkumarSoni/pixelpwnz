@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, SafeAreaView, KeyboardAvoidingView, Platform, ActivityIndicator } from 'react-native';
-import { Feather } from '@expo/vector-icons';
+import { Feather, FontAwesome5 } from '@expo/vector-icons';
 import { Colors, Spacing } from '../constants/theme';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { AuthStackParamList } from '../navigation/AuthNavigator';
@@ -108,6 +108,22 @@ export default function RegisterScreen({ navigation }: Props) {
             ) : (
               <Text style={styles.btnPrimaryText}>Create account</Text>
             )}
+          </TouchableOpacity>
+
+          <View style={styles.dividerRow}>
+            <View style={styles.dividerLine} />
+            <Text style={styles.dividerText}>or continue with</Text>
+            <View style={styles.dividerLine} />
+          </View>
+
+          <TouchableOpacity style={styles.btnSocial} activeOpacity={0.7} onPress={() => {}}>
+            <FontAwesome5 name="google" size={18} color="#000" />
+            <Text style={styles.btnSocialText}>Continue with Google</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.btnSocial} activeOpacity={0.7} onPress={() => {}}>
+            <FontAwesome5 name="apple" size={20} color="#000" />
+            <Text style={styles.btnSocialText}>Continue with Apple</Text>
           </TouchableOpacity>
           
           <View style={styles.loginPrompt}>
@@ -222,6 +238,37 @@ const styles = StyleSheet.create({
   loginLink: {
     color: Colors.primarySolid,
     fontWeight: '700',
+    fontSize: 15,
+  },
+  dividerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 10,
+  },
+  dividerLine: {
+    flex: 1,
+    height: 1,
+    backgroundColor: Colors.border,
+  },
+  dividerText: {
+    paddingHorizontal: 10,
+    color: Colors.textSecondary,
+    fontSize: 14,
+  },
+  btnSocial: {
+    flexDirection: 'row',
+    backgroundColor: '#FFF',
+    borderWidth: 1,
+    borderColor: Colors.border,
+    paddingVertical: 14,
+    borderRadius: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 12,
+  },
+  btnSocialText: {
+    color: '#111',
+    fontWeight: '600',
     fontSize: 15,
   }
 });
