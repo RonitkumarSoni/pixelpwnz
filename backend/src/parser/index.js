@@ -111,22 +111,16 @@ function buildPairs(messages, userName, contactName) {
     if (!isUser && msg.sender === contactName) {
       bufferedIncoming = msg;
     } else if (isUser && bufferedIncoming) {
-      if (bufferedIncoming.message && bufferedIncoming.message.trim().length > 0) {
-        // Truncate extremely long messages to prevent ChromaDB/embedding token limit crashes (max 2000 chars)
-        const safeIncoming = bufferedIncoming.message.substring(0, 2000);
-        const safeReply = msg.message.substring(0, 2000);
-
-        pairs.push({
-          id: uuidv4(),
-          incoming_message: safeIncoming,
-          user_reply: safeReply,
-          timestamp: msg.timestamp,
-          contact_name: bufferedIncoming.sender,
-          word_count_in: countWords(bufferedIncoming.message),
-          word_count_out: countWords(msg.message),
-          emoji_count: countEmojis(msg.message),
-        });
-      }
+      pairs.push({
+        id: uuidv4(),
+        incoming_message: bufferedIncoming.message,
+        user_reply: msg.message,
+        timestamp: msg.timestamp,
+        contact_name: bufferedIncoming.sender,
+        word_count_in: countWords(bufferedIncoming.message),
+        word_count_out: countWords(msg.message),
+        emoji_count: countEmojis(msg.message),
+      });
       bufferedIncoming = null;
     }
   }

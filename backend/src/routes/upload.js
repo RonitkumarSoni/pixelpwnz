@@ -5,10 +5,11 @@ import { parseWhatsAppChat } from '../parser/index.js';
 import { ingestPairs } from '../brain/index.js';
 import { buildToneProfile } from '../brain/promptBuilder.js';
 import { createSession } from '../store/sessionStore.js';
+import { optionalAuth } from '../middleware/auth.js';
 
 const router = Router();
 
-router.post('/', upload.single('chatFile'), async (req, res, next) => {
+router.post('/', upload.single('chatFile'), optionalAuth, async (req, res, next) => {
   try {
     if (!req.file) {
       const err = new Error('No file uploaded');
@@ -23,17 +24,12 @@ router.post('/', upload.single('chatFile'), async (req, res, next) => {
       throw err;
     }
 
-    const { contactName, pairs: parsedPairs, totalMessagesParsed } = parseWhatsAppChat(
+    const { contactName, pairs, totalMessagesParsed } = parseWhatsAppChat(
       req.file.buffer,
       userName
     );
 
-    // Limit to 750 pairs to safely process a larger chunk of the conversation
-    // We slice the last 750 pairs to preserve the most recent part of the conversation
-    const pairs = parsedPairs.slice(-750);
-
     const sessionId = uuidv4();
-
     const toneProfile = buildToneProfile(pairs);
 
     await ingestPairs(sessionId, pairs);
@@ -43,7 +39,7 @@ router.post('/', upload.single('chatFile'), async (req, res, next) => {
       pairs,
       toneProfile,
       userName,
-    });
+    }, req.user?.id || null);
 
     res.status(200).json({
       success: true,

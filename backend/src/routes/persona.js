@@ -35,9 +35,9 @@ router.post('/:id', async (req, res, next) => {
     const toneProfile = buildToneProfile(pairs);
     await ingestPairs(sessionId, pairs);
     
-    await createSession(sessionId, {
+    createSession(sessionId, {
       contact_name: persona.name,
-      pairs: persona.pairs,
+      pairs,
       toneProfile,
       userName: persona.name,
     });

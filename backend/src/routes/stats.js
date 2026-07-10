@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { getSession } from '../store/sessionStore.js';
+import { countVectors } from '../brain/chromaClient.js';
 
 const router = Router();
 
@@ -31,10 +32,18 @@ router.get('/:sessionId', async (req, res, next) => {
         ? parseFloat((messagesWithEmoji / totalPairs).toFixed(2))
         : 0;
 
+    // Get actual vector count from ChromaDB (best-effort)
+    let vectorCount = totalPairs;
+    try {
+      vectorCount = await countVectors(sessionId);
+    } catch {
+      // ChromaDB may not be available
+    }
+
     res.status(200).json({
       session_exists: true,
       total_pairs: totalPairs,
-      vector_count: totalPairs,
+      vector_count: vectorCount,
       contact_name: session.contact_name,
       avg_reply_length: avgReplyLength,
       emoji_frequency: emojiFrequency,

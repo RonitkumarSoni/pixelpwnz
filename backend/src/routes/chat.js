@@ -2,10 +2,12 @@ import { Router } from 'express';
 import { getSession } from '../store/sessionStore.js';
 import { buildRAGPrompt } from '../brain/index.js';
 import { generateReply } from '../llm/provider.js';
+import { optionalAuth } from '../middleware/auth.js';
+import ChatMessage from '../models/ChatMessage.js';
 
 const router = Router();
 
-router.post('/', async (req, res, next) => {
+router.post('/', optionalAuth, async (req, res, next) => {
   const startTime = Date.now();
 
   try {
@@ -32,6 +34,18 @@ router.post('/', async (req, res, next) => {
       throw err;
     }
 
+    // Save user message to history
+    try {
+      await ChatMessage.create({
+        session_id,
+        user_id: req.user?.id || null,
+        role: 'user',
+        content: finalMessage.trim(),
+      });
+    } catch {
+      // Non-critical — don't block the response
+    }
+
     const {
       systemPrompt,
       userPrompt,
@@ -50,6 +64,20 @@ router.post('/', async (req, res, next) => {
     );
 
     const latencyMs = Date.now() - startTime;
+
+    // Save clone reply to history
+    try {
+      await ChatMessage.create({
+        session_id,
+        user_id: req.user?.id || null,
+        role: 'clone',
+        content: reply,
+        token_usage: usage,
+        latency_ms: latencyMs,
+      });
+    } catch {
+      // Non-critical
+    }
 
     res.status(200).json({
       success: true,

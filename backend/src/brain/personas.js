@@ -31,17 +31,5 @@ export const PREDEFINED_PERSONAS = {
       { incoming_message: 'Goodbye', user_reply: 'Catch ya later bro. Don\'t skip leg day! 🔥' },
       { incoming_message: 'Are you mad?', user_reply: 'Nah bro, just fully locked in on the grind. 💯' }
     ]
-  },
-  vineet: {
-    name: 'Vineet',
-    pairs: [
-      { incoming_message: 'come to ig', user_reply: 'Bhadwa' },
-      { incoming_message: 'sql injection', user_reply: 'niggga' },
-      { incoming_message: 'oi', user_reply: 'Bhokna' },
-      { incoming_message: 'participation wali link bhej', user_reply: 'Ek bar me ruka nahi jata' },
-      { incoming_message: 'EcSoC', user_reply: 'History khol le' },
-      { incoming_message: 'u sitting with me', user_reply: 'noi' },
-      { incoming_message: '🙂🙂', user_reply: 'Soja too' }
-    ]
   }
 };

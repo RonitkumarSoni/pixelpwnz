@@ -1,17 +1,8 @@
-import { ChromaClient, CloudClient } from 'chromadb';
+import { ChromaClient } from 'chromadb';
 
-const isCloud = !!process.env.CHROMA_CLOUD_API_KEY;
-
-
-const chroma = isCloud 
-  ? new CloudClient({
-      apiKey: process.env.CHROMA_CLOUD_API_KEY,
-      tenant: process.env.CHROMA_TENANT,
-      database: process.env.CHROMA_DATABASE,
-    })
-  : new ChromaClient({
-      path: `http://${process.env.CHROMA_HOST || 'localhost'}:${process.env.CHROMA_PORT || 8000}`,
-    });
+const chroma = new ChromaClient({
+  path: `http://${process.env.CHROMA_HOST || 'localhost'}:${process.env.CHROMA_PORT || 8000}`,
+});
 
 /**
  * Get-or-create a ChromaDB collection for a session.
@@ -32,17 +23,12 @@ async function getCollection(sessionId) {
 export async function addVectors(sessionId, items) {
   const collection = await getCollection(sessionId);
 
-  // Batch insert to avoid ChromaDB payload size and max batch limits
-  const BATCH_SIZE = 100;
-  for (let i = 0; i < items.length; i += BATCH_SIZE) {
-    const batch = items.slice(i, i + BATCH_SIZE);
-    await collection.add({
-      ids: batch.map((i) => i.id),
-      embeddings: batch.map((i) => i.embedding),
-      documents: batch.map((i) => i.document),
-      metadatas: batch.map((i) => i.metadata),
-    });
-  }
+  await collection.add({
+    ids: items.map((i) => i.id),
+    embeddings: items.map((i) => i.embedding),
+    documents: items.map((i) => i.document),
+    metadatas: items.map((i) => i.metadata),
+  });
 
   return items.length;
 }

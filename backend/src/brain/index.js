@@ -18,34 +18,23 @@ export async function ingestPairs(sessionId, pairs) {
   const texts = pairs.map((p) => p.incoming_message);
   const embeddings = await embedBatch(texts);
 
-    const items = pairs.map((pair, i) => {
-      // Truncate text for ChromaDB metadata to prevent payload size/quota limits
-      const safeIncomingText = pair.incoming_message.length > 1000 
-        ? pair.incoming_message.substring(0, 1000) 
-        : pair.incoming_message;
-        
-      const safeDocument = pair.user_reply.length > 2000 
-        ? pair.user_reply.substring(0, 2000) 
-        : pair.user_reply;
+  const items = pairs.map((pair, i) => ({
+    id: pair.id,
+    embedding: embeddings[i],
+    // Store the user's reply as the document; incoming is in metadata for keyword search
+    document: pair.user_reply,
+    metadata: {
+      session_id: sessionId,
+      pair_id: pair.id,
+      incoming_text: pair.incoming_message,
+      contact: pair.contact_name ?? '',
+      reply_length: pair.word_count_out ?? pair.user_reply.split(/\s+/).length,
+      emoji_count: pair.emoji_count ?? 0,
+      timestamp: pair.timestamp ?? '',
+    },
+  }));
 
-      return {
-        id: pair.id,
-        embedding: embeddings[i],
-        // Store the user's reply as the document; incoming is in metadata for keyword search
-        document: safeDocument,
-        metadata: {
-          session_id: sessionId,
-          pair_id: pair.id,
-          incoming_text: safeIncomingText,
-          contact: pair.contact_name ?? '',
-          reply_length: pair.word_count_out ?? pair.user_reply.split(/\s+/).length,
-          emoji_count: pair.emoji_count ?? 0,
-          timestamp: pair.timestamp ?? '',
-        },
-      };
-    });
-
-    return addVectors(sessionId, items);
+  return addVectors(sessionId, items);
 }
 
 /**
