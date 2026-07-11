@@ -73,25 +73,7 @@ export default function DashboardPage() {
             </Link>
           </div>
 
-          {/* Stats Overview */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 24, marginBottom: 48 }}>
-            <div className="glass-card" style={{ padding: 24, borderRadius: 24 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16, color: 'var(--color-text-muted)' }}>
-                <Settings size={20} />
-                <span style={{ fontWeight: 600 }}>Total Clones</span>
-              </div>
-              <div style={{ fontSize: '2.5rem', fontWeight: 800, color: 'var(--color-text)' }}>{isLoading ? '-' : clones.length}</div>
-            </div>
-            <div className="glass-card" style={{ padding: 24, borderRadius: 24 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16, color: 'var(--color-text-muted)' }}>
-                <MessageSquare size={20} />
-                <span style={{ fontWeight: 600 }}>Total Knowledge Pairs</span>
-              </div>
-              <div style={{ fontSize: '2.5rem', fontWeight: 800, color: 'var(--color-text)' }}>
-                {isLoading ? '-' : clones.reduce((acc, curr) => acc + (curr.pairs?.length || 0), 0)}
-              </div>
-            </div>
-          </div>
+
 
           <h2 style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--color-text)', marginBottom: 24 }}>Your Creations</h2>
 
@@ -119,8 +101,7 @@ export default function DashboardPage() {
                     <button 
                       className="btn" 
                       onClick={() => {
-                        setChatSession(clone.session_id, clone.userName, clone.contact_name, clone.pairs?.length || 0);
-                        navigate(`/chat`);
+                        navigate(`/chat?session_id=${clone.session_id}`);
                       }}
                       style={{ flex: 1, padding: '8px', background: 'var(--color-primary)', border: 'none', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, color: '#FFF', fontSize: '0.875rem', fontWeight: 600 }}
                     >

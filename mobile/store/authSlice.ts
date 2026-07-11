@@ -6,6 +6,7 @@ interface AuthState {
     id: string;
     email: string;
     name: string;
+    avatarUrl?: string | null;
   } | null;
   isAuthenticated: boolean;
 }
@@ -33,8 +34,10 @@ export const authSlice = createSlice({
       state.user = null;
       state.isAuthenticated = false;
     },
-    updateUser: (state, action: PayloadAction<any>) => {
-      state.user = action.payload;
+    updateUser: (state, action: PayloadAction<Partial<AuthState['user']>>) => {
+      if (state.user) {
+        state.user = { ...state.user, ...action.payload };
+      }
     }
   },
 });

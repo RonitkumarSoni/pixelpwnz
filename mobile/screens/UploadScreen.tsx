@@ -15,7 +15,6 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as DocumentPicker from 'expo-document-picker';
-import * as FileSystem from 'expo-file-system';
 import * as Haptics from 'expo-haptics';
 import { Feather } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
@@ -43,6 +42,9 @@ export default function UploadScreen() {
   const [selectedFile, setSelectedFile] = useState<DocumentPicker.DocumentPickerAsset | null>(null);
 
   const progressAnim = useRef(new Animated.Value(0)).current;
+  const dropzoneScaleAnim = useRef(new Animated.Value(1)).current;
+  const submitAnim = useRef(new Animated.Value(0)).current;
+  const iconPulseAnim = useRef(new Animated.Value(1)).current;
 
   const animateProgress = useCallback((toValue: number) => {
     Animated.timing(progressAnim, {
@@ -52,6 +54,75 @@ export default function UploadScreen() {
       useNativeDriver: false,
     }).start();
   }, [progressAnim]);
+
+  const startIconPulse = useCallback(() => {
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(iconPulseAnim, {
+          toValue: 1.1,
+          duration: 600,
+          easing: Easing.inOut(Easing.sin),
+          useNativeDriver: true,
+        }),
+        Animated.timing(iconPulseAnim, {
+          toValue: 1,
+          duration: 600,
+          easing: Easing.inOut(Easing.sin),
+          useNativeDriver: true,
+        }),
+      ])
+    ).start();
+  }, [iconPulseAnim]);
+
+  React.useEffect(() => {
+    if (!selectedFile && !isUploading) {
+      startIconPulse();
+    } else {
+      iconPulseAnim.stopAnimation();
+      Animated.timing(iconPulseAnim, {
+        toValue: 1,
+        duration: 200,
+        useNativeDriver: true,
+      }).start();
+    }
+  }, [selectedFile, isUploading, iconPulseAnim, startIconPulse]);
+
+  const animateFileSelect = useCallback(() => {
+    // Bounce dropzone
+    Animated.sequence([
+      Animated.timing(dropzoneScaleAnim, {
+        toValue: 0.96,
+        duration: 100,
+        useNativeDriver: true,
+      }),
+      Animated.timing(dropzoneScaleAnim, {
+        toValue: 1.04,
+        duration: 100,
+        useNativeDriver: true,
+      }),
+      Animated.timing(dropzoneScaleAnim, {
+        toValue: 1,
+        duration: 150,
+        easing: Easing.out(Easing.quad),
+        useNativeDriver: true,
+      }),
+    ]).start();
+    // Animate in submit button
+    Animated.timing(submitAnim, {
+      toValue: 1,
+      duration: 400,
+      easing: Easing.out(Easing.cubic),
+      useNativeDriver: true,
+    }).start();
+  }, [dropzoneScaleAnim, submitAnim]);
+
+  const animateFileDeselect = useCallback(() => {
+    Animated.timing(submitAnim, {
+      toValue: 0,
+      duration: 200,
+      useNativeDriver: true,
+    }).start();
+  }, [submitAnim]);
 
   const pickFile = async () => {
     try {
@@ -68,15 +139,15 @@ export default function UploadScreen() {
         return;
       }
       setSelectedFile(file);
+      animateFileSelect();
     } catch (err) {
       console.log(err);
     }
   };
 
-  const doUpload = async () => {
-    if (!selectedFile) return;
-    if (!userName.trim()) {
-      Alert.alert('Name Required', 'Please enter a name for your persona.');
+  const handleUpload = async () => {
+    if (!selectedFile || !userName.trim()) {
+      Alert.alert('Error', 'Please fill in all fields and select a file');
       return;
     }
 
@@ -85,26 +156,32 @@ export default function UploadScreen() {
       dispatch(setUploadProgress(0));
       animateProgress(0);
 
-      const uploadResult = await FileSystem.uploadAsync(
-        `${apiClient.defaults.baseURL}/upload`,
-        selectedFile.uri,
-        {
-          fieldName: 'chatFile',
-          httpMethod: 'POST',
-          // @ts-ignore
-          uploadType: FileSystem.FileSystemUploadType.MULTIPART,
-          parameters: { user_name: userName.trim() },
-          headers: { Accept: 'application/json' },
-        }
-      );
+      // Create FormData directly with uri
+      const formData = new FormData();
+      formData.append('chatFile', {
+        uri: selectedFile.uri,
+        type: 'text/plain',
+        name: selectedFile.name || 'chat.txt',
+      } as any);
+      formData.append('user_name', userName.trim());
 
       animateProgress(0.5);
       dispatch(setUploadProgress(0.5));
 
-      if (uploadResult.status >= 200 && uploadResult.status < 300) {
-        animateProgress(1);
-        dispatch(setUploadProgress(1));
-        const data = JSON.parse(uploadResult.body);
+      // Send via fetch
+      const response = await fetch(`${apiClient.defaults.baseURL}/upload`, {
+        method: 'POST',
+        body: formData,
+        headers: {
+          Accept: 'application/json',
+        },
+      });
+
+      animateProgress(1);
+      dispatch(setUploadProgress(1));
+
+      if (response.ok) {
+        const data = await response.json();
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
         dispatch(setSession({
           sessionId: data.session_id,
@@ -114,9 +191,11 @@ export default function UploadScreen() {
         dispatch(setUploading(false));
         navigation.navigate('Chat');
       } else {
-        throw new Error(`Upload failed with status ${uploadResult.status}`);
+        const errorText = await response.text();
+        throw new Error(`Upload failed with status ${response.status}: ${errorText}`);
       }
     } catch (error: any) {
+      console.error('Upload error:', error);
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       dispatch(setUploading(false));
       dispatch(setUploadProgress(0));
@@ -168,52 +247,74 @@ export default function UploadScreen() {
             />
 
             <Text style={styles.inputLabel}>Chat File</Text>
-            <TouchableOpacity
-              onPress={pickFile}
-              disabled={isUploading}
-              activeOpacity={0.75}
-              style={[styles.dropzone, isUploading && styles.dropzoneUploading]}
-            >
-              <Feather
-                name="upload-cloud"
-                size={48}
-                color={isUploading ? Colors.primarySolid : Colors.textSecondary}
-              />
-              <Text style={styles.dropzoneTitle}>
-                {selectedFile ? 'File Selected' : (isUploading ? 'Uploading...' : 'Tap to Select File')}
-              </Text>
-              <Text style={styles.dropzoneSubtitle}>
-                {selectedFile ? selectedFile.name : 'Must be a .txt export'}
-              </Text>
+            <Animated.View style={{ transform: [{ scale: dropzoneScaleAnim }] }}>
+              <TouchableOpacity
+                onPress={pickFile}
+                disabled={isUploading}
+                activeOpacity={0.75}
+                style={[
+                  styles.dropzone, 
+                  isUploading && styles.dropzoneUploading,
+                  selectedFile && styles.dropzoneSelected
+                ]}
+              >
+                <Animated.View style={{ transform: [{ scale: iconPulseAnim }] }}>
+                  <Feather
+                    name={selectedFile ? "check-circle" : "upload-cloud"}
+                    size={48}
+                    color={selectedFile 
+                      ? Colors.primarySolid 
+                      : (isUploading ? Colors.primarySolid : Colors.textSecondary)}
+                  />
+                </Animated.View>
+                <Text style={styles.dropzoneTitle}>
+                  {selectedFile ? 'File Selected' : (isUploading ? 'Uploading...' : 'Tap to Select File')}
+                </Text>
+                <Text style={styles.dropzoneSubtitle}>
+                  {selectedFile ? selectedFile.name : 'Must be a .txt export'}
+                </Text>
 
-              {/* Progress Bar */}
-              {isUploading && (
-                <View style={styles.progressTrack}>
-                  <Animated.View style={[styles.progressBarContainer, { width: progressWidth }]}>
-                    <LinearGradient
-                      colors={[...Gradients.primary]}
-                      start={{ x: 0, y: 0 }}
-                      end={{ x: 1, y: 0 }}
-                      style={styles.progressBar}
-                    />
-                  </Animated.View>
-                </View>
-              )}
-            </TouchableOpacity>
+                {/* Progress Bar */}
+                {isUploading && (
+                  <View style={styles.progressTrack}>
+                    <Animated.View style={[styles.progressBarContainer, { width: progressWidth }]}>
+                      <LinearGradient
+                        colors={[...Gradients.primary]}
+                        start={{ x: 0, y: 0 }}
+                        end={{ x: 1, y: 0 }}
+                        style={styles.progressBar}
+                      />
+                    </Animated.View>
+                  </View>
+                )}
+              </TouchableOpacity>
+            </Animated.View>
 
             {/* Submit Button */}
             {selectedFile && !isUploading && (
-              <TouchableOpacity style={styles.submitBtn} onPress={doUpload}>
-                <LinearGradient
-                  colors={[...Gradients.primary]}
-                  start={{ x: 0, y: 0 }}
-                  end={{ x: 1, y: 0 }}
-                  style={styles.submitBtnGradient}
-                >
-                  <Text style={styles.submitBtnText}>Create Clone</Text>
-                  <Feather name="arrow-right" size={20} color="#FFF" />
-                </LinearGradient>
-              </TouchableOpacity>
+              <Animated.View style={{
+                opacity: submitAnim,
+                transform: [
+                  { 
+                    translateY: submitAnim.interpolate({
+                      inputRange: [0, 1],
+                      outputRange: [20, 0]
+                    })
+                  }
+                ]
+              }}>
+                <TouchableOpacity style={styles.submitBtn} onPress={handleUpload}>
+                  <LinearGradient
+                    colors={[...Gradients.primary]}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 0 }}
+                    style={styles.submitBtnGradient}
+                  >
+                    <Text style={styles.submitBtnText}>Create Clone</Text>
+                    <Feather name="arrow-right" size={20} color="#FFF" />
+                  </LinearGradient>
+                </TouchableOpacity>
+              </Animated.View>
             )}
           </View>
 
@@ -306,6 +407,11 @@ const styles = StyleSheet.create({
   dropzoneUploading: {
     borderColor: Colors.primarySolid,
     borderStyle: 'solid',
+  },
+  dropzoneSelected: {
+    borderColor: Colors.primarySolid,
+    borderStyle: 'solid',
+    backgroundColor: `${Colors.primarySolid}10`, // 10% opacity
   },
   dropzoneTitle: {
     ...Typography.h3,

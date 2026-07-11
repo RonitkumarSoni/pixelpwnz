@@ -86,7 +86,9 @@ export default function DashboardLayout({ children, activeTab = 'Home' }) {
       WebkitBackdropFilter: 'blur(16px)',
       height: '100vh',
       overflowY: 'auto',
-      transition: 'all 0.3s ease'
+      transition: 'all 0.3s ease',
+      display: 'flex',
+      flexDirection: 'column'
     },
     navItem: (active = false) => ({
       display: 'flex',
@@ -148,7 +150,7 @@ export default function DashboardLayout({ children, activeTab = 'Home' }) {
 
         {/* Navigation */}
         <div style={{ flex: 1 }}>
-          <div style={styles.navItem(activeTab === 'Home')} onClick={() => navigate('/app-dashboard')}>
+          <div style={styles.navItem(activeTab === 'Home')} onClick={() => navigate('/dashboard')}>
             <Home size={18} /> Home
           </div>
           <div style={styles.navItem(activeTab === 'Explore')} onClick={() => navigate('/explore')}>
@@ -191,13 +193,12 @@ export default function DashboardLayout({ children, activeTab = 'Home' }) {
           </div>
 
           {/* Bottom: Upgrade Button */}
-          <button style={{
-            width: '100%', padding: '12px', borderRadius: '16px', border: 'none',
-            background: c.primaryLight, color: '#6c5ce7', fontSize: '12px', fontWeight: 700,
-            cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
-            boxShadow: `inset 2px 2px 5px ${c.shadowInner}`
-          }}>
-            <Star size={16} /> Upgrade Plan
+          <button className="upgrade-btn-blob">
+            <div className="blob1"></div>
+            <div className="blob2"></div>
+            <div className="inner">
+              <Star size={16} /> Upgrade Plan
+            </div>
           </button>
         </div>
       </div>
@@ -234,45 +235,63 @@ export default function DashboardLayout({ children, activeTab = 'Home' }) {
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-            <div style={{
-              display: 'flex', alignItems: 'center', background: c.inputBg, borderRadius: '20px', padding: '10px 16px',
-              backdropFilter: 'blur(10px)',
-              boxShadow: `inset 2px 2px 5px ${c.shadowSmall}, inset -2px -2px 5px ${c.shadowInner}`,
-              width: '280px',
-              border: `1px solid ${c.borderSubtle}`
-            }}>
-              <input type="text" placeholder="Search anything..." style={{ border: 'none', background: 'transparent', outline: 'none', flex: 1, fontSize: '13px', color: c.textMain }} />
-              <Search size={16} color={c.textLight} />
+            <div className="search-neumorphic">
+              <div className="btn-inner">
+                <input type="text" placeholder="Search anything..." />
+                <Search size={16} color={c.textLight} style={{ zIndex: 2, position: 'relative' }} />
+              </div>
             </div>
             
-            <div style={{ ...styles.iconWrapper, borderRadius: '50%', position: 'relative' }}>
-              <Bell size={20} color={c.textMuted} />
-              <div style={{ position: 'absolute', top: '8px', right: '10px', width: '6px', height: '6px', background: '#6c5ce7', borderRadius: '50%' }} />
-            </div>
+            <button 
+              className="icon-btn-neumorphic"
+              onClick={(e) => {
+                e.currentTarget.classList.toggle('active');
+                setTimeout(() => navigate('/notifications'), 150);
+              }}
+            >
+              <span className="btn-inner">
+                <Bell size={20} color={c.textMuted} style={{ zIndex: 2, position: 'relative' }} />
+                <div style={{ position: 'absolute', top: '10px', right: '12px', width: '6px', height: '6px', background: '#6c5ce7', borderRadius: '50%', zIndex: 3 }} />
+              </span>
+            </button>
             
-            <div style={{ ...styles.iconWrapper, borderRadius: '50%', cursor: 'pointer' }} onClick={() => {
-              const newTheme = isDark ? 'light' : 'dark';
-              setTheme(newTheme);
-              document.documentElement.setAttribute('data-theme', newTheme);
-            }}>
-              {isDark ? (
-                <Moon size={22} color="#c7bee6" fill="#c7bee6" />
-              ) : (
-                <Sun size={22} color="#fbc531" fill="#fbc531" />
-              )}
-            </div>
+            <button 
+              className="icon-btn-neumorphic"
+              onClick={(e) => {
+                const btn = e.currentTarget;
+                btn.classList.add('active');
+                setTimeout(() => {
+                  const newTheme = isDark ? 'light' : 'dark';
+                  setTheme(newTheme);
+                  document.documentElement.setAttribute('data-theme', newTheme);
+                  btn.classList.remove('active');
+                }, 150);
+              }}
+            >
+              <span className="btn-inner">
+                {isDark ? (
+                  <Moon size={20} color="#c7bee6" fill="#c7bee6" style={{ zIndex: 2, position: 'relative' }} />
+                ) : (
+                  <Sun size={20} color="#fbc531" fill="#fbc531" style={{ zIndex: 2, position: 'relative' }} />
+                )}
+              </span>
+            </button>
 
             <img src="https://i.pravatar.cc/150?img=11" alt="User" style={{ width: '44px', height: '44px', borderRadius: '50%', objectFit: 'cover', border: `2px solid ${c.borderMain}`, cursor: 'pointer' }} onClick={() => navigate('/profile')} />
           </div>
         </div>
 
         {/* Page Content */}
-        {React.Children.map(children, child => {
-          if (React.isValidElement(child)) {
-            return React.cloneElement(child, { c, isDark });
-          }
-          return child;
-        })}
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+          <div style={{ margin: 'auto 0', width: '100%' }}>
+            {React.Children.map(children, child => {
+              if (React.isValidElement(child)) {
+                return React.cloneElement(child, { c, isDark });
+              }
+              return child;
+            })}
+          </div>
+        </div>
 
       </div>
     </div>

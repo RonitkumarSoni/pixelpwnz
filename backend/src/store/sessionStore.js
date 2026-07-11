@@ -186,7 +186,7 @@ export async function listSessions(userId = null) {
  * @returns {Promise<object|null>}
  */
 export async function updateSession(sessionId, updates) {
-  const allowedFields = ['label', 'temperature'];
+  const allowedFields = ['label', 'temperature', 'pairs'];
 
   // Build filtered update
   const filtered = {};

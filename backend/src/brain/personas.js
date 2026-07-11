@@ -240,6 +240,15 @@ export async function initPersonas() {
         },
         { upsert: true, new: true }
       );
+
+      // Generate vectors for Chroma DB
+      const pairsWithIds = data.pairs.map((p, i) => ({ ...p, id: `predef_${key}_${i}` }));
+      try {
+        const { ingestPairs } = await import('./index.js');
+        await ingestPairs(`persona_${key}`, pairsWithIds);
+      } catch (err) {
+        console.warn(`[Signet] Could not ingest vectors for ${key}:`, err.message);
+      }
     }
     console.log('[Signet] Predefined Personas initialized in DB');
   } catch (err) {

@@ -6,6 +6,7 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { AuthStackParamList } from '../navigation/AuthNavigator';
 import { useAppDispatch } from '../store/hooks';
 import { setAuthCredentials } from '../store/authSlice';
+import { setUserName } from '../store/sessionSlice';
 import { loginUser } from '../api/client';
 
 type Props = NativeStackScreenProps<AuthStackParamList, 'Login'>;
@@ -31,6 +32,7 @@ export default function LoginScreen({ navigation }: Props) {
       
       if (data.success && data.token) {
         dispatch(setAuthCredentials({ token: data.token, user: data.user }));
+        dispatch(setUserName(data.user.name));
       } else {
         setError('Login failed. Please try again.');
       }

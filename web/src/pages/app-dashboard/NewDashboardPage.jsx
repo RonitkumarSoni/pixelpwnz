@@ -1,18 +1,16 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   MessageSquare, Upload, Database, Activity, ChevronRight, CheckCircle, Zap
 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import useUiStore from '../../store/uiStore';
 import DashboardLayout from '../../components/DashboardLayout';
+import { getSessions } from '../../api/client';
 
 export default function NewDashboardPage() {
   const { user } = useUiStore();
   const userName = user?.name || 'Ronit';
 
-  // We receive `c` and `isDark` as props from DashboardLayout when passed as children, 
-  // but since we are writing standard React, it's better to just use a render prop or access theme from store.
-  // Actually, DashboardLayout passes props to children using React.cloneElement.
-  // We can just accept them here.
   return (
     <DashboardLayout activeTab="Home">
       <DashboardContent userName={userName} />
@@ -21,7 +19,29 @@ export default function NewDashboardPage() {
 }
 
 function DashboardContent({ userName, c, isDark }) {
-  // If c is not provided yet (initial render before cloneElement), return null
+  const navigate = useNavigate();
+  const [clones, setClones] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadSessions() {
+      try {
+        const data = await getSessions();
+        if (data.success) {
+          setClones(data.sessions);
+        }
+      } catch (err) {
+        console.error('Failed to load sessions', err);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    loadSessions();
+  }, []);
+
+  const totalPairs = clones.reduce((sum, clone) => sum + (clone.pair_count || 0), 0);
+  const latestClone = clones.length > 0 ? clones[0] : null;
+
   if (!c) return null;
 
   return (
@@ -42,21 +62,31 @@ function DashboardContent({ userName, c, isDark }) {
             <h2 style={{ fontSize: '28px', margin: '0 0 12px 0', color: c.textDark, transition: 'color 0.3s' }}>Your AI Clone is Ready</h2>
             <p style={{ fontSize: '13px', color: c.textMuted, margin: '0 0 24px 0', lineHeight: 1.5 }}>
               The clone has learned from<br />
-              <strong style={{ color: c.textDark }}>5,263</strong> conversations.
+              <strong style={{ color: c.textDark }}>{isLoading ? '...' : totalPairs.toLocaleString()}</strong> conversations.
             </p>
             <div style={{ display: 'flex', gap: '12px' }}>
-              <button style={{
-                background: 'linear-gradient(135deg, #8c7ae6, #6c5ce7)', color: '#fff', border: 'none',
-                padding: '10px 20px', borderRadius: '20px', fontSize: '13px', fontWeight: 600, cursor: 'pointer',
-                boxShadow: '0 8px 16px rgba(108,92,231,0.2)', display: 'flex', alignItems: 'center', gap: '8px'
-              }}>
-                Chat Now <ChevronRight size={14} />
+              <button 
+                onClick={() => {
+                  if (latestClone) {
+                    navigate(`/chat?session_id=${latestClone.session_id}`);
+                  } else {
+                    navigate('/create');
+                  }
+                }}
+                style={{
+                  background: 'linear-gradient(135deg, #8c7ae6, #6c5ce7)', color: '#fff', border: 'none',
+                  padding: '10px 20px', borderRadius: '20px', fontSize: '13px', fontWeight: 600, cursor: 'pointer',
+                  boxShadow: '0 8px 16px rgba(108,92,231,0.2)', display: 'flex', alignItems: 'center', gap: '8px'
+                }}>
+                {latestClone ? 'Chat Now' : 'Create Clone'} <ChevronRight size={14} />
               </button>
-              <button style={{
-                background: c.cardBgHighlight, color: c.textMain, border: `1px solid ${c.borderSubtle}`,
-                padding: '10px 20px', borderRadius: '20px', fontSize: '13px', fontWeight: 600, cursor: 'pointer',
-                boxShadow: `2px 2px 8px ${c.shadowSmall}`, display: 'flex', alignItems: 'center', gap: '8px'
-              }}>
+              <button 
+                onClick={() => navigate('/upload')}
+                style={{
+                  background: c.cardBgHighlight, color: c.textMain, border: `1px solid ${c.borderSubtle}`,
+                  padding: '10px 20px', borderRadius: '20px', fontSize: '13px', fontWeight: 600, cursor: 'pointer',
+                  boxShadow: `2px 2px 8px ${c.shadowSmall}`, display: 'flex', alignItems: 'center', gap: '8px'
+                }}>
                 <Upload size={14} /> Upload New Chat
               </button>
             </div>
@@ -105,28 +135,35 @@ function DashboardContent({ userName, c, isDark }) {
           </div>
           
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-            {[
-              { name: 'WhatsApp Export', time: 'Today', msgs: '532 Messages', iconUrl: 'https://img.icons8.com/color/48/whatsapp--v1.png', bg: isDark ? 'rgba(240, 253, 244, 0.1)' : '#f0fdf4' },
-              { name: 'Instagram Chat', time: 'Yesterday', msgs: '421 Messages', iconUrl: 'https://img.icons8.com/fluency/48/instagram-new.png', bg: isDark ? 'rgba(253, 242, 248, 0.1)' : '#fdf2f8' },
-              { name: 'Telegram Chat', time: '2 Days Ago', msgs: '891 Messages', iconUrl: 'https://img.icons8.com/color/48/telegram-app--v1.png', bg: isDark ? 'rgba(240, 249, 255, 0.1)' : '#f0f9ff' },
-              { name: 'Messenger Chat', time: 'Last Week', msgs: '318 Messages', iconUrl: 'https://img.icons8.com/fluency/48/facebook-messenger--v2.png', bg: isDark ? 'rgba(239, 246, 255, 0.1)' : '#eff6ff' }
-            ].map((chat, i) => (
-              <div key={i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 12px', borderRadius: '16px', background: c.cardBgHighlight, boxShadow: `2px 2px 8px ${c.shadowSmall}` }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                  <div style={{ width: '36px', height: '36px', borderRadius: '12px', background: chat.bg, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <img src={chat.iconUrl} alt={chat.name} style={{ width: '22px', height: '22px' }} />
+            {isLoading ? (
+              <div style={{ fontSize: '13px', color: c.textMuted, textAlign: 'center', padding: '20px 0' }}>Loading...</div>
+            ) : clones.length === 0 ? (
+              <div style={{ fontSize: '13px', color: c.textMuted, textAlign: 'center', padding: '20px 0' }}>No recent chats found.</div>
+            ) : (
+              clones.slice(0, 4).map((chat, i) => (
+                <div 
+                  key={chat.session_id} 
+                  onClick={() => navigate(`/chat?session_id=${chat.session_id}`)}
+                  style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 12px', borderRadius: '16px', background: c.cardBgHighlight, boxShadow: `2px 2px 8px ${c.shadowSmall}`, cursor: 'pointer', transition: 'transform 0.2s' }}
+                  onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
+                  onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <div style={{ width: '36px', height: '36px', borderRadius: '12px', background: isDark ? 'rgba(108,92,231,0.1)' : '#f3efff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <MessageSquare size={18} color="#6c5ce7" />
+                    </div>
+                    <div>
+                      <div style={{ fontSize: '13px', fontWeight: 600, color: c.textMain }}>{chat.userName || 'Unknown'}</div>
+                      <div style={{ fontSize: '11px', color: c.textLight }}>{new Date(chat.created_at).toLocaleDateString()}</div>
+                    </div>
                   </div>
-                  <div>
-                    <div style={{ fontSize: '13px', fontWeight: 600, color: c.textMain }}>{chat.name}</div>
-                    <div style={{ fontSize: '11px', color: c.textLight }}>{chat.time}</div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                    <span style={{ fontSize: '12px', color: c.textMuted, fontWeight: 500 }}>{chat.pair_count} Pairs</span>
+                    <span style={{ color: '#c7bee6', letterSpacing: '2px' }}>•••</span>
                   </div>
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                  <span style={{ fontSize: '12px', color: c.textMuted, fontWeight: 500 }}>{chat.msgs}</span>
-                  <span style={{ color: '#c7bee6', letterSpacing: '2px' }}>•••</span>
-                </div>
-              </div>
-            ))}
+              ))
+            )}
           </div>
         </div>
 
@@ -199,8 +236,8 @@ function DashboardContent({ userName, c, isDark }) {
               <div style={{ fontSize: '11px', color: c.textMuted, marginBottom: '8px' }}>Messages Learned</div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
                 <div>
-                  <div style={{ fontSize: '22px', fontWeight: 700, color: c.textDark, marginBottom: '4px' }}>5.2K</div>
-                  <div style={{ fontSize: '10px', color: '#2ed573', fontWeight: 600 }}>+12.5% ↑</div>
+                  <div style={{ fontSize: '22px', fontWeight: 700, color: c.textDark, marginBottom: '4px' }}>{isLoading ? '-' : totalPairs}</div>
+                  <div style={{ fontSize: '10px', color: '#2ed573', fontWeight: 600 }}>Active</div>
                 </div>
                 <div style={{ width: '32px', height: '32px', borderRadius: '10px', background: isDark ? 'rgba(108,92,231,0.1)' : '#f3efff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   <MessageSquare size={16} color="#6c5ce7" />

@@ -22,6 +22,10 @@ const useChatStore = create((set, get) => ({
       totalPairs,
     }),
 
+  incrementTotalPairs: () => set((state) => ({ totalPairs: state.totalPairs + 1 })),
+
+  setMessages: (messages) => set({ messages }),
+
   addMessage: (message) =>
     set((state) => ({
       messages: [

@@ -1,6 +1,7 @@
 import { Router } from 'express';
-import { getSession } from '../store/sessionStore.js';
-import { buildRAGPrompt } from '../brain/index.js';
+import { v4 as uuidv4 } from 'uuid';
+import { getSession, updateSession } from '../store/sessionStore.js';
+import { buildRAGPrompt, ingestPairs } from '../brain/index.js';
 import { generateReply } from '../llm/provider.js';
 import { optionalAuth } from '../middleware/auth.js';
 import ChatMessage from '../models/ChatMessage.js';
@@ -77,8 +78,20 @@ router.post('/', optionalAuth, async (req, res, next) => {
         token_usage: usage,
         latency_ms: latencyMs,
       });
-    } catch {
-      // Non-critical
+
+      // Add to knowledge pairs for continuous learning
+      const newPair = {
+        id: uuidv4(),
+        incoming_message: finalMessage.trim(),
+        user_reply: reply,
+        timestamp: new Date().toISOString(),
+      };
+      
+      session.pairs.push(newPair);
+      await updateSession(session_id, { pairs: session.pairs });
+      await ingestPairs(session_id, [newPair]);
+    } catch (e) {
+      console.warn('[Chat] Failed to update continuous learning:', e.message);
     }
 
     res.status(200).json({
