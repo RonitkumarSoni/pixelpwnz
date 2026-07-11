@@ -4,6 +4,7 @@ export const PREDEFINED_PERSONAS = {
   steve_jobs: {
     name: 'Steve Jobs',
     category: 'Tech',
+    avatar: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/dc/Steve_Jobs_Headshot_2010-CROP_%28cropped_2%29.jpg/800px-Steve_Jobs_Headshot_2010-CROP_%28cropped_2%29.jpg',
     description: 'Discuss technology, design, and putting a dent in the universe.',
     pairs: [
       { incoming_message: 'Hello', user_reply: 'Hello. We are here to put a dent in the universe.' },
@@ -26,6 +27,7 @@ export const PREDEFINED_PERSONAS = {
   naruto: {
     name: 'Naruto Uzumaki',
     category: 'Entertainment',
+    avatar: 'https://upload.wikimedia.org/wikipedia/en/9/9a/NarutoUzumaki.png',
     description: 'Talk to the future Hokage about ramen, training, and never giving up.',
     pairs: [
       { incoming_message: 'Hello', user_reply: 'Hey there! I am Naruto Uzumaki, and I am gonna be Hokage someday! Believe it!' },
@@ -48,6 +50,7 @@ export const PREDEFINED_PERSONAS = {
   goku: {
     name: 'Son Goku',
     category: 'Entertainment',
+    avatar: 'https://upload.wikimedia.org/wikipedia/en/a/af/Son_Goku_YoungAdult.PNG',
     description: 'Spar with the strongest Saiyan! He\'s always hungry for a challenge.',
     pairs: [
       { incoming_message: 'Hello', user_reply: 'Hey, it\'s me, Goku!' },
@@ -70,6 +73,7 @@ export const PREDEFINED_PERSONAS = {
   elon: {
     name: 'Elon Musk',
     category: 'Tech',
+    avatar: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/cb/Elon_Musk_Royal_Society_crop.jpg/800px-Elon_Musk_Royal_Society_crop.jpg',
     description: 'Pitch your ideas about Mars, Dogecoin, or electric cars.',
     pairs: [
       { incoming_message: 'Hello', user_reply: 'Hello. Let\'s make humanity multiplanetary.' },
@@ -92,6 +96,7 @@ export const PREDEFINED_PERSONAS = {
   gandhi: {
     name: 'Mahatma Gandhi',
     category: 'Historical',
+    avatar: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7a/Mahatma-Gandhi%2C_studio_1931.jpg/800px-Mahatma-Gandhi%2C_studio_1931.jpg',
     description: 'Seek wisdom on truth, non-violence, and inner peace.',
     pairs: [
       { incoming_message: 'Hello', user_reply: 'Namaste. Peace be with you, my friend.' },
@@ -114,6 +119,7 @@ export const PREDEFINED_PERSONAS = {
   trump: {
     name: 'Donald Trump',
     category: 'Funny',
+    avatar: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/56/Donald_Trump_official_portrait.jpg/800px-Donald_Trump_official_portrait.jpg',
     description: 'Chat with the 45th President about crowds, the economy, and fake news.',
     pairs: [
       { incoming_message: 'Hello', user_reply: 'Hello folks, great to be here. Tremendous crowd, just fantastic.' },
@@ -136,6 +142,7 @@ export const PREDEFINED_PERSONAS = {
   luffy: {
     name: 'Monkey D. Luffy',
     category: 'Entertainment',
+    avatar: 'https://upload.wikimedia.org/wikipedia/en/a/aa/Monkey_D._Luffy_One_Piece.png',
     description: 'Join the Straw Hat crew! Just don\'t touch his meat.',
     pairs: [
       { incoming_message: 'Hello', user_reply: 'Shishishi! I am Monkey D. Luffy, and I am gonna be King of the Pirates!' },
@@ -158,6 +165,7 @@ export const PREDEFINED_PERSONAS = {
   stark: {
     name: 'Tony Stark',
     category: 'Entertainment',
+    avatar: 'https://upload.wikimedia.org/wikipedia/en/c/cb/Robert_Downey_Jr._as_Iron_Man_in_Avengers_Infinity_War.jpg',
     description: 'Talk to the genius, billionaire, playboy, philanthropist.',
     pairs: [
       { incoming_message: 'Hello', user_reply: 'Hey there. I am Tony Stark. You\'ve probably heard of me.' },
@@ -180,6 +188,7 @@ export const PREDEFINED_PERSONAS = {
   yoda: {
     name: 'Yoda',
     category: 'Entertainment',
+    avatar: 'https://upload.wikimedia.org/wikipedia/en/9/9b/Yoda_Empire_Strikes_Back.png',
     description: 'Learn the ways of the Force from the Jedi Master.',
     pairs: [
       { incoming_message: 'Hello', user_reply: 'Greetings, I bring to you. Hmmm.' },
@@ -202,6 +211,7 @@ export const PREDEFINED_PERSONAS = {
   batman: {
     name: 'Batman',
     category: 'Entertainment',
+    avatar: 'https://upload.wikimedia.org/wikipedia/en/1/19/Batman_%28circa_2016%29.png',
     description: 'He is vengeance. He is the night. He is Batman.',
     pairs: [
       { incoming_message: 'Hello', user_reply: '...' },
@@ -232,7 +242,8 @@ export async function initPersonas() {
           $set: {
             name: data.name,
             description: data.description,
-            category: data.category
+            category: data.category,
+            avatar: data.avatar
           },
           $setOnInsert: { 
             persona_id: key

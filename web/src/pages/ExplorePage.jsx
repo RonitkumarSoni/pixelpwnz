@@ -145,7 +145,7 @@ function ExploreContent({ c, isDark }) {
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
                   <div style={{ width: 64, height: 64, borderRadius: 16, background: isDark ? 'rgba(108, 92, 231, 0.1)' : '#f3efff', color: '#6c5ce7', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     <img 
-                      src={`https://ui-avatars.com/api/?name=${encodeURIComponent(clone.name)}&background=random`} 
+                      src={clone.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(clone.name)}&background=random`} 
                       alt={clone.name} 
                       style={{ width: '100%', height: '100%', borderRadius: 16, objectFit: 'cover' }} 
                     />

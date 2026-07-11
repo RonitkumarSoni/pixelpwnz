@@ -18,6 +18,10 @@ const personaSchema = new mongoose.Schema({
     type: String,
     default: 'Other',
   },
+  avatar: {
+    type: String,
+    default: null,
+  },
   chat_count: {
     type: Number,
     default: 0,
