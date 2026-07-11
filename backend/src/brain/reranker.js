@@ -6,12 +6,18 @@ env.backends.onnx.wasm.numThreads = 1;
 let _tokenizer = null;
 let _model = null;
 
+let _initPromise = null;
+
 async function getReranker() {
-  if (!_tokenizer || !_model) {
-    const model_id = 'Xenova/ms-marco-MiniLM-L-6-v2';
-    _tokenizer = await AutoTokenizer.from_pretrained(model_id);
-    _model = await AutoModelForSequenceClassification.from_pretrained(model_id, { quantized: true });
+  if (_tokenizer && _model) return { tokenizer: _tokenizer, model: _model };
+  if (!_initPromise) {
+    _initPromise = (async () => {
+      const model_id = 'Xenova/ms-marco-MiniLM-L-6-v2';
+      _tokenizer = await AutoTokenizer.from_pretrained(model_id);
+      _model = await AutoModelForSequenceClassification.from_pretrained(model_id, { quantized: true });
+    })();
   }
+  await _initPromise;
   return { tokenizer: _tokenizer, model: _model };
 }
 

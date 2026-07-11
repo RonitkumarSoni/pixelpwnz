@@ -14,6 +14,7 @@ import personaRoutes from './routes/persona.js';
 import sessionsRoutes from './routes/sessions.js';
 import configRoutes from './routes/config.js';
 import authRoutes from './routes/auth.js';
+import whatsappRoutes from './routes/whatsapp.js';
 import { startCleanup } from './store/sessionStore.js';
 import { cleanupOrphanedCollections } from './brain/chromaClient.js';
 import { initPersonas } from './brain/personas.js';
@@ -55,7 +56,7 @@ app.use('/api/session', sessionRoutes);
 app.use('/api/persona', personaRoutes);
 app.use('/api/sessions', sessionsRoutes);
 app.use('/api/config', configRoutes);
-
+app.use('/api/whatsapp', whatsappRoutes);
 app.get('/api/health', (_req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });

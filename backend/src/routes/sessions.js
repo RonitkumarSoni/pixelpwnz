@@ -14,10 +14,33 @@ const router = Router();
 router.get('/', optionalAuth, async (req, res, next) => {
   try {
     const { search } = req.query;
-
-    // If user is authenticated, scope to their sessions
     const userId = req.user?.id || null;
+    
+    // 1. Get user's active sessions (custom personas)
     let sessions = await listSessions(userId);
+
+    // Filter out chat sessions that are just instances of predefined personas
+    const { PREDEFINED_PERSONAS } = await import('../brain/personas.js');
+    const predefinedNames = new Set(Object.values(PREDEFINED_PERSONAS).map(p => p.name));
+    sessions = sessions.filter(s => !predefinedNames.has(s.contact_name));
+
+    // 2. Add Bookmarked Predefined Personas
+    if (userId) {
+      const Persona = (await import('../models/Persona.js')).default;
+      const bookmarked = await Persona.find({ liked_by: userId }).lean();
+      
+      for (const p of bookmarked) {
+        sessions.push({
+          session_id: `persona_${p.persona_id}`,
+          contact_name: p.name,
+          userName: p.name,
+          label: p.name,
+          created_at: Date.now(),
+          pair_count: 15,
+          is_predefined: true
+        });
+      }
+    }
 
     if (search && typeof search === 'string' && search.trim()) {
       const q = search.trim().toLowerCase();

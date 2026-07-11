@@ -20,6 +20,7 @@ import DashboardPage from './pages/DashboardPage';
 import CreateNewPage from './pages/CreateNewPage';
 import NewDashboardPage from './pages/app-dashboard/NewDashboardPage';
 import NotificationsPage from './pages/app-dashboard/NotificationsPage';
+import WhatsAppPage from './pages/app-dashboard/WhatsAppPage';
 // import ProtectedRoute from './components/ProtectedRoute';
 
 import InteractiveDotGrid from './components/InteractiveDotGrid';
@@ -97,6 +98,7 @@ export default function App() {
           <Route path="/dashboard" element={<ProtectedRoute><NewDashboardPage /></ProtectedRoute>} />
           <Route path="/create" element={<ProtectedRoute><CreateNewPage /></ProtectedRoute>} />
           <Route path="/notifications" element={<ProtectedRoute><NotificationsPage /></ProtectedRoute>} />
+          <Route path="/whatsapp" element={<ProtectedRoute><WhatsAppPage /></ProtectedRoute>} />
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </div>

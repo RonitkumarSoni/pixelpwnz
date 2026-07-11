@@ -5,17 +5,23 @@ env.backends.onnx.wasm.numThreads = 1;
 
 let _embedder = null;
 
+let _initPromise = null;
+
 /**
  * Lazy-load the embedding pipeline (cached after first call).
  */
 async function getEmbedder() {
-  if (!_embedder) {
-    // dtype: 'q8' downloads model_quantized.onnx (~23 MB vs 86 MB for fp32)
-    _embedder = await pipeline('feature-extraction', 'Xenova/all-MiniLM-L6-v2', {
-      dtype: 'q8',
-    });
+  if (_embedder) return _embedder;
+  if (!_initPromise) {
+    _initPromise = (async () => {
+      // dtype: 'q8' downloads model_quantized.onnx (~23 MB vs 86 MB for fp32)
+      _embedder = await pipeline('feature-extraction', 'Xenova/all-MiniLM-L6-v2', {
+        dtype: 'q8',
+      });
+      return _embedder;
+    })();
   }
-  return _embedder;
+  return await _initPromise;
 }
 
 /**

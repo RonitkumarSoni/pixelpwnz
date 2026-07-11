@@ -28,7 +28,7 @@ export default function ChatPage() {
 
   useEffect(() => {
     async function init() {
-      if (!sessionId && sessionIdParam) {
+      if (sessionIdParam && sessionIdParam !== sessionId) {
         try {
           const data = await getSessionDetails(sessionIdParam);
           setSession(
@@ -134,8 +134,8 @@ export default function ChatPage() {
         flexShrink: 0, zIndex: 10,
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <Link to="/">
-            <button className="btn-icon" title="Back to home"><ArrowLeft size={20} /></button>
+          <Link to="/explore">
+            <button className="btn-icon" title="Back to explore"><ArrowLeft size={20} /></button>
           </Link>
           <div>
             <h2 style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--color-text)' }}>

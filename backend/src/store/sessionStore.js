@@ -50,7 +50,28 @@ export async function createSession(sessionId, data, userId = null) {
  * @returns {Promise<object|null>}
  */
 export async function getSession(sessionId) {
-  // 1. Check in-memory cache first (fast path)
+  // 1. Intercept predefined personas (e.g., persona_steve_jobs)
+  if (sessionId.startsWith('persona_')) {
+    const pId = sessionId.replace('persona_', '');
+    const { PREDEFINED_PERSONAS } = await import('../brain/personas.js');
+    const staticP = PREDEFINED_PERSONAS[pId];
+    if (staticP) {
+      const { buildToneProfile } = await import('../brain/promptBuilder.js');
+      return {
+        session_id: sessionId,
+        user_id: null,
+        contact_name: staticP.name,
+        userName: staticP.name,
+        label: staticP.name,
+        temperature: 0.7,
+        pairs: staticP.pairs,
+        toneProfile: buildToneProfile(staticP.pairs),
+        created_at: Date.now(),
+      };
+    }
+  }
+
+  // 2. Check in-memory cache first (fast path)
   const cached = cache.get(sessionId);
   if (cached) {
     const age = (Date.now() - cached.created_at) / 1000;

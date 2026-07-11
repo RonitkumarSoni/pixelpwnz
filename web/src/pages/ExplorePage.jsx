@@ -1,19 +1,13 @@
 import React from 'react';
-import { Search, Filter, MessageSquare, Heart, TrendingUp, Star, Award, Zap } from 'lucide-react';
+import { Search, Filter, MessageSquare, Bookmark, TrendingUp, Star, Award, Zap } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useAuthStore } from '../store/authStore';
 import DashboardLayout from '../components/DashboardLayout';
 import PremiumLoader from '../components/PremiumLoader';
 import apiClient from '../api/client';
 
-const CLONES = [
-  { id: 1, name: "Albert Einstein", creator: "@historybuff", description: "Discuss physics and philosophy with the genius himself.", chats: "12.4k", likes: "4.2k", icon: <Star size={24} /> },
-  { id: 2, name: "Tech Bro Chad", creator: "@silicon_valley", description: "Always talking about crypto, AI, and grinding 24/7.", chats: "8.1k", likes: "3.5k", icon: <Zap size={24} /> },
-  { id: 3, name: "Gordon Ramsay", creator: "@chef_master", description: "He will brutally critique your coding skills like food.", chats: "24.5k", likes: "9.8k", icon: <Award size={24} /> },
-  { id: 4, name: "Socrates", creator: "@philosopher", description: "Answers every question with another question.", chats: "5.2k", likes: "1.2k", icon: <Star size={24} /> },
-  { id: 5, name: "Startup Founder", creator: "@hustle_culture", description: "Pitch him your ideas, he will probably steal them.", chats: "15.3k", likes: "6.7k", icon: <TrendingUp size={24} /> },
-  { id: 6, name: "Grumpy Cat", creator: "@meme_lord", description: "Responds to everything with extreme apathy.", chats: "45.1k", likes: "18.2k", icon: <Heart size={24} /> },
-];
+import { useNavigate } from 'react-router-dom';
+import useChatStore from '../store/chatStore';
 
 export default function ExplorePage() {
   return (
@@ -27,6 +21,8 @@ function ExploreContent({ c, isDark }) {
   const [personas, setPersonas] = React.useState([]);
   const [isLoading, setIsLoading] = React.useState(true);
   const [selectedCategory, setSelectedCategory] = React.useState('All');
+  const navigate = useNavigate();
+  const { sessionId: activeSessionId, userName: activeUserName } = useChatStore();
 
   React.useEffect(() => {
     window.scrollTo(0, 0);
@@ -146,6 +142,27 @@ function ExploreContent({ c, isDark }) {
               }}
               onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
               onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
+              onClick={() => {
+                // Resume active session if it matches the persona
+                if (activeUserName === clone.name && activeSessionId) {
+                  navigate(`/chat?session_id=${activeSessionId}`);
+                  return;
+                }
+                
+                const toastId = toast.loading('Loading persona...');
+                apiClient.post(`/persona/${clone.id}`)
+                  .then(res => {
+                    toast.dismiss(toastId);
+                    if (res.data.success && res.data.session_id) {
+                      navigate(`/chat?session_id=${res.data.session_id}`);
+                    }
+                  })
+                  .catch(err => {
+                    toast.dismiss(toastId);
+                    toast.error('Failed to load persona.');
+                    console.error(err);
+                  });
+              }}
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
                   <div style={{ width: 64, height: 64, borderRadius: 16, background: isDark ? 'rgba(108, 92, 231, 0.1)' : '#f3efff', color: '#6c5ce7', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -161,23 +178,15 @@ function ExploreContent({ c, isDark }) {
                       background: 'linear-gradient(135deg, #8c7ae6, #6c5ce7)', color: '#fff', border: 'none',
                       fontWeight: 600, cursor: 'pointer', boxShadow: '0 4px 12px rgba(108,92,231,0.2)'
                     }}
-                    onClick={() => {
-                      apiClient.post(`/persona/${clone.id}`)
-                        .then(res => {
-                          if (res.data.success && res.data.session_id) {
-                            window.location.href = `/chat?session_id=${res.data.session_id}`;
-                          }
-                        });
-                    }}
                   >
                     Chat
                   </button>
                 </div>
                 
                 <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: c.textDark, marginBottom: 4 }}>{clone.name}</h3>
-                <p style={{ fontSize: '0.85rem', color: '#6c5ce7', fontWeight: 600, marginBottom: 12 }}>@signet_official</p>
+                <p style={{ fontSize: '0.85rem', color: '#6c5ce7', fontWeight: 600, marginBottom: 12 }}>@{clone.id}</p>
                 <p style={{ color: c.textMuted, fontSize: '0.9rem', lineHeight: 1.5, marginBottom: 24, flexGrow: 1 }}>
-                  {clone.description || 'Official predefined persona. Ready to chat!'}
+                  {clone.description || 'Ready to chat!'}
                 </p>
 
                 <div style={{ display: 'flex', gap: 16, paddingTop: 16, borderTop: `1px solid ${c.borderSubtle}` }}>
@@ -186,19 +195,22 @@ function ExploreContent({ c, isDark }) {
                     {(clone.chat_count || 0).toLocaleString()}
                   </div>
                   <div 
-                    onClick={() => toggleBookmark(clone.id, personas.findIndex(p => p.id === clone.id))}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleBookmark(clone.id, personas.findIndex(p => p.id === clone.id));
+                    }}
                     style={{ 
                       display: 'flex', 
                       alignItems: 'center', 
                       gap: 6, 
-                      color: clone.is_liked ? '#ff4757' : c.textMuted, 
+                      color: clone.is_liked ? '#6c5ce7' : c.textMuted, 
                       fontSize: '0.85rem', 
                       fontWeight: 600,
                       cursor: 'pointer',
                       transition: 'color 0.2s'
                     }}
                   >
-                    <Heart size={16} fill={clone.is_liked ? '#ff4757' : 'none'} />
+                    <Bookmark size={16} fill={clone.is_liked ? '#6c5ce7' : 'none'} />
                     {(clone.likes_count || 0).toLocaleString()}
                   </div>
                 </div>

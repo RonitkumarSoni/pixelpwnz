@@ -54,7 +54,7 @@ function BookmarksContent({ c, isDark }) {
     e.stopPropagation();
     try {
       await toggleBookmark(id);
-      setBookmarkedItems(prev => prev.filter(p => p._id !== id));
+      setBookmarkedItems(prev => prev.filter(p => p.id !== id));
       toast.success('Removed from bookmarks');
     } catch (err) {
       toast.error('Failed to remove bookmark');
@@ -88,8 +88,8 @@ function BookmarksContent({ c, isDark }) {
           ) : (
             bookmarkedItems.map((item) => (
               <div 
-                key={item._id} 
-                onClick={() => navigate(`/explore?persona=${item._id}`)}
+                key={item.id} 
+                onClick={() => navigate(`/explore?persona=${item.id}`)}
                 style={{ 
                   background: c.cardBgSolid, borderRadius: '20px', padding: '20px', 
                   boxShadow: `4px 4px 10px ${c.shadowSmall}`, border: `1px solid ${c.borderSubtle}`,
@@ -101,7 +101,7 @@ function BookmarksContent({ c, isDark }) {
               >
                 <div 
                   style={{ position: 'absolute', top: '16px', right: '16px', cursor: 'pointer', padding: '4px' }}
-                  onClick={(e) => handleRemoveBookmark(e, item._id)}
+                  onClick={(e) => handleRemoveBookmark(e, item.id)}
                   title="Remove Bookmark"
                 >
                   <Bookmark size={18} color="#6c5ce7" fill="#6c5ce7" />

@@ -12,7 +12,8 @@ const router = Router();
 // GET /api/persona -> List available personas with DB stats
 router.get('/', optionalAuth, async (req, res, next) => {
   try {
-    const personas = await Persona.find().lean();
+    // Only fetch predefined personas (exclude custom ones starting with @custom-)
+    const personas = await Persona.find({ persona_id: { $not: /^@custom-/ } }).lean();
     
     // Map to response format
     const formatted = personas.map(p => {
@@ -108,11 +109,31 @@ router.post('/:id', optionalAuth, async (req, res, next) => {
     // Increment global chat count in DB
     await Persona.updateOne({ persona_id: personaId }, { $inc: { chat_count: 1 } });
 
+    // Prevent duplicate sessions for predefined personas
+    if (req.user && req.user.id) {
+      const SessionModel = (await import('../store/Session.js')).default;
+      const existing = await SessionModel.findOne({ 
+        user_id: req.user.id, 
+        userName: staticPersona.name 
+      }).lean();
+
+      if (existing) {
+        return res.status(200).json({
+          success: true,
+          session_id: existing.session_id,
+          persona: staticPersona.name,
+          total_pairs_extracted: existing.pairs ? existing.pairs.length : 0,
+        });
+      }
+    }
+
     const sessionId = uuidv4();
     const pairs = staticPersona.pairs.map(p => ({ ...p, id: uuidv4() }));
     
     // Process exactly like a WhatsApp upload
     const toneProfile = buildToneProfile(pairs);
+    toneProfile.description = staticPersona.description;
+    
     await ingestPairs(sessionId, pairs);
     
     await createSession(sessionId, {

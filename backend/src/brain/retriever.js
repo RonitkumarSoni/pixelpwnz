@@ -42,7 +42,7 @@ function keywordScore(query, document) {
  *   - alpha: weight for semantic score [0–1] (default 0.7)
  * @returns {Promise<{ incoming: string, reply: string, score: number, rerankScore: number }[]>}
  */
-export async function retrieve(sessionId, incomingMessage, { topK = 5, alpha = 0.7 } = {}) {
+export async function retrieve(sessionId, incomingMessage, { topK = 15, alpha = 0.7 } = {}) {
   // Fetch more candidates than needed to allow re-ranking
   const candidateK = Math.max(topK * 3, 15);
 

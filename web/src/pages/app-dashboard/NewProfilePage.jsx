@@ -1,10 +1,10 @@
 import React from 'react';
 import { User, Mail, Shield, Key, CreditCard, LogOut, ChevronRight, ChevronLeft, CheckCircle } from 'lucide-react';
+import toast from 'react-hot-toast';
 import useUiStore from '../../store/uiStore';
 import DashboardLayout from '../../components/DashboardLayout';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore';
-import toast from 'react-hot-toast';
 
 export default function NewProfilePage() {
   return (
@@ -18,14 +18,14 @@ function ProfileContent({ c, isDark }) {
   const navigate = useNavigate();
   const location = useLocation();
   const { logout } = useAuthStore();
-  
   if (!c) return null;
+
   const { user } = useUiStore();
   const { user: authUser } = useAuthStore();
   const activeUser = authUser || user;
   const userName = activeUser?.name || 'User';
   const userEmail = activeUser?.email || 'user@example.com';
-  
+
   const [activeSetting, setActiveSetting] = React.useState(location.state?.activeSetting || null);
 
   const handleLogout = () => {

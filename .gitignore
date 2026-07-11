@@ -70,4 +70,9 @@ pairs.json
 *.gguf
 lora_model/
 model_gguf/
-outputs/
+outputs/ 
+backend/.wwebjs_auth/
+backend/.wwebjs_cache/
+backend/check.js
+backend/query.js
+backend/test-retriever.js

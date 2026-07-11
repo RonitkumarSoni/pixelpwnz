@@ -16,7 +16,7 @@ router.get('/:sessionId', async (req, res, next) => {
 
     // Fetch chat history
     const messages = await ChatMessage.find({ session_id: sessionId })
-      .sort({ created_at: 1 })
+      .sort({ createdAt: 1 })
       .lean();
 
     res.status(200).json({
@@ -32,7 +32,7 @@ router.get('/:sessionId', async (req, res, next) => {
         id: m._id,
         type: m.role,
         text: m.content,
-        timestamp: new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        timestamp: new Date(m.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       }))
     });
   } catch (err) {

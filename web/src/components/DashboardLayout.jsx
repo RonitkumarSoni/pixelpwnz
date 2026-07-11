@@ -1,19 +1,20 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { 
-  Search, Bell, Sun, Moon, ChevronRight, AlignLeft, X, MoreVertical, Star, Home, Compass, PlusCircle, Bookmark, User, Settings, LogOut
+  Search, Bell, Sun, Moon, ChevronRight, AlignLeft, X, MoreVertical, Star, Home, Compass, PlusCircle, Bookmark, User, Settings, LogOut, Smartphone
 } from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
 import { useNavigate, useLocation } from 'react-router-dom';
 import useUiStore from '../store/uiStore';
 
 export default function DashboardLayout({ children, activeTab = 'Home' }) {
-  const { user, theme, toggleTheme } = useUiStore();
+  const { theme, toggleTheme, user: uiUser } = useUiStore();
+  const { user: authUser, logout } = useAuthStore();
   const navigate = useNavigate();
   const location = useLocation();
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const profileMenuRef = useRef(null);
-  const { logout, user: authUser } = useAuthStore();
+
 
   useEffect(() => {
     function handleClickOutside(event) {
@@ -26,7 +27,7 @@ export default function DashboardLayout({ children, activeTab = 'Home' }) {
   }, []);
 
   // Use authStore user (JWT-verified) as primary, fallback to uiStore user
-  const activeUser = authUser || user;
+  const activeUser = authUser || uiUser;
   const userName = activeUser?.name || 'User';
   const userAvatar = activeUser?.avatar || activeUser?.photoURL || activeUser?.picture || null;
 
@@ -184,6 +185,9 @@ export default function DashboardLayout({ children, activeTab = 'Home' }) {
           <div style={styles.navItem(activeTab === 'Profile')} onClick={() => navigate('/profile')}>
             <User size={18} /> Profile
           </div>
+          <div style={styles.navItem(activeTab === 'WhatsApp Link')} onClick={() => navigate('/whatsapp')}>
+            <Smartphone size={18} /> WhatsApp Link
+          </div>
         </div>
 
         {/* Profile / Upgrade */}
@@ -277,6 +281,7 @@ export default function DashboardLayout({ children, activeTab = 'Home' }) {
                 {activeTab === 'Create' && 'Create New Persona'}
                 {activeTab === 'Bookmarks' && 'Your Bookmarks'}
                 {activeTab === 'Profile' && 'Your Profile'}
+                {activeTab === 'WhatsApp Link' && 'Link WhatsApp'}
               </h1>
               <p style={{ margin: '4px 0 0 0', fontSize: '13px', color: c.textMuted }}>
                 {activeTab === 'Home' && 'Your AI Clone is ready to chat with you'}
@@ -284,6 +289,7 @@ export default function DashboardLayout({ children, activeTab = 'Home' }) {
                 {activeTab === 'Create' && 'Build a new AI from your data'}
                 {activeTab === 'Bookmarks' && 'Quick access to your favorites'}
                 {activeTab === 'Profile' && 'Manage your account and settings'}
+                {activeTab === 'WhatsApp Link' && 'Enable AI Auto-Pilot on WhatsApp'}
               </p>
             </div>
           </div>
