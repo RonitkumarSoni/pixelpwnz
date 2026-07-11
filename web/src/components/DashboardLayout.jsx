@@ -1,22 +1,40 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { 
-  Search, Bell, Sun, Moon, ChevronRight, AlignLeft, X, MoreVertical, Star, Home, Compass, PlusCircle, Bookmark, User
+  Search, Bell, Sun, Moon, ChevronRight, AlignLeft, X, MoreVertical, Star, Home, Compass, PlusCircle, Bookmark, User, Settings, LogOut
 } from 'lucide-react';
+import { useAuthStore } from '../store/authStore';
 import { useNavigate, useLocation } from 'react-router-dom';
 import useUiStore from '../store/uiStore';
 
 export default function DashboardLayout({ children, activeTab = 'Home' }) {
-  const { user } = useUiStore();
+  const { user, theme, toggleTheme } = useUiStore();
   const navigate = useNavigate();
   const location = useLocation();
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-  const [theme, setTheme] = useState(document.documentElement.getAttribute('data-theme') || 'light');
+  const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
+  const profileMenuRef = useRef(null);
+  const { logout } = useAuthStore();
 
   useEffect(() => {
-    document.documentElement.setAttribute('data-theme', theme);
-  }, [theme]);
+    function handleClickOutside(event) {
+      if (profileMenuRef.current && !profileMenuRef.current.contains(event.target)) {
+        setIsProfileMenuOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
-  const userName = user?.name || 'Ronit';
+
+
+  const userName = user?.name || 'User';
+
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return 'Good Morning';
+    if (hour < 18) return 'Good Afternoon';
+    return 'Good Evening';
+  };
 
   const isDark = theme === 'dark';
   const c = {
@@ -171,15 +189,47 @@ export default function DashboardLayout({ children, activeTab = 'Home' }) {
         <div style={{ background: c.cardBgHighlight, borderRadius: '20px', padding: '12px', marginTop: 'auto', transition: 'background 0.3s' }}>
           {/* Top: Profile */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '14px', cursor: 'pointer' }} onClick={() => navigate('/profile')}>
-            <img src="https://i.pravatar.cc/150?img=11" alt="Profile" style={{ width: '36px', height: '36px', borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
+            <img src={user?.avatar || user?.photoURL || user?.picture || `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name || 'User')}&background=random`} alt="Profile" style={{ width: '36px', height: '36px', borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
             <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '2px' }}>
-              <h4 style={{ margin: 0, fontSize: '12.5px', fontWeight: 700, color: c.textDark, lineHeight: 1.2, transition: 'color 0.3s' }}>{userName} Kumar</h4>
+              <h4 style={{ margin: 0, fontSize: '12.5px', fontWeight: 700, color: c.textDark, lineHeight: 1.2, transition: 'color 0.3s' }}>{userName}</h4>
               <p style={{ margin: 0, fontSize: '11px', color: c.textMuted, display: 'flex', alignItems: 'center', gap: '4px', fontWeight: 500 }}>
                 <span style={{ fontSize: '12px' }}>👑</span> Premium Plan
               </p>
             </div>
-            <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: c.primaryLight, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0 }}>
-              <MoreVertical size={14} color="#6c5ce7" />
+            <div style={{ position: 'relative' }} ref={profileMenuRef}>
+              <div 
+                style={{ width: '24px', height: '24px', borderRadius: '50%', background: c.primaryLight, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0 }}
+                onClick={(e) => { e.stopPropagation(); setIsProfileMenuOpen(!isProfileMenuOpen); }}
+              >
+                <MoreVertical size={14} color="#6c5ce7" />
+              </div>
+              
+              {isProfileMenuOpen && (
+                <div style={{
+                  position: 'absolute', bottom: 'calc(100% + 10px)', right: 0, width: '180px',
+                  background: c.cardBgSolid, borderRadius: '16px', padding: '8px',
+                  boxShadow: `0 8px 24px ${c.shadowOuter}`, border: `1px solid ${c.borderSubtle}`,
+                  display: 'flex', flexDirection: 'column', gap: '4px', zIndex: 100
+                }}>
+                  <div 
+                    style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 12px', borderRadius: '10px', cursor: 'pointer', color: c.textDark, fontSize: '13px', fontWeight: 500, transition: 'background 0.2s' }}
+                    onMouseEnter={(e) => e.currentTarget.style.background = c.cardBgHighlight}
+                    onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+                    onClick={() => { setIsProfileMenuOpen(false); navigate('/profile'); }}
+                  >
+                    <Settings size={16} color={c.textLight} /> Account Settings
+                  </div>
+                  <div style={{ height: '1px', background: c.borderSubtle, margin: '4px 0' }} />
+                  <div 
+                    style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 12px', borderRadius: '10px', cursor: 'pointer', color: '#ef4444', fontSize: '13px', fontWeight: 600, transition: 'background 0.2s' }}
+                    onMouseEnter={(e) => e.currentTarget.style.background = isDark ? 'rgba(239, 68, 68, 0.1)' : '#fee2e2'}
+                    onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+                    onClick={() => { setIsProfileMenuOpen(false); logout(); navigate('/login'); }}
+                  >
+                    <LogOut size={16} /> Logout
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 
@@ -193,7 +243,10 @@ export default function DashboardLayout({ children, activeTab = 'Home' }) {
           </div>
 
           {/* Bottom: Upgrade Button */}
-          <button className="upgrade-btn-blob">
+          <button 
+            className="upgrade-btn-blob"
+            onClick={() => navigate('/profile', { state: { activeSetting: 'billing' } })}
+          >
             <div className="blob1"></div>
             <div className="blob2"></div>
             <div className="inner">
@@ -218,7 +271,7 @@ export default function DashboardLayout({ children, activeTab = 'Home' }) {
             )}
             <div>
               <h1 style={{ margin: 0, fontSize: '22px', fontWeight: 600, color: c.textMain, transition: 'color 0.3s' }}>
-                {activeTab === 'Home' && `Good Evening, ${userName} 👋`}
+                {activeTab === 'Home' && `${getGreeting()}, ${userName} 👋`}
                 {activeTab === 'Explore' && 'Explore Personas'}
                 {activeTab === 'Create' && 'Create New Persona'}
                 {activeTab === 'Bookmarks' && 'Your Bookmarks'}
@@ -237,7 +290,7 @@ export default function DashboardLayout({ children, activeTab = 'Home' }) {
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
             <div className="search-neumorphic">
               <div className="btn-inner">
-                <input type="text" placeholder="Search anything..." />
+                <input className="dashboard-search-input" type="text" placeholder="Search anything..." style={{ color: c.textMain }} />
                 <Search size={16} color={c.textLight} style={{ zIndex: 2, position: 'relative' }} />
               </div>
             </div>
@@ -261,9 +314,7 @@ export default function DashboardLayout({ children, activeTab = 'Home' }) {
                 const btn = e.currentTarget;
                 btn.classList.add('active');
                 setTimeout(() => {
-                  const newTheme = isDark ? 'light' : 'dark';
-                  setTheme(newTheme);
-                  document.documentElement.setAttribute('data-theme', newTheme);
+                  toggleTheme();
                   btn.classList.remove('active');
                 }, 150);
               }}
@@ -277,7 +328,7 @@ export default function DashboardLayout({ children, activeTab = 'Home' }) {
               </span>
             </button>
 
-            <img src="https://i.pravatar.cc/150?img=11" alt="User" style={{ width: '44px', height: '44px', borderRadius: '50%', objectFit: 'cover', border: `2px solid ${c.borderMain}`, cursor: 'pointer' }} onClick={() => navigate('/profile')} />
+            <img src={user?.avatar || user?.photoURL || user?.picture || `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name || 'User')}&background=random`} alt="User" style={{ width: '44px', height: '44px', borderRadius: '50%', objectFit: 'cover', border: `2px solid ${c.borderMain}`, cursor: 'pointer' }} onClick={() => navigate('/profile')} />
           </div>
         </div>
 
@@ -294,6 +345,12 @@ export default function DashboardLayout({ children, activeTab = 'Home' }) {
         </div>
 
       </div>
+      <style>{`
+        .dashboard-search-input::placeholder {
+          color: ${c.textMuted};
+          opacity: 0.8;
+        }
+      `}</style>
     </div>
   );
 }

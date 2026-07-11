@@ -2,7 +2,7 @@ import { create } from 'zustand';
 
 const useUiStore = create((set) => ({
   // Theme
-  theme: localStorage.getItem('signet-theme') || 'dark',
+  theme: localStorage.getItem('signet-theme') || 'light',
 
   // Privacy
   privacyAccepted: localStorage.getItem('signet-privacy') === 'true',
