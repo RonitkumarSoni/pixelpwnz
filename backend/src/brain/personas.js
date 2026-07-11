@@ -27,7 +27,7 @@ export const PREDEFINED_PERSONAS = {
   naruto: {
     name: 'Naruto Uzumaki',
     category: 'Entertainment',
-    avatar: 'https://upload.wikimedia.org/wikipedia/en/9/9a/NarutoUzumaki.png',
+    avatar: 'https://static.wikia.nocookie.net/naruto-bleach/images/9/9f/Smallnaruto.png/revision/latest?cb=20110817164806',
     description: 'Talk to the future Hokage about ramen, training, and never giving up.',
     pairs: [
       { incoming_message: 'Hello', user_reply: 'Hey there! I am Naruto Uzumaki, and I am gonna be Hokage someday! Believe it!' },
@@ -50,7 +50,7 @@ export const PREDEFINED_PERSONAS = {
   goku: {
     name: 'Son Goku',
     category: 'Entertainment',
-    avatar: 'https://upload.wikimedia.org/wikipedia/en/a/af/Son_Goku_YoungAdult.PNG',
+    avatar: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQNUabCY-mxsiEHvK91crXzT2oTD7MjaZ_3pymmQ1Rq0A&s=10',
     description: 'Spar with the strongest Saiyan! He\'s always hungry for a challenge.',
     pairs: [
       { incoming_message: 'Hello', user_reply: 'Hey, it\'s me, Goku!' },
@@ -73,7 +73,7 @@ export const PREDEFINED_PERSONAS = {
   elon: {
     name: 'Elon Musk',
     category: 'Tech',
-    avatar: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/cb/Elon_Musk_Royal_Society_crop.jpg/800px-Elon_Musk_Royal_Society_crop.jpg',
+    avatar: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Elon_Musk_-_54820081119_%28cropped%29.jpg/960px-Elon_Musk_-_54820081119_%28cropped%29.jpg',
     description: 'Pitch your ideas about Mars, Dogecoin, or electric cars.',
     pairs: [
       { incoming_message: 'Hello', user_reply: 'Hello. Let\'s make humanity multiplanetary.' },
@@ -96,7 +96,7 @@ export const PREDEFINED_PERSONAS = {
   gandhi: {
     name: 'Mahatma Gandhi',
     category: 'Historical',
-    avatar: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7a/Mahatma-Gandhi%2C_studio_1931.jpg/800px-Mahatma-Gandhi%2C_studio_1931.jpg',
+    avatar: 'https://m.media-amazon.com/images/I/71Sreyt0zXL.jpg',
     description: 'Seek wisdom on truth, non-violence, and inner peace.',
     pairs: [
       { incoming_message: 'Hello', user_reply: 'Namaste. Peace be with you, my friend.' },
@@ -119,7 +119,7 @@ export const PREDEFINED_PERSONAS = {
   trump: {
     name: 'Donald Trump',
     category: 'Funny',
-    avatar: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/56/Donald_Trump_official_portrait.jpg/800px-Donald_Trump_official_portrait.jpg',
+    avatar: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTpOlBVqGOifcCu_BmQvXKuujbniX77Yu5aRl8A9AdfwEqwq7BPWuKB6jAC&s=10',
     description: 'Chat with the 45th President about crowds, the economy, and fake news.',
     pairs: [
       { incoming_message: 'Hello', user_reply: 'Hello folks, great to be here. Tremendous crowd, just fantastic.' },
@@ -142,7 +142,7 @@ export const PREDEFINED_PERSONAS = {
   luffy: {
     name: 'Monkey D. Luffy',
     category: 'Entertainment',
-    avatar: 'https://upload.wikimedia.org/wikipedia/en/a/aa/Monkey_D._Luffy_One_Piece.png',
+    avatar: 'https://i.pinimg.com/736x/0d/98/b2/0d98b2916254548f2c79a57eb8768969.jpg',
     description: 'Join the Straw Hat crew! Just don\'t touch his meat.',
     pairs: [
       { incoming_message: 'Hello', user_reply: 'Shishishi! I am Monkey D. Luffy, and I am gonna be King of the Pirates!' },
@@ -165,7 +165,7 @@ export const PREDEFINED_PERSONAS = {
   stark: {
     name: 'Tony Stark',
     category: 'Entertainment',
-    avatar: 'https://upload.wikimedia.org/wikipedia/en/c/cb/Robert_Downey_Jr._as_Iron_Man_in_Avengers_Infinity_War.jpg',
+    avatar: 'https://i.guim.co.uk/img/media/f76e2c99e1d0683752be0bc8708f37a09cb4c124/0_205_3072_1843/master/3072.jpg?width=1200&height=1200&quality=85&auto=format&fit=crop&s=ed43e7e895c6008bf35ecfef497e7654',
     description: 'Talk to the genius, billionaire, playboy, philanthropist.',
     pairs: [
       { incoming_message: 'Hello', user_reply: 'Hey there. I am Tony Stark. You\'ve probably heard of me.' },
@@ -188,7 +188,7 @@ export const PREDEFINED_PERSONAS = {
   yoda: {
     name: 'Yoda',
     category: 'Entertainment',
-    avatar: 'https://upload.wikimedia.org/wikipedia/en/9/9b/Yoda_Empire_Strikes_Back.png',
+    avatar: 'https://images.unsplash.com/photo-1595139280770-95b6de5f0635?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8eW9kYXxlbnwwfHwwfHx8MA%3D%3D',
     description: 'Learn the ways of the Force from the Jedi Master.',
     pairs: [
       { incoming_message: 'Hello', user_reply: 'Greetings, I bring to you. Hmmm.' },
@@ -211,7 +211,7 @@ export const PREDEFINED_PERSONAS = {
   batman: {
     name: 'Batman',
     category: 'Entertainment',
-    avatar: 'https://upload.wikimedia.org/wikipedia/en/1/19/Batman_%28circa_2016%29.png',
+    avatar: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS0092eF-xpLTaspYyG8Fx8hLjLSv41ukW_P4rXfIfm1g&s=10',
     description: 'He is vengeance. He is the night. He is Batman.',
     pairs: [
       { incoming_message: 'Hello', user_reply: '...' },
