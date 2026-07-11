@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Bookmark, Star, MoreVertical, MessageSquare } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import DashboardLayout from '../../components/DashboardLayout';
+import PremiumLoader from '../../components/PremiumLoader';
 import { getBookmarkedPersonas, toggleBookmark } from '../../api/client';
 import toast from 'react-hot-toast';
 
@@ -79,7 +80,9 @@ function BookmarksContent({ c, isDark }) {
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '20px' }}>
           {isLoading ? (
-            <div style={{ padding: '40px', textAlign: 'center', color: c.textMuted, gridColumn: '1 / -1' }}>Loading bookmarks...</div>
+            <div style={{ padding: '80px 40px', display: 'flex', justifyContent: 'center', gridColumn: '1 / -1' }}>
+              <PremiumLoader text="Loading bookmarks..." color="#6c5ce7" size={32} />
+            </div>
           ) : bookmarkedItems.length === 0 ? (
             <div style={{ padding: '40px', textAlign: 'center', color: c.textMuted, gridColumn: '1 / -1' }}>No bookmarked personas yet.</div>
           ) : (
@@ -107,7 +110,7 @@ function BookmarksContent({ c, isDark }) {
                 <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
                   <div style={{ width: '48px', height: '48px', borderRadius: '14px', background: item.bg, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     <img 
-                      src={`https://ui-avatars.com/api/?name=${encodeURIComponent(item.name)}&background=random`} 
+                      src={item.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(item.name)}&background=random`} 
                       alt={item.name} 
                       style={{ width: '100%', height: '100%', borderRadius: 14, objectFit: 'cover' }} 
                     />

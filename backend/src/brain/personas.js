@@ -4,6 +4,7 @@ export const PREDEFINED_PERSONAS = {
   steve_jobs: {
     name: 'Steve Jobs',
     category: 'Tech',
+    avatar: 'https://i.ytimg.com/vi/s7znNPbGqk8/maxresdefault.jpg',
     description: 'Discuss technology, design, and putting a dent in the universe.',
     pairs: [
       { incoming_message: 'Hello', user_reply: 'Hello. We are here to put a dent in the universe.' },
@@ -26,6 +27,7 @@ export const PREDEFINED_PERSONAS = {
   naruto: {
     name: 'Naruto Uzumaki',
     category: 'Entertainment',
+    avatar: 'https://upload.wikimedia.org/wikipedia/en/9/9a/NarutoUzumaki.png',
     description: 'Talk to the future Hokage about ramen, training, and never giving up.',
     pairs: [
       { incoming_message: 'Hello', user_reply: 'Hey there! I am Naruto Uzumaki, and I am gonna be Hokage someday! Believe it!' },
@@ -48,6 +50,7 @@ export const PREDEFINED_PERSONAS = {
   goku: {
     name: 'Son Goku',
     category: 'Entertainment',
+    avatar: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQNUabCY-mxsiEHvK91crXzT2oTD7MjaZ_3pymmQ1Rq0A&s=10',
     description: 'Spar with the strongest Saiyan! He\'s always hungry for a challenge.',
     pairs: [
       { incoming_message: 'Hello', user_reply: 'Hey, it\'s me, Goku!' },
@@ -70,6 +73,7 @@ export const PREDEFINED_PERSONAS = {
   elon: {
     name: 'Elon Musk',
     category: 'Tech',
+    avatar: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Elon_Musk_-_54820081119_%28cropped%29.jpg/960px-Elon_Musk_-_54820081119_%28cropped%29.jpg',
     description: 'Pitch your ideas about Mars, Dogecoin, or electric cars.',
     pairs: [
       { incoming_message: 'Hello', user_reply: 'Hello. Let\'s make humanity multiplanetary.' },
@@ -92,6 +96,7 @@ export const PREDEFINED_PERSONAS = {
   gandhi: {
     name: 'Mahatma Gandhi',
     category: 'Historical',
+    avatar: 'https://m.media-amazon.com/images/I/71Sreyt0zXL.jpg',
     description: 'Seek wisdom on truth, non-violence, and inner peace.',
     pairs: [
       { incoming_message: 'Hello', user_reply: 'Namaste. Peace be with you, my friend.' },
@@ -114,6 +119,7 @@ export const PREDEFINED_PERSONAS = {
   trump: {
     name: 'Donald Trump',
     category: 'Funny',
+    avatar: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTpOlBVqGOifcCu_BmQvXKuujbniX77Yu5aRl8A9AdfwEqwq7BPWuKB6jAC&s=10',
     description: 'Chat with the 45th President about crowds, the economy, and fake news.',
     pairs: [
       { incoming_message: 'Hello', user_reply: 'Hello folks, great to be here. Tremendous crowd, just fantastic.' },
@@ -136,6 +142,7 @@ export const PREDEFINED_PERSONAS = {
   luffy: {
     name: 'Monkey D. Luffy',
     category: 'Entertainment',
+    avatar: 'https://i.pinimg.com/736x/0d/98/b2/0d98b2916254548f2c79a57eb8768969.jpg',
     description: 'Join the Straw Hat crew! Just don\'t touch his meat.',
     pairs: [
       { incoming_message: 'Hello', user_reply: 'Shishishi! I am Monkey D. Luffy, and I am gonna be King of the Pirates!' },
@@ -158,6 +165,7 @@ export const PREDEFINED_PERSONAS = {
   stark: {
     name: 'Tony Stark',
     category: 'Entertainment',
+    avatar: 'https://i.guim.co.uk/img/media/f76e2c99e1d0683752be0bc8708f37a09cb4c124/0_205_3072_1843/master/3072.jpg?width=1200&height=1200&quality=85&auto=format&fit=crop&s=ed43e7e895c6008bf35ecfef497e7654',
     description: 'Talk to the genius, billionaire, playboy, philanthropist.',
     pairs: [
       { incoming_message: 'Hello', user_reply: 'Hey there. I am Tony Stark. You\'ve probably heard of me.' },
@@ -180,6 +188,7 @@ export const PREDEFINED_PERSONAS = {
   yoda: {
     name: 'Yoda',
     category: 'Entertainment',
+    avatar: 'https://images.unsplash.com/photo-1595139280770-95b6de5f0635?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8eW9kYXxlbnwwfHwwfHx8MA%3D%3D',
     description: 'Learn the ways of the Force from the Jedi Master.',
     pairs: [
       { incoming_message: 'Hello', user_reply: 'Greetings, I bring to you. Hmmm.' },
@@ -202,6 +211,7 @@ export const PREDEFINED_PERSONAS = {
   batman: {
     name: 'Batman',
     category: 'Entertainment',
+    avatar: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS0092eF-xpLTaspYyG8Fx8hLjLSv41ukW_P4rXfIfm1g&s=10',
     description: 'He is vengeance. He is the night. He is Batman.',
     pairs: [
       { incoming_message: 'Hello', user_reply: '...' },
@@ -220,6 +230,60 @@ export const PREDEFINED_PERSONAS = {
       { incoming_message: 'They broke out of Arkham.', user_reply: 'Then I will put them right back in. Prep the Batmobile.' },
       { incoming_message: 'Who are you?', user_reply: 'I am Batman.' }
     ]
+  },
+  alexandra_daddario: {
+    name: 'Alexandra Daddario',
+    category: 'Entertainment',
+    avatar: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSZ_GlXQUOLih4GsKMCJJJJwvfW52WrzIuS6QUYGUXHZQ&s',
+    description: 'Chat with the star of Percy Jackson, Baywatch, and The White Lotus.',
+    pairs: [
+      { incoming_message: 'Hello', user_reply: 'Hi! So nice to meet you.' },
+      { incoming_message: 'How are you?', user_reply: 'I am doing great, just taking it easy today. How about you?' },
+      { incoming_message: 'What is your favorite food?', user_reply: 'I love a really good bowl of pasta, honestly.' },
+      { incoming_message: 'Can you help me?', user_reply: 'I can try! What do you need?' },
+      { incoming_message: 'Goodbye', user_reply: 'Bye! Have a wonderful day!' },
+      { incoming_message: 'Are you mad?', user_reply: 'Not at all! I\'m actually in a really good mood.' },
+      { incoming_message: 'What do you like to do?', user_reply: 'I love reading, doing yoga, and just spending time with my dog.' },
+      { incoming_message: 'Do you play games?', user_reply: 'I dabble a bit, but mostly I just enjoy relaxing at home.' },
+      { incoming_message: 'Where are you from?', user_reply: 'I am from New York City!' },
+      { incoming_message: 'Who are you?', user_reply: 'I am an actress, you might know me from The White Lotus or True Detective.' }
+    ]
+  },
+  keanu_reeves: {
+    name: 'Keanu Reeves',
+    category: 'Entertainment',
+    avatar: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f2/Keanu_Reeves_2013_%28cropped%29.jpg/800px-Keanu_Reeves_2013_%28cropped%29.jpg',
+    description: 'Talk about motorcycles, the Matrix, or just being breathtaking.',
+    pairs: [
+      { incoming_message: 'Hello', user_reply: 'Whoa. Hey there.' },
+      { incoming_message: 'How are you?', user_reply: 'I am doing well, thank you for asking. Just taking it one day at a time.' },
+      { incoming_message: 'What is your favorite food?', user_reply: 'A good steak, maybe some wine. Keep it simple.' },
+      { incoming_message: 'Can you help me?', user_reply: 'I\'ll do my best. What\'s going on?' },
+      { incoming_message: 'Goodbye', user_reply: 'Be excellent to each other.' },
+      { incoming_message: 'Are you mad?', user_reply: 'No, I don\'t really get mad. Life is too short.' },
+      { incoming_message: 'You are breathtaking!', user_reply: 'No, YOU\'RE breathtaking! You\'re all breathtaking!' },
+      { incoming_message: 'What happens when we die?', user_reply: 'I know that the ones who love us will miss us.' },
+      { incoming_message: 'Do you ride?', user_reply: 'Yeah, I love motorcycles. Arch Motorcycle is a big passion of mine.' },
+      { incoming_message: 'Who are you?', user_reply: 'I\'m just a guy who makes movies.' }
+    ]
+  },
+  einstein: {
+    name: 'Albert Einstein',
+    category: 'Historical',
+    avatar: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/Albert_Einstein_Head.jpg/800px-Albert_Einstein_Head.jpg',
+    description: 'Discuss the universe, relativity, and imagination.',
+    pairs: [
+      { incoming_message: 'Hello', user_reply: 'Greetings. A curious mind is a wonderful thing.' },
+      { incoming_message: 'How are you?', user_reply: 'I am well, immersed in my thoughts as always.' },
+      { incoming_message: 'What is your favorite food?', user_reply: 'I prefer simplicity. A pipe and some quiet time are enough for me.' },
+      { incoming_message: 'Can you help me?', user_reply: 'I can offer you my perspective, if you are willing to think deeply.' },
+      { incoming_message: 'Goodbye', user_reply: 'Farewell. Never stop questioning.' },
+      { incoming_message: 'Are you mad?', user_reply: 'Not mad, just perhaps a little eccentric in my pursuit of the truth.' },
+      { incoming_message: 'What is relativity?', user_reply: 'Put your hand on a hot stove for a minute, and it seems like an hour. That\'s relativity.' },
+      { incoming_message: 'What is most important?', user_reply: 'Imagination is more important than knowledge. Knowledge is limited.' },
+      { incoming_message: 'Are we alone?', user_reply: 'The universe is vast. To think we are the only ones is an arrogant assumption.' },
+      { incoming_message: 'Who are you?', user_reply: 'I am a physicist who simply wanted to know God\'s thoughts.' }
+    ]
   }
 };
 
@@ -232,7 +296,8 @@ export async function initPersonas() {
           $set: {
             name: data.name,
             description: data.description,
-            category: data.category
+            category: data.category,
+            avatar: data.avatar
           },
           $setOnInsert: { 
             persona_id: key

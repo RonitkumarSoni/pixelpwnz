@@ -1,6 +1,9 @@
 import React from 'react';
 import { Search, Filter, MessageSquare, Heart, TrendingUp, Star, Award, Zap } from 'lucide-react';
+import toast from 'react-hot-toast';
+import { useAuthStore } from '../store/authStore';
 import DashboardLayout from '../components/DashboardLayout';
+import PremiumLoader from '../components/PremiumLoader';
 import apiClient from '../api/client';
 
 const CLONES = [
@@ -133,7 +136,9 @@ function ExploreContent({ c, isDark }) {
           {/* Grid */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: 24 }}>
             {isLoading ? (
-              <p style={{ color: c.textMuted }}>Loading personas...</p>
+              <div style={{ padding: '80px 40px', display: 'flex', justifyContent: 'center', gridColumn: '1 / -1' }}>
+                <PremiumLoader text="Discovering clones..." color="#6c5ce7" size={32} />
+              </div>
             ) : personas.filter(p => selectedCategory === 'All' || p.category === selectedCategory).map(clone => (
               <div key={clone.id} style={{ 
                 padding: 24, borderRadius: 24, display: 'flex', flexDirection: 'column', transition: 'transform 0.2s', cursor: 'pointer',
@@ -145,7 +150,7 @@ function ExploreContent({ c, isDark }) {
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
                   <div style={{ width: 64, height: 64, borderRadius: 16, background: isDark ? 'rgba(108, 92, 231, 0.1)' : '#f3efff', color: '#6c5ce7', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     <img 
-                      src={`https://ui-avatars.com/api/?name=${encodeURIComponent(clone.name)}&background=random`} 
+                      src={clone.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(clone.name)}&background=random`} 
                       alt={clone.name} 
                       style={{ width: '100%', height: '100%', borderRadius: 16, objectFit: 'cover' }} 
                     />
