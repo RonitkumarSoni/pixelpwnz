@@ -150,7 +150,11 @@ function DashboardContent({ userName, c, isDark }) {
                 >
                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                     <div style={{ width: '36px', height: '36px', borderRadius: '12px', background: isDark ? 'rgba(108,92,231,0.1)' : '#f3efff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      <MessageSquare size={18} color="#6c5ce7" />
+                      <img 
+                        src={`https://ui-avatars.com/api/?name=${encodeURIComponent(chat.userName || 'Unknown')}&background=random`} 
+                        alt={chat.userName} 
+                        style={{ width: '100%', height: '100%', borderRadius: 12, objectFit: 'cover' }} 
+                      />
                     </div>
                     <div>
                       <div style={{ fontSize: '13px', fontWeight: 600, color: c.textMain }}>{chat.userName || 'Unknown'}</div>

@@ -1,5 +1,5 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { MessageSquare, Lock, Zap, Sparkles, EyeOff, ShieldCheck, ArrowRight } from 'lucide-react';
+import { MessageSquare, Lock, Zap, Sparkles, EyeOff, Eye, ShieldCheck, ArrowRight } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useAuthStore } from '../store/authStore';
 import toast from 'react-hot-toast';
@@ -8,6 +8,7 @@ export default function LoginPage() {
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [name, setName] = useState('');
   
   const navigate = useNavigate();
@@ -257,7 +258,7 @@ export default function LoginPage() {
                 </div>
                 <div style={{ position: 'relative' }}>
                   <input
-                    type="password"
+                    type={showPassword ? "text" : "password"}
                     required
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
@@ -268,7 +269,11 @@ export default function LoginPage() {
                       boxShadow: '0 1px 2px rgba(0,0,0,0.02)'
                     }}
                   />
-                  <EyeOff size={16} color="#9CA3AF" style={{ position: 'absolute', right: 14, top: '50%', transform: 'translateY(-50%)', cursor: 'pointer' }} />
+                  {showPassword ? (
+                    <Eye size={16} color="#9CA3AF" style={{ position: 'absolute', right: 14, top: '50%', transform: 'translateY(-50%)', cursor: 'pointer' }} onClick={() => setShowPassword(false)} />
+                  ) : (
+                    <EyeOff size={16} color="#9CA3AF" style={{ position: 'absolute', right: 14, top: '50%', transform: 'translateY(-50%)', cursor: 'pointer' }} onClick={() => setShowPassword(true)} />
+                  )}
                 </div>
               </div>
 

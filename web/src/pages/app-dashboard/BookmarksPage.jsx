@@ -106,7 +106,11 @@ function BookmarksContent({ c, isDark }) {
                 
                 <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
                   <div style={{ width: '48px', height: '48px', borderRadius: '14px', background: item.bg, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <MessageSquare size={24} color={item.iconColor} />
+                    <img 
+                      src={`https://ui-avatars.com/api/?name=${encodeURIComponent(item.name)}&background=random`} 
+                      alt={item.name} 
+                      style={{ width: '100%', height: '100%', borderRadius: 14, objectFit: 'cover' }} 
+                    />
                   </div>
                   <div>
                     <h3 style={{ margin: 0, fontSize: '15px', fontWeight: 600, color: c.textDark }}>{item.name}</h3>
