@@ -187,7 +187,7 @@ function DashboardContent({ userName, c, isDark }) {
                 <div 
                   key={chat.session_id} 
                   onClick={() => navigate(`/chat?session_id=${chat.session_id}`)}
-                  style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 12px', borderRadius: '16px', background: c.cardBgHighlight, boxShadow: `2px 2px 8px ${c.shadowSmall}`, cursor: 'pointer', transition: 'transform 0.2s' }}
+                  style={{ position: 'relative', zIndex: activeDropdown === chat.session_id ? 50 : 1, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 12px', borderRadius: '16px', background: c.cardBgHighlight, boxShadow: `2px 2px 8px ${c.shadowSmall}`, cursor: 'pointer', transition: 'transform 0.2s' }}
                   onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
                   onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
                 >
