@@ -1,0 +1,78 @@
+# Dependencies
+node_modules/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Logs
+*.log
+npm-debug.log*
+
+# ChromaDB persisted data
+chroma_data/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Build / dist
+dist/
+build/
+
+# Dependencies
+node_modules/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Logs
+*.log
+npm-debug.log*
+
+# ChromaDB persisted data
+chroma_data/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Build / dist
+dist/
+build/
+
+# Coverage
+coverage/
+
+# Cache
+.cache/
+*.cache
+ # Private training data
+chat.txt
+pairs.json
+*.gguf
+lora_model/
+model_gguf/
+outputs/ 
+backend/.wwebjs_auth/
+backend/.wwebjs_cache/
+backend/check.js
+backend/query.js
+backend/test-retriever.js

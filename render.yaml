@@ -1,0 +1,44 @@
+services:
+  - type: web
+    name: signet-backend
+    env: node
+    plan: free
+    buildCommand: cd backend && npm install
+    startCommand: cd backend && node src/index.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: '5000'
+      - key: CORS_ORIGIN
+        value: https://signet-web.vercel.app,http://localhost:5173
+      - key: SESSION_TTL
+        value: '3600'
+      - key: MAX_FILE_SIZE
+        value: '52428800'
+      - key: CHROMA_HOST
+        fromService:
+          name: signet-chromadb
+          type: web
+          property: host
+      - key: CHROMA_PORT
+        value: '8000'
+      - key: OLLAMA_BASE_URL
+        value: http://localhost:11434
+      - key: OLLAMA_MODEL
+        value: llama3
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: OPENAI_MODEL
+        value: gpt-4o-mini
+
+  - type: web
+    name: signet-chromadb
+    env: docker
+    plan: free
+    dockerfilePath: ./backend/Dockerfile.chromadb
+    envVars:
+      - key: IS_PERSISTENT
+        value: 'TRUE'
+      - key: ANONYMIZED_TELEMETRY
+        value: 'FALSE'

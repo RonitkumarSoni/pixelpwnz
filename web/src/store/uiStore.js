@@ -1,0 +1,47 @@
+import { create } from 'zustand';
+
+const useUiStore = create((set) => ({
+  // Theme
+  theme: localStorage.getItem('signet-theme') || 'light',
+
+  // Privacy
+  privacyAccepted: localStorage.getItem('signet-privacy') === 'true',
+
+  // Auth
+  user: JSON.parse(localStorage.getItem('signet-user')) || null,
+
+  // Actions
+  setUser: (user) => {
+    if (user) {
+      localStorage.setItem('signet-user', JSON.stringify(user));
+    } else {
+      localStorage.removeItem('signet-user');
+    }
+    set({ user });
+  },
+  toggleTheme: () =>
+    set((state) => {
+      const newTheme = state.theme === 'dark' ? 'light' : 'dark';
+      localStorage.setItem('signet-theme', newTheme);
+      document.documentElement.setAttribute('data-theme', newTheme);
+      return { theme: newTheme };
+    }),
+
+  setTheme: (theme) => {
+    localStorage.setItem('signet-theme', theme);
+    document.documentElement.setAttribute('data-theme', theme);
+    set({ theme });
+  },
+
+  acceptPrivacy: () => {
+    localStorage.setItem('signet-privacy', 'true');
+    set({ privacyAccepted: true });
+  },
+
+  resetPrivacy: () => {
+    localStorage.removeItem('signet-privacy');
+    set({ privacyAccepted: false });
+  },
+}));
+
+export default useUiStore;

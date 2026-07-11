@@ -5,7 +5,7 @@ export default {
     version: '1.0.0',
     orientation: 'portrait',
     icon: './assets/icon.png',
-    userInterfaceStyle: 'dark', // Based on design.md dark theme
+    userInterfaceStyle: 'dark',
     splash: {
       image: './assets/splash-icon.png',
       resizeMode: 'contain',
@@ -25,19 +25,8 @@ export default {
     web: {
       favicon: './assets/favicon.png',
     },
-    plugins: [
-      'expo-font',
-      [
-        'expo-document-picker',
-        {
-          appleTeamId: 'YOUR_APPLE_TEAM_ID',
-        }
-      ]
-    ],
-    extra: {
-      eas: {
-        projectId: 'YOUR_EAS_PROJECT_ID',
-      },
-    },
+    plugins: ['expo-font'],
+    // NOTE: eas config is removed for Expo Go compatibility.
+    // Add it back when switching to a development build (EAS).
   },
 };

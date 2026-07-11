@@ -1,4 +1,4 @@
-import React, { useRef, useCallback } from 'react';
+import React, { useRef, useCallback, useState } from 'react';
 import {
   View,
   Text,
@@ -7,11 +7,14 @@ import {
   Alert,
   Animated,
   Easing,
+  TextInput,
+  ScrollView,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as DocumentPicker from 'expo-document-picker';
-import * as FileSystem from 'expo-file-system';
 import * as Haptics from 'expo-haptics';
 import { Feather } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
@@ -19,18 +22,29 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
 import { setSession, setUploading, setUploadProgress } from '../store/sessionSlice';
 import apiClient from '../api/client';
-import { Colors, Spacing, Typography, Radii, Gradients, MIN_TOUCH_TARGET } from '../constants/theme';
+import { Colors, Spacing, Typography, Radii, Gradients } from '../constants/theme';
 import { RootStackParamList } from '../navigation/AppNavigator';
+import { MainTabParamList } from '../navigation/MainTabNavigator';
+import { CompositeNavigationProp } from '@react-navigation/native';
+import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
+import MaskedView from '@react-native-masked-view/masked-view';
 
-type UploadNavProp = NativeStackNavigationProp<RootStackParamList, 'Upload'>;
+type UploadNavProp = CompositeNavigationProp<
+  BottomTabNavigationProp<MainTabParamList, 'Create'>,
+  NativeStackNavigationProp<RootStackParamList>
+>;
 
 export default function UploadScreen() {
   const dispatch = useAppDispatch();
   const { isUploading, uploadProgress } = useAppSelector((s) => s.session);
   const navigation = useNavigation<UploadNavProp>();
+  const [userName, setUserName] = useState('');
+  const [selectedFile, setSelectedFile] = useState<DocumentPicker.DocumentPickerAsset | null>(null);
 
-  // Animated progress width
   const progressAnim = useRef(new Animated.Value(0)).current;
+  const dropzoneScaleAnim = useRef(new Animated.Value(1)).current;
+  const submitAnim = useRef(new Animated.Value(0)).current;
+  const iconPulseAnim = useRef(new Animated.Value(1)).current;
 
   const animateProgress = useCallback((toValue: number) => {
     Animated.timing(progressAnim, {
@@ -41,67 +55,147 @@ export default function UploadScreen() {
     }).start();
   }, [progressAnim]);
 
-  const pickAndUpload = async () => {
+  const startIconPulse = useCallback(() => {
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(iconPulseAnim, {
+          toValue: 1.1,
+          duration: 600,
+          easing: Easing.inOut(Easing.sin),
+          useNativeDriver: true,
+        }),
+        Animated.timing(iconPulseAnim, {
+          toValue: 1,
+          duration: 600,
+          easing: Easing.inOut(Easing.sin),
+          useNativeDriver: true,
+        }),
+      ])
+    ).start();
+  }, [iconPulseAnim]);
+
+  React.useEffect(() => {
+    if (!selectedFile && !isUploading) {
+      startIconPulse();
+    } else {
+      iconPulseAnim.stopAnimation();
+      Animated.timing(iconPulseAnim, {
+        toValue: 1,
+        duration: 200,
+        useNativeDriver: true,
+      }).start();
+    }
+  }, [selectedFile, isUploading, iconPulseAnim, startIconPulse]);
+
+  const animateFileSelect = useCallback(() => {
+    // Bounce dropzone
+    Animated.sequence([
+      Animated.timing(dropzoneScaleAnim, {
+        toValue: 0.96,
+        duration: 100,
+        useNativeDriver: true,
+      }),
+      Animated.timing(dropzoneScaleAnim, {
+        toValue: 1.04,
+        duration: 100,
+        useNativeDriver: true,
+      }),
+      Animated.timing(dropzoneScaleAnim, {
+        toValue: 1,
+        duration: 150,
+        easing: Easing.out(Easing.quad),
+        useNativeDriver: true,
+      }),
+    ]).start();
+    // Animate in submit button
+    Animated.timing(submitAnim, {
+      toValue: 1,
+      duration: 400,
+      easing: Easing.out(Easing.cubic),
+      useNativeDriver: true,
+    }).start();
+  }, [dropzoneScaleAnim, submitAnim]);
+
+  const animateFileDeselect = useCallback(() => {
+    Animated.timing(submitAnim, {
+      toValue: 0,
+      duration: 200,
+      useNativeDriver: true,
+    }).start();
+  }, [submitAnim]);
+
+  const pickFile = async () => {
     try {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-
       const result = await DocumentPicker.getDocumentAsync({
         type: 'text/plain',
         copyToCacheDirectory: true,
       });
 
       if (result.canceled || !result.assets || result.assets.length === 0) return;
-
       const file = result.assets[0];
       if (!file.name.endsWith('.txt')) {
         Alert.alert('Invalid File', 'Please select a valid .txt WhatsApp export file.');
         return;
       }
+      setSelectedFile(file);
+      animateFileSelect();
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
+  const handleUpload = async () => {
+    if (!selectedFile || !userName.trim()) {
+      Alert.alert('Error', 'Please fill in all fields and select a file');
+      return;
+    }
+
+    try {
       dispatch(setUploading(true));
       dispatch(setUploadProgress(0));
       animateProgress(0);
 
-      // Upload using expo-file-system for multipart/form-data
-      const uploadResult = await FileSystem.uploadAsync(
-        `${apiClient.defaults.baseURL}/upload`,
-        file.uri,
-        {
-          fieldName: 'file',
-          httpMethod: 'POST',
-          uploadType: FileSystem.FileSystemUploadType.MULTIPART,
-          headers: {
-            Accept: 'application/json',
-          },
-        }
-      );
+      // Create FormData directly with uri
+      const formData = new FormData();
+      formData.append('chatFile', {
+        uri: selectedFile.uri,
+        type: 'text/plain',
+        name: selectedFile.name || 'chat.txt',
+      } as any);
+      formData.append('user_name', userName.trim());
 
-      // Simulate progress animation since FileSystem doesn't provide granular progress
       animateProgress(0.5);
       dispatch(setUploadProgress(0.5));
 
-      if (uploadResult.status >= 200 && uploadResult.status < 300) {
-        animateProgress(1);
-        dispatch(setUploadProgress(1));
+      // Send via fetch
+      const response = await fetch(`${apiClient.defaults.baseURL}/upload`, {
+        method: 'POST',
+        body: formData,
+        headers: {
+          Accept: 'application/json',
+        },
+      });
 
-        const data = JSON.parse(uploadResult.body);
+      animateProgress(1);
+      dispatch(setUploadProgress(1));
 
+      if (response.ok) {
+        const data = await response.json();
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-
         dispatch(setSession({
           sessionId: data.session_id,
-          userName: data.user_name || 'User',
+          userName: data.user_name || userName,
           pairCount: data.pair_count || 0,
         }));
-
         dispatch(setUploading(false));
-
-        // Navigate to Chat
         navigation.navigate('Chat');
       } else {
-        throw new Error(`Upload failed with status ${uploadResult.status}`);
+        const errorText = await response.text();
+        throw new Error(`Upload failed with status ${response.status}: ${errorText}`);
       }
     } catch (error: any) {
+      console.error('Upload error:', error);
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       dispatch(setUploading(false));
       dispatch(setUploadProgress(0));
@@ -116,116 +210,208 @@ export default function UploadScreen() {
   });
 
   return (
-    <View style={styles.container}>
-      {/* AI Glow Orb */}
-      <View style={styles.glowOrb} />
-
+    <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
       <SafeAreaView style={styles.safeArea}>
-        <View style={styles.content}>
-          {/* Branding */}
-          <View style={styles.branding}>
-            <Text style={styles.logo}>Signet</Text>
-            <Text style={styles.tagline}>Your digital twin. Write like you.</Text>
+        <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+          {/* Header Title */}
+          <View style={styles.header}>
+            <Text style={styles.headerTitle}>Create Persona</Text>
           </View>
 
-          {/* Upload Dropzone Card */}
-          <TouchableOpacity
-            onPress={pickAndUpload}
-            disabled={isUploading}
-            activeOpacity={0.75}
-            style={[styles.dropzone, isUploading && styles.dropzoneUploading]}
-          >
-            <Feather
-              name="upload-cloud"
-              size={48}
-              color={isUploading ? Colors.primarySolid : Colors.textSecondary}
-            />
-            <Text style={styles.dropzoneTitle}>
-              {isUploading ? 'Uploading...' : 'Tap to Upload'}
-            </Text>
-            <Text style={styles.dropzoneSubtitle}>
-              Select your WhatsApp .txt export file
-            </Text>
+          {/* Intro Text */}
+          <View style={styles.introContainer}>
+            <MaskedView
+              maskElement={<Text style={styles.gradientTitle}>Upload Your Chat</Text>}
+            >
+              <LinearGradient
+                colors={[...Gradients.primary]}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 0 }}
+              >
+                <Text style={[styles.gradientTitle, { opacity: 0 }]}>Upload Your Chat</Text>
+              </LinearGradient>
+            </MaskedView>
+            <Text style={styles.subText}>Export your WhatsApp chat as a .txt file without media and upload it here.</Text>
+          </View>
 
-            {/* Progress Bar */}
-            {isUploading && (
-              <View style={styles.progressTrack}>
-                <Animated.View style={[styles.progressBarContainer, { width: progressWidth }]}>
+          {/* Form */}
+          <View style={styles.formContainer}>
+            <Text style={styles.inputLabel}>Persona Name</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="e.g. John Doe"
+              placeholderTextColor={Colors.textMuted}
+              value={userName}
+              onChangeText={setUserName}
+              editable={!isUploading}
+            />
+
+            <Text style={styles.inputLabel}>Chat File</Text>
+            <Animated.View style={{ transform: [{ scale: dropzoneScaleAnim }] }}>
+              <TouchableOpacity
+                onPress={pickFile}
+                disabled={isUploading}
+                activeOpacity={0.75}
+                style={[
+                  styles.dropzone, 
+                  isUploading && styles.dropzoneUploading,
+                  selectedFile && styles.dropzoneSelected
+                ]}
+              >
+                <Animated.View style={{ transform: [{ scale: iconPulseAnim }] }}>
+                  <Feather
+                    name={selectedFile ? "check-circle" : "upload-cloud"}
+                    size={48}
+                    color={selectedFile 
+                      ? Colors.primarySolid 
+                      : (isUploading ? Colors.primarySolid : Colors.textSecondary)}
+                  />
+                </Animated.View>
+                <Text style={styles.dropzoneTitle}>
+                  {selectedFile ? 'File Selected' : (isUploading ? 'Uploading...' : 'Tap to Select File')}
+                </Text>
+                <Text style={styles.dropzoneSubtitle}>
+                  {selectedFile ? selectedFile.name : 'Must be a .txt export'}
+                </Text>
+
+                {/* Progress Bar */}
+                {isUploading && (
+                  <View style={styles.progressTrack}>
+                    <Animated.View style={[styles.progressBarContainer, { width: progressWidth }]}>
+                      <LinearGradient
+                        colors={[...Gradients.primary]}
+                        start={{ x: 0, y: 0 }}
+                        end={{ x: 1, y: 0 }}
+                        style={styles.progressBar}
+                      />
+                    </Animated.View>
+                  </View>
+                )}
+              </TouchableOpacity>
+            </Animated.View>
+
+            {/* Submit Button */}
+            {selectedFile && !isUploading && (
+              <Animated.View style={{
+                opacity: submitAnim,
+                transform: [
+                  { 
+                    translateY: submitAnim.interpolate({
+                      inputRange: [0, 1],
+                      outputRange: [20, 0]
+                    })
+                  }
+                ]
+              }}>
+                <TouchableOpacity style={styles.submitBtn} onPress={handleUpload}>
                   <LinearGradient
                     colors={[...Gradients.primary]}
                     start={{ x: 0, y: 0 }}
                     end={{ x: 1, y: 0 }}
-                    style={styles.progressBar}
-                  />
-                </Animated.View>
-              </View>
+                    style={styles.submitBtnGradient}
+                  >
+                    <Text style={styles.submitBtnText}>Create Clone</Text>
+                    <Feather name="arrow-right" size={20} color="#FFF" />
+                  </LinearGradient>
+                </TouchableOpacity>
+              </Animated.View>
             )}
-          </TouchableOpacity>
+          </View>
 
-          {/* Footer */}
-          <Text style={styles.footer}>
-            Your data is processed securely and never stored permanently.{'\n'}
-            You can delete everything at any time.
-          </Text>
-        </View>
+          {/* Instructions */}
+          <View style={styles.instructionsCard}>
+            <Text style={styles.instructionsTitle}>How to export from WhatsApp</Text>
+            <View style={styles.instructionStep}>
+              <Text style={styles.stepNum}>1</Text>
+              <Text style={styles.stepText}>Open WhatsApp chat</Text>
+            </View>
+            <View style={styles.instructionStep}>
+              <Text style={styles.stepNum}>2</Text>
+              <Text style={styles.stepText}>Tap the contact name / menu</Text>
+            </View>
+            <View style={styles.instructionStep}>
+              <Text style={styles.stepNum}>3</Text>
+              <Text style={styles.stepText}>Select "Export Chat"</Text>
+            </View>
+            <View style={styles.instructionStep}>
+              <Text style={styles.stepNum}>4</Text>
+              <Text style={styles.stepText}>Choose "Without Media"</Text>
+            </View>
+          </View>
+        </ScrollView>
       </SafeAreaView>
-    </View>
+    </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: Colors.bg,
-  },
-  glowOrb: {
-    position: 'absolute',
-    top: -60,
-    right: -60,
-    width: 200,
-    height: 200,
-    borderRadius: 100,
-    backgroundColor: 'rgba(139,92,246,0.15)',
-  },
-  safeArea: {
-    flex: 1,
-  },
-  content: {
-    flex: 1,
-    justifyContent: 'center',
+  safeArea: { flex: 1, backgroundColor: Colors.bg },
+  scrollContent: { paddingHorizontal: Spacing.xl, paddingBottom: 100 },
+  header: {
+    paddingVertical: Spacing.md,
     alignItems: 'center',
-    paddingHorizontal: Spacing.xl,
   },
-  branding: {
+  headerTitle: {
+    ...Typography.h2,
+    color: Colors.text,
+  },
+  introContainer: {
+    marginTop: Spacing.lg,
+    marginBottom: Spacing.xl,
     alignItems: 'center',
-    marginBottom: Spacing['4xl'],
   },
-  logo: {
-    ...Typography.h1,
-    color: Colors.primarySolid,
+  gradientTitle: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    textAlign: 'center',
     marginBottom: Spacing.sm,
   },
-  tagline: {
-    ...Typography.bodyLarge,
-    color: Colors.textSecondary,
+  subText: {
+    ...Typography.body,
+    color: Colors.textMuted,
+    textAlign: 'center',
+  },
+  formContainer: {
+    marginBottom: Spacing.xl,
+  },
+  inputLabel: {
+    ...Typography.body,
+    fontWeight: 'bold',
+    color: Colors.text,
+    marginBottom: Spacing.sm,
+  },
+  input: {
+    backgroundColor: Colors.glass.bg,
+    borderWidth: 1,
+    borderColor: Colors.border,
+    borderRadius: Radii.md,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: 14,
+    color: Colors.text,
+    fontSize: 16,
+    marginBottom: Spacing.lg,
   },
   dropzone: {
     width: '100%',
-    backgroundColor: Colors.surface,
+    backgroundColor: Colors.glass.bg,
     borderRadius: Radii.md,
     borderWidth: 2,
     borderStyle: 'dashed',
     borderColor: Colors.border,
-    paddingVertical: Spacing['4xl'],
+    paddingVertical: Spacing['2xl'],
     paddingHorizontal: Spacing.xl,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: Spacing['2xl'],
+    marginBottom: Spacing.lg,
   },
   dropzoneUploading: {
     borderColor: Colors.primarySolid,
     borderStyle: 'solid',
-    backgroundColor: 'rgba(139,92,246,0.03)',
+  },
+  dropzoneSelected: {
+    borderColor: Colors.primarySolid,
+    borderStyle: 'solid',
+    backgroundColor: `${Colors.primarySolid}10`, // 10% opacity
   },
   dropzoneTitle: {
     ...Typography.h3,
@@ -253,10 +439,53 @@ const styles = StyleSheet.create({
     flex: 1,
     borderRadius: 2,
   },
-  footer: {
-    ...Typography.small,
-    color: Colors.textMuted,
-    textAlign: 'center',
-    lineHeight: 18,
+  submitBtn: {
+    width: '100%',
+    borderRadius: Radii.md,
+    overflow: 'hidden',
   },
+  submitBtnGradient: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 16,
+    gap: 12,
+  },
+  submitBtnText: {
+    ...Typography.h3,
+    color: '#FFF',
+  },
+  instructionsCard: {
+    backgroundColor: Colors.glass.bg,
+    borderRadius: Radii.lg,
+    padding: Spacing.lg,
+    borderWidth: 1,
+    borderColor: Colors.border,
+  },
+  instructionsTitle: {
+    ...Typography.h3,
+    color: Colors.text,
+    marginBottom: Spacing.md,
+  },
+  instructionStep: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: Spacing.sm,
+  },
+  stepNum: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    backgroundColor: Colors.border,
+    color: Colors.text,
+    textAlign: 'center',
+    lineHeight: 24,
+    fontSize: 12,
+    fontWeight: 'bold',
+    marginRight: Spacing.sm,
+  },
+  stepText: {
+    ...Typography.body,
+    color: Colors.textMuted,
+  }
 });
