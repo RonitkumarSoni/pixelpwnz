@@ -7,8 +7,8 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import useUiStore from '../store/uiStore';
 
 export default function DashboardLayout({ children, activeTab = 'Home' }) {
-  const { theme, toggleTheme } = useUiStore();
-  const { user, logout } = useAuthStore();
+  const { theme, toggleTheme, user: uiUser } = useUiStore();
+  const { user: authUser, logout } = useAuthStore();
   const navigate = useNavigate();
   const location = useLocation();
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -27,7 +27,7 @@ export default function DashboardLayout({ children, activeTab = 'Home' }) {
   }, []);
 
   // Use authStore user (JWT-verified) as primary, fallback to uiStore user
-  const activeUser = authUser || user;
+  const activeUser = authUser || uiUser;
   const userName = activeUser?.name || 'User';
   const userAvatar = activeUser?.avatar || activeUser?.photoURL || activeUser?.picture || null;
 

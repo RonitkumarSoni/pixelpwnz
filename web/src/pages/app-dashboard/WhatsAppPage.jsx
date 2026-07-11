@@ -213,7 +213,7 @@ function WhatsAppContent() {
               <div>
                 <label style={{ display: 'block', fontSize: '0.85rem', color: c.textMuted, marginBottom: '8px', fontWeight: 600 }}>Active Clone Brain</label>
                 <select 
-                  value={autoPilot.sessionId}
+                  value={autoPilot.sessionId || ''}
                   onChange={(e) => {
                   const newConfig = { ...autoPilot, sessionId: e.target.value };
                   setAutoPilot(newConfig);

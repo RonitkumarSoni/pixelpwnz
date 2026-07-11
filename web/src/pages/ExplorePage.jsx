@@ -1,5 +1,7 @@
 import React from 'react';
-
+import { Search, Filter, MessageSquare, Bookmark, TrendingUp, Star, Award, Zap } from 'lucide-react';
+import toast from 'react-hot-toast';
+import { useAuthStore } from '../store/authStore';
 import DashboardLayout from '../components/DashboardLayout';
 import PremiumLoader from '../components/PremiumLoader';
 import apiClient from '../api/client';
