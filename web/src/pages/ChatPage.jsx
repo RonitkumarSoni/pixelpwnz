@@ -7,6 +7,7 @@ import { sendMessage, clearSession as clearSessionApi, getSessionDetails } from 
 import MessageList from '../components/MessageList';
 import InsightsModal from '../components/InsightsModal';
 import DeleteModal from '../components/DeleteModal';
+import PremiumLoader from '../components/PremiumLoader';
 
 export default function ChatPage() {
   const navigate = useNavigate();
@@ -50,7 +51,7 @@ export default function ChatPage() {
   if (isInitializing) {
     return (
       <div className="page-enter" style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <div className="loader"></div>
+        <PremiumLoader text="Initializing chat..." color="#6c5ce7" size={32} />
       </div>
     );
   }

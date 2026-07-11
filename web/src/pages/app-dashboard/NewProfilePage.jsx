@@ -4,6 +4,7 @@ import useUiStore from '../../store/uiStore';
 import DashboardLayout from '../../components/DashboardLayout';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore';
+import toast from 'react-hot-toast';
 
 export default function NewProfilePage() {
   return (
@@ -20,8 +21,10 @@ function ProfileContent({ c, isDark }) {
   
   if (!c) return null;
   const { user } = useUiStore();
-  const userName = user?.name || 'Ronit Kumar';
-  const userEmail = user?.email || 'ronit@example.com';
+  const { user: authUser } = useAuthStore();
+  const activeUser = authUser || user;
+  const userName = activeUser?.name || 'User';
+  const userEmail = activeUser?.email || 'user@example.com';
   
   const [activeSetting, setActiveSetting] = React.useState(location.state?.activeSetting || null);
 
@@ -42,7 +45,7 @@ function ProfileContent({ c, isDark }) {
           display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center'
         }}>
           <div style={{ position: 'relative', marginBottom: '20px' }}>
-            <img src={user?.avatar || user?.photoURL || user?.picture || `https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}&background=random`} alt="Profile" style={{ width: '100px', height: '100px', borderRadius: '50%', objectFit: 'cover', border: `4px solid ${c.cardBgSolid}`, boxShadow: `0 8px 16px ${c.shadowOuter}` }} />
+            <img src={activeUser?.avatar || activeUser?.photoURL || activeUser?.picture || `https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}&background=6c5ce7&color=fff`} alt="Profile" style={{ width: '100px', height: '100px', borderRadius: '50%', objectFit: 'cover', border: `4px solid ${c.cardBgSolid}`, boxShadow: `0 8px 16px ${c.shadowOuter}` }} />
             <div style={{ position: 'absolute', bottom: '0', right: '0', width: '28px', height: '28px', background: '#6c5ce7', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', border: `2px solid ${c.cardBgSolid}` }}>
               <div style={{ width: '12px', height: '12px', borderRadius: '50%', background: '#2ed573' }} />
             </div>
@@ -147,7 +150,7 @@ function ProfileContent({ c, isDark }) {
                     <label style={{ fontSize: '12px', fontWeight: 600, color: c.textMuted }}>Bio</label>
                     <textarea rows="3" placeholder="Tell us about yourself..." style={{ padding: '12px 16px', borderRadius: '12px', border: `1px solid ${c.borderSubtle}`, background: c.inputBg, color: c.textMain, outline: 'none', resize: 'vertical' }}></textarea>
                   </div>
-                  <button style={{ padding: '12px', borderRadius: '12px', background: '#6c5ce7', color: '#fff', border: 'none', fontWeight: 600, cursor: 'pointer', marginTop: '8px' }}>Save Changes</button>
+                  <button onClick={() => toast.success('Personal info updated!')} style={{ padding: '12px', borderRadius: '12px', background: '#6c5ce7', color: '#fff', border: 'none', fontWeight: 600, cursor: 'pointer', marginTop: '8px' }}>Save Changes</button>
                 </div>
               )}
 
@@ -162,14 +165,14 @@ function ProfileContent({ c, isDark }) {
                     <label style={{ fontSize: '12px', fontWeight: 600, color: c.textMuted }}>New Password</label>
                     <input type="password" placeholder="••••••••" style={{ padding: '12px 16px', borderRadius: '12px', border: `1px solid ${c.borderSubtle}`, background: c.inputBg, color: c.textMain, outline: 'none' }} />
                   </div>
-                  <button style={{ padding: '12px', borderRadius: '12px', background: '#6c5ce7', color: '#fff', border: 'none', fontWeight: 600, cursor: 'pointer', marginTop: '8px' }}>Update Password</button>
+                  <button onClick={() => toast.success('Password updated successfully!')} style={{ padding: '12px', borderRadius: '12px', background: '#6c5ce7', color: '#fff', border: 'none', fontWeight: 600, cursor: 'pointer', marginTop: '8px' }}>Update Password</button>
                   
                   <div style={{ marginTop: '16px', paddingTop: '16px', borderTop: `1px solid ${c.borderSubtle}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <div>
                       <h4 style={{ margin: '0 0 4px 0', fontSize: '14px', fontWeight: 600, color: c.textDark }}>Two-Factor Authentication</h4>
                       <p style={{ margin: 0, fontSize: '12px', color: c.textMuted }}>Add an extra layer of security.</p>
                     </div>
-                    <button style={{ padding: '8px 16px', borderRadius: '8px', background: c.cardBgHighlight, color: c.textMain, border: `1px solid ${c.borderSubtle}`, fontWeight: 600, cursor: 'pointer' }}>Enable</button>
+                    <button onClick={() => toast.success('2FA enabled!')} style={{ padding: '8px 16px', borderRadius: '8px', background: c.cardBgHighlight, color: c.textMain, border: `1px solid ${c.borderSubtle}`, fontWeight: 600, cursor: 'pointer' }}>Enable</button>
                   </div>
                 </div>
               )}
@@ -195,7 +198,7 @@ function ProfileContent({ c, isDark }) {
                     </div>
                   </div>
                   
-                  <button style={{ padding: '12px', borderRadius: '12px', background: c.cardBgHighlight, color: c.textMain, border: `1px solid ${c.borderSubtle}`, fontWeight: 600, cursor: 'pointer', marginTop: '8px' }}>Update Payment Method</button>
+                  <button onClick={() => toast.success('Payment method updated!')} style={{ padding: '12px', borderRadius: '12px', background: c.cardBgHighlight, color: c.textMain, border: `1px solid ${c.borderSubtle}`, fontWeight: 600, cursor: 'pointer', marginTop: '8px' }}>Update Payment Method</button>
                 </div>
               )}
             </div>

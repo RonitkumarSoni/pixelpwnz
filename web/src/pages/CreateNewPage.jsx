@@ -25,6 +25,36 @@ function CreateNewContent({ c, isDark }) {
       link: '/upload',
       color: '#25D366',
       badge: 'Recommended'
+    },
+    {
+      id: 'telegram',
+      title: 'Telegram Chat',
+      description: 'Export conversations from Telegram in JSON format.',
+      icon: <MessageCircle size={28} color="#0088cc" />,
+      link: '#',
+      color: '#0088cc',
+      badge: 'Coming Soon',
+      disabled: true
+    },
+    {
+      id: 'instagram',
+      title: 'Instagram DMs',
+      description: 'Download your Instagram data and upload the messages.',
+      icon: <Smartphone size={28} color="#E1306C" />,
+      link: '#',
+      color: '#E1306C',
+      badge: 'Coming Soon',
+      disabled: true
+    },
+    {
+      id: 'text',
+      title: 'Plain Text / CSV',
+      description: 'Upload any conversation in a structured text or CSV file.',
+      icon: <FileText size={28} color="#f59e0b" />,
+      link: '#',
+      color: '#f59e0b',
+      badge: 'Coming Soon',
+      disabled: true
     }
   ];
 
@@ -51,7 +81,7 @@ function CreateNewContent({ c, isDark }) {
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 24 }}>
             {SOURCE_OPTIONS.map(option => (
-              <Link key={option.id} to={option.link} style={{ textDecoration: 'none' }}>
+              <Link key={option.id} to={option.disabled ? '#' : option.link} style={{ textDecoration: 'none', pointerEvents: option.disabled ? 'none' : 'auto' }} onClick={(e) => option.disabled && e.preventDefault()}>
                 <div 
                   style={{ 
                     padding: 32, 
@@ -61,14 +91,15 @@ function CreateNewContent({ c, isDark }) {
                     height: '100%',
                     position: 'relative',
                     transition: 'all 0.3s ease',
-                    cursor: 'pointer',
+                    cursor: option.disabled ? 'default' : 'pointer',
+                    opacity: option.disabled ? 0.55 : 1,
                     background: c.cardBgSolid,
                     border: `1px solid ${c.borderSubtle}`,
                     boxShadow: `4px 4px 10px ${c.shadowSmall}`
                   }}
                 >
                   {option.badge && (
-                    <div style={{ position: 'absolute', top: -12, right: 24, background: 'linear-gradient(135deg, #8c7ae6, #6c5ce7)', color: 'white', fontSize: '0.75rem', fontWeight: 700, padding: '4px 12px', borderRadius: 99, boxShadow: '0 4px 12px rgba(108, 92, 231, 0.3)' }}>
+                    <div style={{ position: 'absolute', top: -12, right: 24, background: option.disabled ? 'linear-gradient(135deg, #9ca3af, #6b7280)' : 'linear-gradient(135deg, #8c7ae6, #6c5ce7)', color: 'white', fontSize: '0.75rem', fontWeight: 700, padding: '4px 12px', borderRadius: 99, boxShadow: option.disabled ? 'none' : '0 4px 12px rgba(108, 92, 231, 0.3)' }}>
                       {option.badge}
                     </div>
                   )}
@@ -82,8 +113,8 @@ function CreateNewContent({ c, isDark }) {
                     {option.description}
                   </p>
                   
-                  <div style={{ display: 'flex', alignItems: 'center', color: option.color, fontWeight: 700, fontSize: '0.95rem', gap: 8, marginTop: 'auto' }}>
-                    Select Source <ArrowRight size={16} />
+                  <div style={{ display: 'flex', alignItems: 'center', color: option.disabled ? c.textLight : option.color, fontWeight: 700, fontSize: '0.95rem', gap: 8, marginTop: 'auto' }}>
+                    {option.disabled ? 'Coming Soon' : 'Select Source'} <ArrowRight size={16} />
                   </div>
                 </div>
               </Link>

@@ -13,7 +13,7 @@ export default function DashboardLayout({ children, activeTab = 'Home' }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const profileMenuRef = useRef(null);
-  const { logout } = useAuthStore();
+  const { logout, user: authUser } = useAuthStore();
 
   useEffect(() => {
     function handleClickOutside(event) {
@@ -25,9 +25,10 @@ export default function DashboardLayout({ children, activeTab = 'Home' }) {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-
-
-  const userName = user?.name || 'User';
+  // Use authStore user (JWT-verified) as primary, fallback to uiStore user
+  const activeUser = authUser || user;
+  const userName = activeUser?.name || 'User';
+  const userAvatar = activeUser?.avatar || activeUser?.photoURL || activeUser?.picture || null;
 
   const getGreeting = () => {
     const hour = new Date().getHours();
@@ -189,7 +190,7 @@ export default function DashboardLayout({ children, activeTab = 'Home' }) {
         <div style={{ background: c.cardBgHighlight, borderRadius: '20px', padding: '12px', marginTop: 'auto', transition: 'background 0.3s' }}>
           {/* Top: Profile */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '14px', cursor: 'pointer' }} onClick={() => navigate('/profile')}>
-            <img src={user?.avatar || user?.photoURL || user?.picture || `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name || 'User')}&background=random`} alt="Profile" style={{ width: '36px', height: '36px', borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
+            <img src={userAvatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}&background=6c5ce7&color=fff`} alt="Profile" style={{ width: '36px', height: '36px', borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
             <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '2px' }}>
               <h4 style={{ margin: 0, fontSize: '12.5px', fontWeight: 700, color: c.textDark, lineHeight: 1.2, transition: 'color 0.3s' }}>{userName}</h4>
               <p style={{ margin: 0, fontSize: '11px', color: c.textMuted, display: 'flex', alignItems: 'center', gap: '4px', fontWeight: 500 }}>
@@ -328,7 +329,7 @@ export default function DashboardLayout({ children, activeTab = 'Home' }) {
               </span>
             </button>
 
-            <img src={user?.avatar || user?.photoURL || user?.picture || `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name || 'User')}&background=random`} alt="User" style={{ width: '44px', height: '44px', borderRadius: '50%', objectFit: 'cover', border: `2px solid ${c.borderMain}`, cursor: 'pointer' }} onClick={() => navigate('/profile')} />
+            <img src={userAvatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}&background=6c5ce7&color=fff`} alt="User" style={{ width: '44px', height: '44px', borderRadius: '50%', objectFit: 'cover', border: `2px solid ${c.borderMain}`, cursor: 'pointer' }} onClick={() => navigate('/profile')} />
           </div>
         </div>
 

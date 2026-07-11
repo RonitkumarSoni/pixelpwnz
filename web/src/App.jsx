@@ -9,6 +9,7 @@ import PrivacyModal from './components/PrivacyModal';
 import ToastProvider from './components/ToastProvider';
 import useUiStore from './store/uiStore';
 import DemoPage from './pages/DemoPage';
+import PremiumLoader from './components/PremiumLoader';
 import SecurityPage from './pages/SecurityPage';
 import LoginPage from './pages/LoginPage';
 import ProfilePage from './pages/ProfilePage';
@@ -29,7 +30,7 @@ function ProtectedRoute({ children }) {
   const { isAuthenticated, isLoading } = useAuthStore();
   
   if (isLoading) {
-    return <div style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>Loading...</div>;
+    return <div style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--color-bg)' }}><PremiumLoader text="Authenticating..." color="#6c5ce7" size={32} /></div>;
   }
   
   if (!isAuthenticated) {
