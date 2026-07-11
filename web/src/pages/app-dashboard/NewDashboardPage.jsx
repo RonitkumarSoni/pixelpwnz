@@ -4,13 +4,17 @@ import {
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import useUiStore from '../../store/uiStore';
+import { useAuthStore } from '../../store/authStore';
 import DashboardLayout from '../../components/DashboardLayout';
 import PremiumLoader from '../../components/PremiumLoader';
 import { getSessions } from '../../api/client';
 
 export default function NewDashboardPage() {
-  const { user } = useUiStore();
-  const userName = user?.name || 'Ronit';
+  const { user: uiUser } = useUiStore();
+  const { user: authUser } = useAuthStore();
+  
+  const activeUser = authUser || uiUser;
+  const userName = activeUser?.name || 'User';
 
   return (
     <DashboardLayout activeTab="Home">
