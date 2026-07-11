@@ -168,7 +168,8 @@ function DashboardContent({ userName, c, isDark }) {
                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                     <div style={{ width: '36px', height: '36px', borderRadius: '12px', background: isDark ? 'rgba(108,92,231,0.1)' : '#f3efff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                       <img 
-
+                        src={chat.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(chat.persona || chat.contact_name || 'Unknown')}&background=6c5ce7&color=fff`}
+                        alt={chat.persona || chat.contact_name || 'Avatar'}
                         style={{ width: '100%', height: '100%', borderRadius: 12, objectFit: 'cover' }} 
                       />
                     </div>
