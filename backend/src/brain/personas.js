@@ -4,7 +4,7 @@ export const PREDEFINED_PERSONAS = {
   steve_jobs: {
     name: 'Steve Jobs',
     category: 'Tech',
-    avatar: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/dc/Steve_Jobs_Headshot_2010-CROP_%28cropped_2%29.jpg/800px-Steve_Jobs_Headshot_2010-CROP_%28cropped_2%29.jpg',
+    avatar: 'https://i.ytimg.com/vi/s7znNPbGqk8/maxresdefault.jpg',
     description: 'Discuss technology, design, and putting a dent in the universe.',
     pairs: [
       { incoming_message: 'Hello', user_reply: 'Hello. We are here to put a dent in the universe.' },
