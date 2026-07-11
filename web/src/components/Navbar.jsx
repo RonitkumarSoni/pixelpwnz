@@ -1,13 +1,19 @@
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import { useAuthStore } from '../store/authStore';
 import useUiStore from '../store/uiStore';
 
 export default function Navbar() {
   const [show, setShow] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
   const [isScrolled, setIsScrolled] = useState(false);
-  const { user } = useUiStore();
+  const { user: uiUser } = useUiStore();
+  const { user: authUser } = useAuthStore();
+
+  const activeUser = authUser || uiUser;
+  const userName = activeUser?.name || 'User';
+  const userAvatar = activeUser?.avatar || activeUser?.photoURL || activeUser?.picture || null;
 
   useEffect(() => {
     const handleScroll = () => {
@@ -59,13 +65,13 @@ export default function Navbar() {
           <li><Link to="/#about">About</Link></li>
           <li><Link to="/docs">Docs</Link></li>
         </ul>
-        {user ? (
+        {activeUser ? (
           <Link to="/profile" style={{ textDecoration: 'none' }}>
             <div style={{
               width: 44,
               height: 44,
               borderRadius: '50%',
-              background: 'var(--color-primary)',
+              background: 'var(--color-primary, #6c5ce7)',
               color: 'white',
               display: 'flex',
               alignItems: 'center',
@@ -74,9 +80,14 @@ export default function Navbar() {
               fontSize: '1.2rem',
               textTransform: 'uppercase',
               boxShadow: '0 4px 12px rgba(108, 92, 231, 0.3)',
-              cursor: 'pointer'
+              cursor: 'pointer',
+              overflow: 'hidden'
             }}>
-              {user.name ? user.name.charAt(0) : 'U'}
+              {userAvatar ? (
+                <img src={userAvatar} alt={userName} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              ) : (
+                userName.charAt(0)
+              )}
             </div>
           </Link>
         ) : (
