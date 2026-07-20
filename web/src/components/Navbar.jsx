@@ -9,9 +9,9 @@ export default function Navbar() {
   const [lastScrollY, setLastScrollY] = useState(0);
   const [isScrolled, setIsScrolled] = useState(false);
   const { user: uiUser } = useUiStore();
-  const { user: authUser } = useAuthStore();
+  const { user: authUser, isAuthenticated } = useAuthStore();
 
-  const activeUser = authUser || uiUser;
+  const activeUser = isAuthenticated ? authUser : null;
   const userName = activeUser?.name || 'User';
   const userAvatar = activeUser?.avatar || activeUser?.photoURL || activeUser?.picture || null;
 

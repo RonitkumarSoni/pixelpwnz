@@ -61,6 +61,7 @@ export const useAuthStore = create((set, get) => ({
   // Logout
   logout: () => {
     localStorage.removeItem('signet_token');
+    localStorage.removeItem('signet-user'); // Clear legacy uiStore zombie user
     set({
       user: null,
       token: null,
